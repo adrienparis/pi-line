@@ -10,10 +10,10 @@ class Attach():
 
 def getIcon(icon):
     if icon is not None:
-        img = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, "logo", icon + ".png")
+        img = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir, "logo", icon + ".png")
         if os.path.isfile(img):
             return img
-    img = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, "logo",  "noPicture.png")
+    img = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir, "logo",  "noPicture.png")
     if os.path.isfile(img):
         return img
 
