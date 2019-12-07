@@ -9,14 +9,16 @@ class User():
         def __init__(self):
             self.name = getpass.getuser()
             self.prefPath = os.path.join("C:/Users", self.name, "Documents", "Pi-Line")
+            self.prefs = {}
             self.loadPref()
             self.assignPrefs()
+            self.profil = None
+            
         def loadPref(self):
             filepath = os.path.join(self.prefPath, "preferences.pil")
             if not os.path.isfile(filepath):
                 print("File path {} does not exist. Exiting...".format(filepath))
                 return
-            self.prefs = {}
             #TODO create a try and catch to avoid a badly written config file
             with open(filepath) as fp:
                 for line in fp:

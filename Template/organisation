@@ -1,0 +1,12 @@
+user:
+-fournir le nom d'utilisateur
+-recuperer les preferences utilisateur
+
+
+project:
+se créer lui même sur le server
+se copier lui même sur le local
+
+
+-créer des categorie d'asset
+-créer des sequences

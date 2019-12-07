@@ -1,5 +1,5 @@
-from UC import *
-from lineUC import *
+from .UC import UserControl
+from .lineUC import LineUC
 
 class AssetTreeUC(UserControl):
     pass

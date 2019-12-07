@@ -206,7 +206,7 @@ class Project(Item):
         #TODO create a try and catch to avoid a badly written config file
         with open(filepath) as fp:
             for line in fp:
-                l = ast.literal_eval(line.replace("\\", "\\\\"))
+                l = ast.literal_eval(line.replace("\\", "/"))
                 if len(l) >= 3:
                     name = l[0]
                     diminutive = l[1]

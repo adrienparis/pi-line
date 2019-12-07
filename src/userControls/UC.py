@@ -2,6 +2,8 @@ import os
 from pymel.all import *
 import maya.cmds as cmds
 
+unicode = str
+
 class Attach():
     NONE = 0
     FORM = 1
@@ -106,7 +108,7 @@ class UserControl(object):
                 if value[0] == Attach.POS:
                     self.ap.append((self.layout, key, side[UserControl.__sideToValue(str(key))], value[1]))
                 if value[0] == Attach.CTRL:
-                    if type(value[1]) is str or type(parent) is unicode:
+                    if type(value[1]) is str or type(value[1]) is unicode:
                         self.ac.append((self.layout, key, side[UserControl.__sideToValue(str(key))], value[1]))
                     else:
                         try:

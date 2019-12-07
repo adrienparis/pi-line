@@ -1,9 +1,9 @@
 import maya.cmds as cmds
-from pymel.all import *
-from UC import *
-from assetTileUC import *
-from assetTreeUC import *
-from treeUC import *
+
+from .UC import *
+from .assetTileUC import *
+from .assetTreeUC import *
+from .treeUC import *
 
 class ExplorerUC(UserControl):
 

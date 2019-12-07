@@ -1,5 +1,6 @@
 import maya.cmds as cmds
-from UC import *
+
+from .UC import *
 
 class WindowUC(UserControl):
 

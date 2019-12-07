@@ -1,7 +1,8 @@
 import maya.cmds as cmds
 from pymel.all import *
-from UC import *
-from tileUC import *
+from .UC import UserControl
+# from . import *
+# from tileUC import *
 
 class AssetTileUC(UserControl):
     styleIcon = 'iconAndTextVertical'

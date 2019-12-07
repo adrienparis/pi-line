@@ -122,6 +122,7 @@ class Project():
         if not os.path.isfile(filepath):
             print("File path {} does not exist. Exiting...".format(filepath))
         #TODO create a try and catch to avoid a badly written config file
+        return ps
         with open(filepath) as fp:
             for line in fp:
                 # l = ast.literal_eval(line.replace("\\", "/"))

@@ -1,17 +1,19 @@
+import math
+
 import maya.cmds as cmds
 from pymel.all import *
 
-from UC import *
+from .UC import *
 
-from defineProjectUC import *
-from detailUC import *
-from explorerUC import *
-from importUC import *
-from projectUC import *
-from syncUC import *
-from versInfonUC import *
-from versionUC import *
-from wipUC import *
+from .defineProjectUC import *
+from .detailUC import *
+from .explorerUC import *
+from .importUC import *
+from .projectUC import *
+from .syncUC import *
+from .versInfonUC import *
+from .versionUC import *
+from .wipUC import *
 
 class CupboardUC(UserControl):
     colMinSize = 225

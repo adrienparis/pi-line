@@ -1,6 +1,7 @@
 import maya.cmds as cmds
 from pymel.all import *
-from UC import *
+
+from .UC import *
 from plUser import *
 
 class VersionUC(UserControl):

@@ -1,8 +1,9 @@
 import maya.cmds as cmds
 from pymel.all import *
-from UC import *
-from defineProjectUC import *
-from windowUC import *
+
+from .UC import *
+from .defineProjectUC import *
+from .windowUC import *
 
 import asset as astPL
 from project import *

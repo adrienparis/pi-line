@@ -1,9 +1,8 @@
-
 from pymel.all import *
 import maya.cmds as cmds
 
-from UC import *
-from lineUC import *
+from .UC import *
+from .lineUC import *
 
 class TreeUC(UserControl):
     class _item():
