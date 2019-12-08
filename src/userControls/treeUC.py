@@ -11,7 +11,6 @@ class TreeUC(UserControl):
             self.elem = elem
             self.image = image
             self.info = info
-            self.eventName = name + "Click"
             self.deep = 0
             self.parent = None
             self.line = None
@@ -74,7 +73,7 @@ class TreeUC(UserControl):
         self.scrlLay = ""
 
     
-    def loadFolder(self, fold, parent):
+    def _loadFolder(self, fold, parent):
         elems = []
         layout = cmds.formLayout(fold.name + "_layout", parent=parent, bgc=hexToRGB(0x111111 * (fold.deep % 2) + 0x555555), vis=(fold.isDeployed or fold.deep < 1))
         for elem in fold.childrens:
@@ -83,11 +82,11 @@ class TreeUC(UserControl):
             elems.append(elem.line.layout)
             # l.attach(top=(Attach.CTRL, pl), bottom=Attach.NONE, left=(Attach.POS, 15), right=Attach.FORM)
             if elem.__class__ is TreeUC._folder:
-                elems.append(self.loadFolder(elem, layout))
+                elems.append(self._loadFolder(elem, layout))
                 elem.area = elems[-1]
-                elem.line.eventHandler("click", self.clickFolder, elem)
+                elem.line.eventHandler("click", self._clickFolder, elem)
             else:
-                elem.line.eventHandler("click", self.clickItem, elem)
+                elem.line.eventHandler("click", self._clickItem, elem)
 
         af = []
         an = []
@@ -124,19 +123,19 @@ class TreeUC(UserControl):
             print("deleting" + self.scrlLay)
             cmds.deleteUI(self.scrlLay)
         self.scrlLay = cmds.scrollLayout(parent=self.layout, childResizable=True)
-        t = self.loadFolder(self.root, self.scrlLay)
+        t = self._loadFolder(self.root, self.scrlLay)
         
         cmds.formLayout(self.layout, edit=True, attachForm=[(self.scrlLay, 'top', -2),(self.scrlLay, 'bottom', -2),(self.scrlLay, 'left', -2), (self.scrlLay, 'right', -2)])
         print("reformat" + self.scrlLay)
 
-    def clickFolder(self, folder, line, mod):
+    def _clickFolder(self, folder, line, mod):
         if mod == 0:
             folder.deploying(not folder.isDeployed)
         elif mod == 1:
             folder.deployingAll(not folder.isDeployed)
 
 
-    def clickItem(self, item, line, mod):
+    def _clickItem(self, item, line, mod):
         
         for t in self.selecteds:
             if (mod != 1 or item.parent != t.parent or not self.multiSelect):
@@ -177,3 +176,9 @@ class TreeUC(UserControl):
         self.items[elem] = i
         return i
         
+    def select(self, selection, value):
+        '''display the lines in selection as selected in the tree
+        selection: the lines to be select
+        value: True to select
+        '''
+        pass
