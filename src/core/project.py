@@ -1,13 +1,14 @@
 import os
 import getpass
 import maya.cmds as cmds
-import ast
+from user import User
 
 from .path import Path
 from .item import Item
 from .asset import Asset
 from .shot import Shot
 
+# TODO remove this line
 unicode = str
 
 class Project(Item):
@@ -247,7 +248,7 @@ class Project(Item):
 
     # [name, diminutive, pathServer, pathLocal]
     @staticmethod
-    def fetchProjects(pathProject):
+    def fetchProjects():
         ps = []
 
         user = User()

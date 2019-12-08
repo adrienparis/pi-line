@@ -1,12 +1,14 @@
 import maya.cmds as cmds
-from pymel.all import *
+from pymel.all import Callback
+import os
 
 from .UC import *
-from .defineProjectUC import *
-from .windowUC import *
+from .defineProjectUC import DefineProjectUC
+from .windowUC import WindowUC
 
-import asset as astPL
-from project import *
+from user import User
+from core.asset import Asset as astPL
+from core.project import Project
 
 class ProjectUC(UserControl):
     projects = []

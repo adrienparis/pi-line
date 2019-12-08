@@ -5,7 +5,7 @@ path = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.path.pardir, 
 sys.path.append(path)
 path = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(path)
-import plUser as user
+import user
 import core
 
 import userControls as UC
@@ -59,14 +59,14 @@ def mainUI():
     la = proj.getAssetsByCategory("char")
     print(la)
 
-    # win = UC.WindowUC(u"Pi-Line")
-    # win.load()
+    win = UC.WindowUC(u"Pi-Line")
+    win.load()
 
-    # cpBrd = UC.CupboardUC(win)
-    # cpBrd.create()
-    # cpBrd.attach(top=UC.Attach.FORM, bottom=UC.Attach.FORM, left=UC.Attach.FORM, right=UC.Attach.FORM, margin=0)
+    cpBrd = UC.CupboardUC(win)
+    cpBrd.create()
+    cpBrd.attach(top=UC.Attach.FORM, bottom=UC.Attach.FORM, left=UC.Attach.FORM, right=UC.Attach.FORM, margin=0)
 
-    # win.applyAttach()
+    win.applyAttach()
 
 
 print(u"=====Start pi-Line=====")
