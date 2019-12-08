@@ -2,8 +2,6 @@ import os
 from pymel.all import *
 import maya.cmds as cmds
 
-unicode = str
-
 class Attach():
     NONE = 0
     FORM = 1

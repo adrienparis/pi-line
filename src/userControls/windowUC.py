@@ -15,6 +15,7 @@ class WindowUC(UserControl):
         self.iw = 400
         self.ih = 600
     
+
     def load(self):
         if cmds.workspaceControl(self.name, exists=1):
             cmds.deleteUI(self.name)

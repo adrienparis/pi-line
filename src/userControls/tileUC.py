@@ -22,12 +22,19 @@ class TileUC(UserControl):
         self.btnLay = cmds.iconTextButton(self.asset.name + "Tile", parent=self.layout, style=self.style, image1=self.asset.image,
                             label=self.asset.name, w=self.sizeImage, h=self.sizeImage, sic=True, c=Callback(self.clickCommand), bgc=self.selectedColor, ebg=self.selected)
         img = "denied"
-        if self.asset.state == 0:        
+        if self.asset.onServer and self.asset.onLocal:
             img = "check"
-        if self.asset.state == 1:        
+        if self.asset.onServer and not self.asset.onLocal:
             img = "download"
-        if self.asset.state == 2:        
+        if not self.asset.onServer and self.asset.onLocal:
             img = "upload"
+
+        # if self.asset.state == 0:        
+        #     img = "check"
+        # if self.asset.state == 1:        
+        #     img = "download"
+        # if self.asset.state == 2:        
+        #     img = "upload"
 
 
         self.iconLay = cmds.image(parent=self.layout, image=getIcon(img), bgc=hexToRGB(0x1d1d1d))

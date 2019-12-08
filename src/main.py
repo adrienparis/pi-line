@@ -2,6 +2,7 @@ import userControls as UC
 
 
 def mainUI():
+    print(u"=====Start pi-Line=====")
     win = UC.WindowUC(u"Pi-Line")
     win.load()
 
@@ -12,6 +13,6 @@ def mainUI():
     win.applyAttach()
 
 
-print(u"=====Start pi-Line=====")
+print(u"=====Load pi-Line=====")
 # print("Merci pilou <3")
-mainUI()
+# mainUI()

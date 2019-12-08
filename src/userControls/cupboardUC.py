@@ -92,6 +92,7 @@ class CupboardUC(UserControl):
         
         #Create and load all the interfaces
         for key, view in self.views.items():
+            print(key)
             view.create()
         # self.views["project"].create()
         # self.views["explorer"].create()

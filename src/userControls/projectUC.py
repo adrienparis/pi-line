@@ -6,7 +6,7 @@ from .UC import *
 from .defineProjectUC import DefineProjectUC
 from .windowUC import WindowUC
 
-from user import User
+from core.user import User
 from core.asset import Asset as astPL
 from core.project import Project
 

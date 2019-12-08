@@ -1,15 +1,14 @@
 import os
+import datetime
 import getpass
 import maya.cmds as cmds
-from user import User
+
+from .user import User
 
 from .path import Path
 from .item import Item
 from .asset import Asset
 from .shot import Shot
-
-# TODO remove this line
-unicode = str
 
 class Project(Item):
     treeTemplate = [["1_preprod"],
@@ -109,9 +108,11 @@ class Project(Item):
                 cat = os.path.join(lp, c)
                 if not os.path.isdir(cat):
                     continue
+                self.addCategory(c)
                 for n in os.listdir(cat):
                     a = Asset(n, c, self)
-                    self.assets.append(a)
+                    print(self.assets)
+                    self.assets[c].append(a)
                     a.onLocal = True
 
         if not os.path.isdir(sp):
@@ -122,9 +123,10 @@ class Project(Item):
                 cat = os.path.join(sp, c)
                 if not os.path.isdir(cat):
                     continue
+                self.addCategory(c)
                 for n in os.listdir(cat):
                     a = Asset(n, c, self)
-                    s = next((x for x in self.assets if x.name == a.name and x.category == a.category), None)
+                    s = next((x for x in self.assets[c] if x.name == a.name and x.category == a.category), None)
                     if s is None:
                         self.assets.append(a)
                     else:
@@ -145,10 +147,11 @@ class Project(Item):
                 cat = os.path.join(lp, c)
                 if not os.path.isdir(cat):
                     continue
+                self.addSequence(c)
                 for n in os.listdir(cat):
                     print("\t\t" + n)
                     a = Shot(n, c, self)
-                    self.shots.append(a)
+                    self.shots[c].append(a)
                     a.onLocal = True
 
         if not os.path.isdir(sp):
@@ -160,10 +163,11 @@ class Project(Item):
                 cat = os.path.join(sp, c)
                 if not os.path.isdir(cat):
                     continue
+                self.addSequence(c)
                 for n in os.listdir(cat):
                     print("\t\t" + n)
                     a = Shot(n, c, self)
-                    s = next((x for x in self.shots if x.name == a.name and x.category == a.category), None)
+                    s = next((x for x in self.shots[c] if x.name == a.name and x.category == a.category), None)
                     if s is None:
                         self.shots.append(a)
                     else:
@@ -185,13 +189,25 @@ class Project(Item):
         #TODO make dir on server and on local
         return True
 
+    def addCategory(self, name):
+        if name in self.assets:
+            return False
+        self.assets[name] = []
+        return True
+
+    def addSequence(self, name):
+        if name in self.shots:
+            return False
+        self.shots[name] = []
+        return True
+
 
     def fetchAll(self):
         self.fetchAssets()
         self.fetchShots()
 
     def setProject(self):
-        p = os.path.join(self.serverPath, self.name, "3_work", "maya")
+        p = os.path.join(self.path.server, self.name, "3_work", "maya")
         if not os.path.isdir(p):
             cmds.warning("Project folder not found")
             return
@@ -218,7 +234,7 @@ class Project(Item):
 
 
     def writeInfo(self):
-        path = os.path.join(self.serverPath, self.name, ".pil")
+        path = os.path.join(self.path.server, self.name, ".pil")
         if not os.path.isdir(path):
             os.mkdir(path)
         info = open(os.path.join(path, "project.pil"), "w+")
@@ -231,7 +247,7 @@ class Project(Item):
 
     def readInfo(self):
         print("fetching Data") 
-        path = os.path.join(self.serverPath, self.name, ".pil", "project.pil")
+        path = os.path.join(self.path.server, self.name, ".pil", "project.pil")
         print(path)
         if not os.path.isfile(path):
             return
@@ -280,6 +296,8 @@ class Project(Item):
                 name = f
                 if os.path.exists(os.path.join(path, name)):
                     print("\t" + name + ' : exists')
+                elif not os.path.exists(path):
+                    print("\t" + path + ' : does not exist')
                 else:
                     os.mkdir(os.path.join(path, name))
             else:

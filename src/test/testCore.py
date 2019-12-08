@@ -11,14 +11,14 @@ import core
 import userControls as UC
 
 
-# add       ->   ajouter l'élément au enfants
+# add       ->   ajouter l'element au enfants
 # new       ->   
-# fetch     ->   recupere les données 
+# fetch     ->   recupere les donnees 
 # write     ->   enregistre les informations dans les .pil
 # read      ->   recupere les info dans les .pil
 # make      ->   construire les fichier
 # load      ->   charger l'interface
-# refresh   ->   mettre a jour l'interface par rapport au donnée et recharger les éléments changer de l'interface
+# refresh   ->   mettre a jour l'interface par rapport au donnee et recharger les elements changer de l'interface
 
 
 
@@ -40,12 +40,12 @@ import userControls as UC
 #download
 #publish
 #
-unicode = str
 
 def mainUI():
     
 
-    path = core.Path("D:/creative seed/pi-line/src/test/serverFileProject", "D:/creative seed/pi-line/src/test/localFileProject")
+    current_path = os.path.dirname(os.path.abspath(__file__)).replace('\\', '/')
+    path = core.Path(os.path.join( current_path, "serverFileProject"),  os.path.join(current_path, "localFileProject"))
     # path = core.Path("D:/creative seed/pi-line/src/test/serverFileProject")
     proj = core.Project("anubis", path)
     print(proj.path.local)

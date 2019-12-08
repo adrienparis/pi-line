@@ -1,8 +1,7 @@
 import maya.cmds as cmds
 from pymel.all import *
-from .UC import UserControl
-# from . import *
-# from tileUC import *
+from .UC import *
+from tileUC import TileUC
 
 class AssetTileUC(UserControl):
     styleIcon = 'iconAndTextVertical'
@@ -37,6 +36,8 @@ class AssetTileUC(UserControl):
         self.runEvent("changeTile", selection)
 
     def newAssetCommand(self, c):
+        print("badly implemented")
+        return
         print("Create New Asset")
         print(c.name)
     
@@ -100,19 +101,20 @@ class AssetTileUC(UserControl):
             cmds.deleteUI(s[0])
 
 
-        for c in self.assets.categories:
-            scrollLayout = cmds.scrollLayout( c.name, parent=self.tabs,
+        for c in self.assets.assets.keys():
+            print(c)
+            scrollLayout = cmds.scrollLayout( c, parent=self.tabs,
                                         horizontalScrollBarThickness=160,
                                         verticalScrollBarThickness=16,
                                         cr=True)
-            assetColumn = cmds.gridLayout(c.name + "Grid", numberOfColumns=3, cr=False, ag=True, cellWidthHeight=(self.sizeImage, self.sizeImage))
+            assetColumn = cmds.gridLayout(c + "Grid", numberOfColumns=3, cr=False, ag=True, cellWidthHeight=(self.sizeImage, self.sizeImage))
             self.shelf[c] = [scrollLayout, assetColumn]
             cmds.scrollLayout(self.shelf[c][0], e=True, rc=Callback(self.resizeTilesView, c))
             
             current_path = os.path.dirname(os.path.abspath(__file__)).replace('\\', '/')
-            newTiles = cmds.iconTextButton(c.name + "NewTile", parent=self.shelf[c][1], style=self.styleIcon, image1=getIcon("add"),
+            newTiles = cmds.iconTextButton(c + "NewTile", parent=self.shelf[c][1], style=self.styleIcon, image1=getIcon("add"),
                                 label="New Asset", w=self.sizeImage, h=self.sizeImage, sic=True, c=Callback(self.newAssetCommand, c) )
-            for a in c.assets:
+            for a in self.assets.assets[c]:
                 t = TileUC(a, self.shelf[c][1], self.sizeImage)
                 t.eventHandler("click", self.clickCommand)
                 t.create()

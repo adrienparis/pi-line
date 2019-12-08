@@ -12,6 +12,19 @@ class ExplorerUC(UserControl):
         self.project = None
         self.assets = None
         self.tabs = ""
+        
+    def switchAssetView(self, *args):
+        buttonTree = args[0].split(", ")[0]
+        buttonTile = args[0].split(", ")[1]
+        atrv = args[0].split(", ")[2]
+        ativ = args[0].split(", ")[3]
+        switch = cmds.layout(ativ, q=True, vis=True)
+
+        cmds.layout(ativ, e=True, vis=not switch)
+        cmds.layout(atrv, e=True, vis=switch)
+        cmds.iconTextButton(buttonTile, e=True, vis=not switch)
+        cmds.iconTextButton(buttonTree, e=True, vis=switch)
+
     def assetDisplay(self, parent, a):    
         layout = cmds.formLayout('Assets', parent=parent, numberOfDivisions=100)
         
@@ -23,9 +36,9 @@ class ExplorerUC(UserControl):
         ativ.eventHandler("changeTile", self.runEvent, "changeItem")
         # atrv = AssetTreeUC(layout)
         atrv = TreeUC(layout)
-        for c in a.categories:
-            p = atrv.addFolder(c.name, c)
-            for asset in c.assets:
+        for c in a.assets.keys():
+            p = atrv.addFolder(c, None)
+            for asset in a.assets[c]:
                 atrv.addItem(asset.name, asset, parent=p, image="check", info="Yesterday")
         atrv.eventHandler("changeSelection", self.runEvent, "changeItem")
 
@@ -33,8 +46,8 @@ class ExplorerUC(UserControl):
         # atrv.create()
         assetViewSwitchTree = cmds.iconTextButton('assetViewSwitchTree', parent=layout, style='iconOnly', image1=getIcon("list"), label='Switch view', w=22, h=22, sic=True, bgc=[0.45,0.45,0.45])
         assetViewSwitchTile = cmds.iconTextButton('assetViewSwitchTile', parent=layout, style='iconOnly', image1=getIcon("tiles"), label='Switch view', w=22, h=22, sic=True, bgc=[0.45,0.45,0.45])
-        cmds.iconTextButton(assetViewSwitchTile, e=True, c='AMui.switchAssetView("{0}, {1}, {2}, {3}")'.format(assetViewSwitchTree, assetViewSwitchTile, ativ.layout, atrv.layout), vis=False)
-        cmds.iconTextButton(assetViewSwitchTree, e=True, c='AMui.switchAssetView("{0}, {1}, {2}, {3}")'.format(assetViewSwitchTree, assetViewSwitchTile, ativ.layout, atrv.layout), vis=True)
+        cmds.iconTextButton(assetViewSwitchTile, e=True, c=Callback(self.switchAssetView, assetViewSwitchTree, assetViewSwitchTile, ativ.layout, atrv.layout), vis=False)
+        cmds.iconTextButton(assetViewSwitchTree, e=True, c=Callback(self.switchAssetView, assetViewSwitchTree, assetViewSwitchTile, ativ.layout, atrv.layout), vis=True)
         cmds.layout(ativ.layout, e=True, vis=True)
         cmds.layout(atrv.layout, e=True, vis=False)
         cmds.formLayout( layout, edit=True,
@@ -65,7 +78,7 @@ class ExplorerUC(UserControl):
             cmds.deleteUI(self.tabs)
         self.tabs = cmds.tabLayout('SceneFold', parent=self.layout)
 
-        if self.project is None or self.project.categories is None:
+        if self.project is None or self.project.assets is None:
             self.tabAssets = cmds.formLayout('Assets', numberOfDivisions=100, parent=self.tabs)
         else:
             #TODO REPLACE THAT!!!
