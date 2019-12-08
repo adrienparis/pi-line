@@ -1,6 +1,6 @@
 import os
 
-from scene import *
+from .scene import Scene
 
 class Shot(Scene):
     _path = os.path.join(Scene._path,"shots")

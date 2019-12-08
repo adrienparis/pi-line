@@ -1,4 +1,4 @@
-from . import *
+from .item import Item
 
 class Version(Item):
     def __init__(self):

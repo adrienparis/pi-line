@@ -1,7 +1,7 @@
 import os
 from copy import copy
 
-from . import *
+from .item import Item
 
 class Scene(Item):
     _path = os.path.join("3_work", "maya", "scenes")
@@ -16,10 +16,10 @@ class Scene(Item):
 
     #TODO fill the info.pil with date/img etc
     #TODO copy the server version to a saved version
-    def publish(self):
+    def Publish(self):
         self.createVersion()
         pass
-    def download(self):
+    def Download(self):
         pass
 
     def createVersion(self):

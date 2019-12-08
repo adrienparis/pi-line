@@ -1,5 +1,6 @@
 import os
-from . import *
+
+from .path import Path
 
 class Item():
     def __init__(self, name, parent):

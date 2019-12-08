@@ -1,11 +1,14 @@
 import os
 import getpass
-# import maya.cmds as cmds
+import maya.cmds as cmds
 import ast
 
-from item import *
-from asset import *
-from shot import *
+from .path import Path
+from .item import Item
+from .asset import Asset
+from .shot import Shot
+
+unicode = str
 
 class Project(Item):
     treeTemplate = [["1_preprod"],
@@ -22,47 +25,75 @@ class Project(Item):
     ]
 
     
-    assetCategory = ["mod", "rig", "surf"]
-    sequence = ["animation", "previz", "rendering", "sfx"]
+    assetCategory = ["chars", "props", "sets", "modules", "vehs"]
 
     def __init__(self, name, path):
         Item.__init__(self, name, None)
         self.path = path
         self.relativePath = self.name
         self.diminutive = ""
-        self.assets = []
-        self.shots = []
+        self.assets = {}
+        self.assetCategories = [] # Categories ????
+        self.shots = {}
+        self.sequences = []
 
-    def getAssetsBy(self, cat):
+    def getAssetsByCategory(self, cat):
+        '''Return a list of assets that are a [cat] categories
+
+        cat : name of the category
+        '''
+
         l = []
-        self.assets.sort(key=lambda x: x.name, reverse=False)
         if type(cat) == tuple:
-            l = [x for x in self.assets if x.category in cat]
-        elif type(cat) == str:
-            l = [x for x in self.assets if x.category == cat]
-        print(l)
+            for c in cat:
+                l += self.assets[c][:]
+        elif type(cat) == str or type(cat) == unicode:
+            l = self.assets[cat][:]
+        l.sort(key=lambda x: x.name, reverse=False)
         return l
 
-    def getShotsBy(self, seq):
-        l = []
-        print(seq)
-        self.shots.sort(key=lambda x: x.name, reverse=False)
-        if type(seq) == tuple:
-            print("tuple")
-            l = [x for x in self.shots if x.category in seq]
-        elif type(seq) == str:
-            print("str")
-            l = [x for x in self.shots if x.category == seq]
+    def getShotsBySequence(self, seq):
+        '''Return a list of shots that are in a sequence
+
+        seq : name of the sequence
+        '''
         
+        l = []
+        if type(seq) == tuple:
+            for c in seq:
+                l += self.shots[c][:]
+        elif type(seq) == str or type(seq) == unicode:
+            l = self.shots[seq][:]
+        l.sort(key=lambda x: x.name, reverse=False)
         return l
 
-    def addAsset(self, asset, cat):
-        asset.categorie = cat
-        self.assets.append(asset)
+    def addAssetToCategory(self, asset, cat):
+        '''add an asset to the project
 
-    def addShot(self, shot, seq):
-        shot.categorie = seq
-        self.shots.append(shot)
+        asset: -asset-
+        cat: -str- name of the category
+        return bool
+        '''
+
+        if not cat in self.assets:
+            return False
+        asset.categorie = cat
+        self.assets[cat].append(asset)
+        return True
+
+    def addShotToSequence(self, shot, seq):
+        '''add a shot to the project
+
+        shot: -shot-
+        seq: -str- name of the sequence
+        return bool
+        '''
+
+        if not seq in self.shots:
+            return False
+        shot.categorie = seq # bad object attribute name. he should be name sequence
+        self.shots[seq].append(shot)
+        return True
 
     def fetchAssets(self):
         relativePath = os.path.join(self.relativePath, Asset._path)
@@ -137,18 +168,21 @@ class Project(Item):
                     else:
                         a = s
                     a.onServer = True
-        
-    def create(self):
-        pass
 
 
+    def makeCategory(self, name):
+        if name in self.assets:
+            return False
+        self.assets[name] = []
+        #TODO make dir on server and on local
+        return True
 
-    #TODO Create on server and on local
-    def newAssetCategory(self, name):
-        pass
-    #TODO Create on server and on local
-    def newSequence(self, name):
-        pass
+    def makeSequence(self, name):
+        if name in self.shots:
+            return False
+        self.shots[name] = []
+        #TODO make dir on server and on local
+        return True
 
 
     def fetchAll(self):
@@ -158,7 +192,7 @@ class Project(Item):
     def setProject(self):
         p = os.path.join(self.serverPath, self.name, "3_work", "maya")
         if not os.path.isdir(p):
-            cmds.error("Project folder not found")
+            cmds.warning("Project folder not found")
             return
         
         cmds.workspace(p, o=True)
@@ -172,67 +206,85 @@ class Project(Item):
         print("C:/Users/" + username + "/Documents/Pi-Line")
 
 
-    #TODO Create all the folders of the server tree
-    def createTreeTemplateLocal(self):
-        path = self.localPath
-        fold = self.name
-        # (path, fold) = os.path.split(self.localPath)
-        print(Project.treeTemplate)
-        tree = [fold] + Project.treeTemplate
-        print("the path")
-        print(tree)
-        print(path)
-        Project.createProjectTree(tree, 0, path)
+    #TODO Create/copy all the folders of the local tree
+    def makeLocalFolderTree(self):
+        tree = [self.name] + Project.treeTemplate
+        Project._makeFolderTree(tree, self.path.local)
 
-    def createTreeTemplateServer(self):
-        path = self.serverPath
-        fold = self.name
-        # (path, fold) = os.path.split(self.serverPath)
-        print(Project.treeTemplate)
-        tree = [fold] + Project.treeTemplate
-        print("the path")
-        print(tree)
+    def makeServerFolderTree(self):
+        tree = [self.name] + Project.treeTemplate
+        Project._makeFolderTree(tree, self.path.server)
+
+
+    def writeInfo(self):
+        path = os.path.join(self.serverPath, self.name, ".pil")
+        if not os.path.isdir(path):
+            os.mkdir(path)
+        info = open(os.path.join(path, "project.pil"), "w+")
+        info.write("name=" + self.name + "\n")
+        info.write("dim=" + self.diminutive + "\n")
+        info.write("author=" + self.author + "\n")
+        info.write("date=" + str(self.date) + "\n")
+
+        ctypes.windll.kernel32.SetFileAttributesW(path, 0x02)
+
+    def readInfo(self):
+        print("fetching Data") 
+        path = os.path.join(self.serverPath, self.name, ".pil", "project.pil")
         print(path)
-        Project.createProjectTree(tree, 0, path)  
+        if not os.path.isfile(path):
+            return
+        data = {}
+        with open(path) as fp:
+            for line in fp:
+                k, v = line.replace("\n", "").split("=")
+                data[k] = v
+        
+        print(data)
+        self.diminutive = data["dim"]
+        self.date = datetime.datetime.strptime( data["date"], '%Y-%m-%d %H:%M:%S.%f')
+        self.author = data["author"]
 
     # [name, diminutive, pathServer, pathLocal]
     @staticmethod
     def fetchProjects(pathProject):
         ps = []
 
-        filepath = os.path.join(pathProject, "projects.pil")
+        user = User()
+
+
+        filepath = os.path.join(user.prefPath, "projects.pil")
         if not os.path.isfile(filepath):
             print("File path {} does not exist. Exiting...".format(filepath))
-        #TODO create a try and catch to avoid a badly written config file
+            return ps
         with open(filepath) as fp:
             for line in fp:
-                l = ast.literal_eval(line.replace("\\", "/"))
+                # l = ast.literal_eval(line.replace("\\", "/"))
+                l = line.split(";")
+                print(l)
                 if len(l) >= 3:
-                    name = l[0]
-                    diminutive = l[1]
-                    path = Path(server=l[2])
+                    p = Project(l[0], Path(l[2]))
+                    p.diminutive = l[1]
                     if len(l) == 4:
-                        path.local = l[3]
-                    
-                    print(path.server)
-                    p = Project(name, path)
+                        p.localPath = l[3]
+                    p.readInfo()
                     ps.append(p)
         return ps
 
     @staticmethod
-    def createProjectTree(tree, deep, path):
+    def _makeFolderTree(tree, path, deep=0):
         name = ""
-        print(tree, deep, path)
         for f in tree:
-            print(f)
             if type(f) == str or type(f) == unicode:
-                print("\t" * deep + f)
                 name = f
-                print(os.path.join(path, name))
                 if os.path.exists(os.path.join(path, name)):
                     print("\t" + name + ' : exists')
                 else:
                     os.mkdir(os.path.join(path, name))
             else:
-                Project.createProjectTree(f, deep + 1, path + "/" + name)
+                Project._makeFolderTree(f, path + "/" + name, deep + 1)
 
+    def getAvailableNewAssetCategories(self):
+        pass
+    def getNextSequence(self):
+        pass
