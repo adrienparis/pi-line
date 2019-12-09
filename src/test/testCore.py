@@ -13,7 +13,7 @@ import userControls as UC
 
 # add       ->   ajouter l'element au enfants
 # new       ->   
-# fetch     ->   recupere les donnees 
+# fetch     ->   recupere les donnees selon les dossier
 # write     ->   enregistre les informations dans les .pil
 # read      ->   recupere les info dans les .pil
 # make      ->   construire les fichier
@@ -44,29 +44,49 @@ import userControls as UC
 def mainUI():
     
 
-    current_path = os.path.dirname(os.path.abspath(__file__)).replace('\\', '/')
-    path = core.Path(os.path.join( current_path, "serverFileProject"),  os.path.join(current_path, "localFileProject"))
-    # path = core.Path("D:/creative seed/pi-line/src/test/serverFileProject")
-    proj = core.Project("anubis", path)
-    print(proj.path.local)
-    proj.makeServerFolderTree()
-    proj.makeCategory("char")
-    a = core.Asset("bob", "char", proj)
-    proj.addAssetToCategory(a, "char")
-    a = core.Asset("didier", "char", proj)
-    proj.addAssetToCategory(a, "char")
+    # current_path = os.path.dirname(os.path.abspath(__file__)).replace('\\', '/')
+    # path = core.Path(os.path.join( current_path, "serverFileProject"),  os.path.join(current_path, "localFileProject"))
+    # # path = core.Path("D:/creative seed/pi-line/src/test/serverFileProject")
+    # proj = core.Project("anubis", path)
+    # print(proj.path.local)
+    # proj.makeServerFolderTree()
+    # proj.makeCategory("char")
+    # a = core.Asset("bob", "char", proj)
+    # proj.addAssetToCategory(a, "char")
+    # a = core.Asset("didier", "char", proj)
+    # proj.addAssetToCategory(a, "char")
 
-    la = proj.getAssetsByCategory("char")
-    print(la)
+    # la = proj.getAssetsByCategory("char")
+    # print(la)
 
-    win = UC.WindowUC(u"Pi-Line")
-    win.load()
+    projects = core.Project.fetchProjects()
+    print(projects)
+    if len(projects) >= 1:
+        p = projects[0]
+        print(p.path.local)
+        p.addCategory("char")
+        a = core.asset.Asset("bob", "chars", p)
+        a.make()
+        p.addAssetToCategory(a, a.category)
+        # a.makeNewVersion(core.Asset._steps[0])
+        a.fetchVersions()
+        vers = a.getVersionBy("mod")
+        vers[0].upload()
+        vers[0].setCurrent()
+        for v in vers:
+            print(v.onServer, v.onLocal)
+        
+#S:\a.paris\projects\Cesaristochat\3_work\maya\scenes\char\bob\mod\versions   
+#S:/a.paris/projects\Cesaristochat\3_work\maya\scenes\char\bob\versions\20191209163707
 
-    cpBrd = UC.CupboardUC(win)
-    cpBrd.create()
-    cpBrd.attach(top=UC.Attach.FORM, bottom=UC.Attach.FORM, left=UC.Attach.FORM, right=UC.Attach.FORM, margin=0)
+    # win = UC.WindowUC(u"Pi-Line")
+    # win.load()
 
-    win.applyAttach()
+    # cpBrd = UC.CupboardUC(win)
+    # cpBrd.create()
+    # cpBrd.attach(top=UC.Attach.FORM, bottom=UC.Attach.FORM, left=UC.Attach.FORM, right=UC.Attach.FORM, margin=0)
+
+    # win.applyAttach()
 
 
 print(u"=====Start pi-Line=====")

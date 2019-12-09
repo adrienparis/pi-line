@@ -1,10 +1,10 @@
 import maya.cmds as cmds
 from pymel.all import *
 
-from .UC import UserControl
+from .UC import *
 from .treeUC import TreeUC
 
-from core.project import Project
+from core.project import Project, Path
 
 
 
@@ -157,7 +157,7 @@ class DefineProjectUC(UserControl):
                 return
             cmds.text(self.txName, e=True, label=self.project.name)
             cmds.text(self.txDim, e=True, label=self.project.diminutive)
-            cmds.text(self.txServPath, e=True, label=self.project.serverPath)
+            cmds.text(self.txServPath, e=True, label=self.project.path.server)
             cmds.text(self.txAuthor, e=True, label=self.project.author)
             cmds.text(self.txDate, e=True, label=self.project.date)
             
@@ -215,7 +215,7 @@ class DefineProjectUC(UserControl):
             self.name = "initializeProjectUC" + self.name
             self.tabs = ""
             self.edition = True
-            self.project = Project()
+            self.project = Project("new Project", Path())
         def load(self):
             self.layout = cmds.formLayout(self.name, parent=self.parentLay, bgc=hexToRGB(0x5a5a5a))
             
@@ -233,7 +233,7 @@ class DefineProjectUC(UserControl):
             self.newTab.eventHandler("create", self.createNewProject)
             
             if self.project is not None:
-                self.loadTab.changePath(self.project.serverPath)
+                self.loadTab.changePath(self.project.path.server)
             else:
                 self.loadTab.changePath("")
 
@@ -262,26 +262,28 @@ class DefineProjectUC(UserControl):
             self.refresh()
 
         def changeWorkDir(self, p):
-            self.project.serverPath = p
-            self.loadTab.changePath(self.project.serverPath)
+            print("define path server", p)
+            self.project.path.server = p
+            
+            self.loadTab.changePath(self.project.path.server)
             self.loadTab.refresh()
 
         def loadProject(self, name):
-            if len(self.project.serverPath) == 0:
+            if len(self.project.path.server) == 0:
                 cmds.warning("The working directory is empty")
                 return
             if len(name) == 0:
                 cmds.warning("Name invalide")
                 return
             self.project.name = name
-            self.project.fetchProjectInfo()
+            self.project.readInfo()
             #TODO fetch data of the project
             self.setEdition(False)
             self.runEvent("loadProj", self.project)
         
         def createNewProject(self, name, dim):
             user = User()
-            if len(self.project.serverPath) == 0:
+            if len(self.project.path.server) == 0:
                 cmds.warning("The working directory is empty")
                 return
             if len(name) == 0:
@@ -306,7 +308,7 @@ class DefineProjectUC(UserControl):
         def setProj(self, proj):
             if proj is None:
                 self.setEdition(True)
-                self.project = Project()
+                self.project = Project("", Path())
             else:
                 self.project = proj
                 self.setEdition(False)
@@ -363,5 +365,5 @@ class DefineProjectUC(UserControl):
         self.views["projects"].load()
 
     def saveExit(self):
-        Project.saveListProject(self.projects)
+        Project.writeAllProjectsInPrefs(self.projects)
         self.runEvent("close")

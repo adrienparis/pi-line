@@ -1,7 +1,7 @@
 #TODO check if path exist
 
 class Path(object):
-    def __init__(self, server=None, local=None):
+    def __init__(self, server="None", local=None):
         self.local = None
         self._local = local
         self.server = server

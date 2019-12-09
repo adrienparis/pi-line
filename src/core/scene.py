@@ -2,17 +2,21 @@ import os
 from copy import copy
 
 from .item import Item
+from .version import Version
 
 class Scene(Item):
     _path = os.path.join("3_work", "maya", "scenes")
-    _step = []
+    _steps = []
 
-    def __init__(self, name, cat, project):
-        Item.__init__(self, name, project)
-
-        self.relativePath = os.path.join(self.relativePath, Scene._path, cat, name)
+    def __init__(self, name, cat, project=None):
         self.category = cat
+        Item.__init__(self, name, project)
+        self.relativePath = os.path.join(self._path, cat, name)
+        print(self.relativePath)
         self.versions = []
+
+    def setRelativePath(self):
+        self.relativePath = os.path.join(self._path, self.category, self.name)
 
     #TODO fill the info.pil with date/img etc
     #TODO copy the server version to a saved version
@@ -33,9 +37,6 @@ class Scene(Item):
     def addVersion(self, version):
         self.versions.append(version)
 
-    def newVersion(self):
-        pass
-
     def getVersionBy(self, steps):
         l = []
         self.versions.sort(key=lambda x: x.date, reverse=False)
@@ -46,15 +47,47 @@ class Scene(Item):
         
         return l
 
-    def getWips(self):
-        pass
-
-    def getLastWip(self):
-        pass
-
     #TODO create on both server and local
-    def new(self):
-        for s in self.step:
-            print("create folder " + s)
+    def make(self):
+        print(os.path.join(self.path.local, self.getAbsolutePath()))
+        print(self.relativePath)
+        for s in self._steps:
+            print("create folder " + self.getAbsolutePath() + s)
+            p = os.path.join(self.path.local, self.getAbsolutePath(), s, Version._path)
+            print(p)
+            if not os.path.isdir(p):
+                os.makedirs(p)
             #and inside create folder versions, and wip only for local
         pass
+
+    def makeNewVersion(self, step):
+        v = Version(self, step)
+        v.make()
+        self.versions.append(v)
+    
+    def fetchVersions(self):
+        for s in self._steps:
+
+            lp = os.path.join(self.path.local, self.getAbsolutePath(), s, Version._path)
+            sp = os.path.join(self.path.server, self.getAbsolutePath(), s, Version._path)
+            print(lp)
+            print(sp)
+            if not os.path.isdir(lp):
+                print("no " + s + " step in local")
+            else:
+                for n in os.listdir(lp):
+                    v = Version(self, s, n)
+                    v.onLocal = True
+                    self.versions.append(v)
+
+            if not os.path.isdir(sp):
+                print("no " + s + " step in server")
+            else:
+                for n in os.listdir(sp):
+                    isOnLoc = next((x for x in self.versions if x.name == n and x.step == s), None)
+                    if isOnLoc is None:
+                        v = Version(self, s, n)
+                        v.onServer = True
+                        self.versions.append(v)
+                    else:
+                        isOnLoc.onServer = True

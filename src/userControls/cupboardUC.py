@@ -200,11 +200,12 @@ class CupboardUC(UserControl):
         self.views["explorer"].setProject(p)
         self.views["explorer"].reload()
 
-    def changeSelection(self, item):
-        if len(item) == 1:
-            self.selected = [item[0]]
-            self.views["detail"].changeAsset(item[0])
-            self.views["detail"].refresh()
+    def changeSelection(self, selection):
+        print(selection)
+        if len(selection) == 1:
+            self.selected = [selection[0]]
+            self.views["detail"].changeScene(selection[0])
+        self.views["detail"].refresh()
 
     def changeVersion(self, s):
         self.step = s

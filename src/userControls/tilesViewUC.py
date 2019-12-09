@@ -27,25 +27,25 @@ class TilesViewUC(UserControl):
         def __init__(self, name, elem):
             TilesViewUC._item.__init__(self, name, elem)
             self.childrens = []
-            self.image = "arrowBottom"
-            self.isDeployed = True
+            # self.image = "arrowBottom"
+            # self.isDeployed = True
             self.area = None
 
-        def deploying(self, val):
-            self.isDeployed = val
-            if val:
-                self.image = "arrowBottom"
-            else:
-                self.image = "arrowRight"
-            self.line.icon = self.image
-            self.line.refresh()
-            cmds.formLayout(self.area, e=True, vis=self.isDeployed)
+        # def deploying(self, val):
+        #     self.isDeployed = val
+        #     if val:
+        #         self.image = "arrowBottom"
+        #     else:
+        #         self.image = "arrowRight"
+        #     self.line.icon = self.image
+        #     self.line.refresh()
+        #     cmds.formLayout(self.area, e=True, vis=self.isDeployed)
 
-        def deployingAll(self, val):
-            self.deploying(val)
-            for f in self.childrens:
-                if f.__class__ is TilesViewUC._folder:
-                    TilesViewUC._folder.deployingAll(f, val)
+        # def deployingAll(self, val):
+        #     self.deploying(val)
+        #     for f in self.childrens:
+        #         if f.__class__ is TilesViewUC._folder:
+        #             TilesViewUC._folder.deployingAll(f, val)
 
 
         def addChildren(self, child):
@@ -64,52 +64,54 @@ class TilesViewUC(UserControl):
     def __init__(self, parent, multiSelect=True):
         UserControl.__init__(self, parent)
         #must be an array of categorie, or a class that encompass all the categories
-        self.project = None
-        self.scene = None
+        self.name = "TilesView" + self.name
+        self.folders = {}
+        self.items = {}
+        self.selecteds = []
         self.multiSelect = multiSelect
-        self.selected = []
+        self.layout = ""
+        self.scrlLay = ""
 
-    def setProject(self, project):
-        self.project = project
-        self.assets = self.project.assets
+    def load(self):
+        pass
 
-    def clickCommand(self, tile, mods):
-        for t in self.selected:
-            if (mods != 1 or tile.asset.category.name != t.asset.category.name):
-                t.selection(False)
-        if mods != 1:
-            self.selected = []
-        if mods <= 1:
+    def _clickItem(self, item, tile, mod):
+        
+        for t in self.selecteds:
+            if (mod != 1 or item.parent != t.parent or not self.multiSelect):
+                t.tile.selection(False)
+        if mod != 1:
+            self.selecteds = []
+        if mod <= 1:
             if tile.selected:
                 tile.selection(False)
-                self.selected.remove(tile)
+                self.selecteds.remove(item)
             else:
                 tile.selection(True)
-                self.selected.append(tile)
-        selection = [x.asset for x in self.selected]
-        print(selection)
-        self.runEvent("changeTile", selection)
+                self.selecteds.append(item)
+        selection = [x.elem for x in self.selecteds if x.tile.selected]
+        self.runEvent("changeSelection", selection)
 
-    def newAssetCommand(self, c):
-        print("badly implemented")
-        return
-        print("Create New Asset")
-        print(c.name)
+    # def newAssetCommand(self, c):
+    #     print("badly implemented")
+    #     return
+    #     print("Create New Asset")
+    #     print(c.name)
     
-        result = cmds.promptDialog(
-                        title='New Asset - ' + c.name,
-                        message='Enter name:',
-                        button=['OK', 'Cancel'],
-                        defaultButton='OK',
-                        cancelButton='Cancel',
-                        dismissString='Cancel')
-        if result != 'OK': return
-        name = cmds.promptDialog(query=True, text=True)
-        a = astPL.Asset(c, name)
-        a.create(c.path)
-        a.fetchAssetData()
-        c.assets.append(a)
-        self.reload()
+    #     result = cmds.promptDialog(
+    #                     title='New Asset - ' + c.name,
+    #                     message='Enter name:',
+    #                     button=['OK', 'Cancel'],
+    #                     defaultButton='OK',
+    #                     cancelButton='Cancel',
+    #                     dismissString='Cancel')
+    #     if result != 'OK': return
+    #     name = cmds.promptDialog(query=True, text=True)
+    #     a = astPL.Asset(c, name)
+    #     a.create(c.path)
+    #     a.fetchAssetData()
+    #     c.assets.append(a)
+    #     self.reload()
 
     def resizeTilesView(self, c):
         h = cmds.scrollLayout(self.shelf[c][0], q=True, h=True)
@@ -132,16 +134,16 @@ class TilesViewUC(UserControl):
         cmds.gridLayout(self.shelf[c][1], e=True, numberOfRows= rows )
 
 
-    def setAsset(self, assets):
-        #TODO check if it's an Assets class
-        self.assets = assets
+    # def setAsset(self, assets):
+    #     #TODO check if it's an Assets class
+    #     self.assets = assets
 
     def load(self):
         self.layout = cmds.formLayout('AssetTileUC', parent=self.parentLay)
 
         
         self.tabs = cmds.tabLayout('Categories', snt=True, parent=self.layout)
-        cmds.tabLayout(self.tabs, e=True, ntc='AMui.newTabAsset("{0}")'.format(self.tabs))
+        cmds.tabLayout(self.tabs, e=True, ntc=Callback(self.runEvent("newCategorie")))
         
         self.shelf = {}
 
@@ -168,7 +170,7 @@ class TilesViewUC(UserControl):
             
             current_path = os.path.dirname(os.path.abspath(__file__)).replace('\\', '/')
             newTiles = cmds.iconTextButton(c + "NewTile", parent=self.shelf[c][1], style=self._styleIcon, image1=getIcon("add"),
-                                label="New Asset", w=self._sizeImage, h=self._sizeImage, sic=True, c=Callback(self.newAssetCommand, c) )
+                                label="New Asset", w=self._sizeImage, h=self._sizeImage, sic=True, c=Callback(self.runEvent, "newAsset", c) )
             for a in self.assets.assets[c]:
                 t = TileUC(a, self.shelf[c][1], self._sizeImage)
                 t.eventHandler("click", self.clickCommand)

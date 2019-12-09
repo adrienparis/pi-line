@@ -78,6 +78,7 @@ class Project(Item):
         if not cat in self.assets:
             return False
         asset.categorie = cat
+        asset.setParent(self)
         self.assets[cat].append(asset)
         return True
 
@@ -92,6 +93,7 @@ class Project(Item):
         if not seq in self.shots:
             return False
         shot.categorie = seq # bad object attribute name. he should be name sequence
+        shot.setParent(self)
         self.shots[seq].append(shot)
         return True
 
@@ -262,6 +264,32 @@ class Project(Item):
         self.date = datetime.datetime.strptime( data["date"], '%Y-%m-%d %H:%M:%S.%f')
         self.author = data["author"]
 
+    def writeProjectInPrefs(self):
+        user = User()
+        if not os.path.isdir(user.prefPath):
+            os.mkdir(user.prefPath)
+        filepath = os.path.join(user.prefPath, "projects.pil")
+        print(filepath)
+        with open(filepath,"a") as f:
+            s = ""
+            for w in (self.name, self.diminutive, self.path.server, self.path.local):
+                s += str(w) + ";"
+            f.write(s + "\n")
+            print(s)
+
+    @staticmethod
+    def writeAllProjectsInPrefs(projects):
+        user = User()
+        if not os.path.isdir(user.prefPath):
+            os.mkdir(user.prefPath)
+        filepath = os.path.join(user.prefPath, "projects.pil")
+        os.remove(filepath)
+
+        for p in projects:
+            print(p.name, p.diminutive, p.path.server, p.path.local)
+            p.writeProjectInPrefs()
+
+
     # [name, diminutive, pathServer, pathLocal]
     @staticmethod
     def fetchProjects():
@@ -278,12 +306,14 @@ class Project(Item):
             for line in fp:
                 # l = ast.literal_eval(line.replace("\\", "/"))
                 l = line.split(";")
-                print(l)
+                l.pop()
                 if len(l) >= 3:
                     p = Project(l[0], Path(l[2]))
                     p.diminutive = l[1]
+                    print(l)
                     if len(l) == 4:
-                        p.localPath = l[3]
+                        print(l[3])
+                        p.path.local = l[3]
                     p.readInfo()
                     ps.append(p)
         return ps
