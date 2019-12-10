@@ -6,6 +6,7 @@ from UC import *
 from assetTileUC import AssetTileUC
 from assetTreeUC import AssetTreeUC
 from cupboardUC import CupboardUC
+from checkBoxGrpUC import CheckBoxGrpUC
 from defineProjectUC import DefineProjectUC
 from detailUC import DetailUC
 from explorerUC import ExplorerUC
@@ -24,6 +25,7 @@ from wipUC import WipUC
 # reload(UC)
 reload(windowUC)
 reload(cupboardUC)
+reload(checkBoxGrpUC)
 reload(assetTileUC)
 reload(explorerUC)
 reload(assetTreeUC)

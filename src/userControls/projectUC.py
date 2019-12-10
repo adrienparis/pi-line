@@ -29,10 +29,13 @@ class ProjectUC(UserControl):
 
         self.optionBtn = cmds.iconTextButton('optionBtn', parent=self.layout, style='iconOnly', image1=getIcon("gear"), label='Option', w=22, h=22, sic=True, bgc=hexToRGB(0x5d5d5d),
                                               c=Callback(self.runEvent, "optionBtn"))
+        self.refreshBtn = cmds.iconTextButton('refreshBtn', parent=self.layout, style='iconOnly', image1=getIcon("refresh"), label='Option', w=22, h=22, sic=True, bgc=hexToRGB(0x5d5d5d),
+                                              c=Callback(self.runEvent, "refreshBtn"))
         cmds.formLayout(self.layout, edit=True,
-                        attachForm=[(self.menu, 'top', 0), (self.menu, 'left', 0), (self.optionBtn, 'top', 0), (self.optionBtn, 'right', 0)],
-                        attachControl=[(self.menu, 'right', 5, self.optionBtn)],
-                        attachNone=[(self.menu, 'bottom')])
+                        attachForm=[(self.menu, 'top', 0), (self.menu, 'left', 0), (self.optionBtn, 'top', 0), (self.optionBtn, 'right', 0), (self.refreshBtn, 'top', 0)],
+                        attachControl=[(self.menu, 'right', 5, self.refreshBtn), (self.refreshBtn, 'right', 5, self.optionBtn)],
+                        attachNone=[(self.menu, 'bottom'), (self.optionBtn, 'bottom'), (self.refreshBtn, 'bottom'), (self.refreshBtn, 'left')])
+
     def changeProject(self, *args):
         v = cmds.optionMenu(self.menu, q=True, v=True)
         p = next((x for x in self.projects if x.name == v), None)

@@ -20,7 +20,7 @@ class AssetTileUC(UserControl):
 
     def clickCommand(self, tile, mods):
         for t in self.selected:
-            if (mods != 1 or tile.asset.category.name != t.asset.category.name):
+            if (mods != 1 or tile.asset.category != t.asset.category):
                 t.selection(False)
         if mods != 1:
             self.selected = []

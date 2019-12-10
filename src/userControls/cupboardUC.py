@@ -79,6 +79,7 @@ class CupboardUC(UserControl):
         # TODO replace [None] by actual fonction
         self.views["project"].eventHandler("changeProject", self.changeProject)
         self.views["project"].eventHandler("optionBtn", self.commandProjectOption)
+        self.views["project"].eventHandler("refreshBtn", None)
         self.views["explorer"].eventHandler("changeItem", self.changeSelection)
         self.views["version"].eventHandler("changeItem", self.changeVersion)
         self.views["sync"].eventHandler("download", self.commandDownload)
@@ -205,10 +206,12 @@ class CupboardUC(UserControl):
         if len(selection) == 1:
             self.selected = [selection[0]]
             self.views["detail"].changeScene(selection[0])
+            self.views["version"].changeScene(selection[0])
         self.views["detail"].refresh()
+        self.views["version"].load()
 
     def changeVersion(self, s):
-        self.step = s
+        print(s)
 
     def commandDownload(self):
         if len(self.selected) > 0:

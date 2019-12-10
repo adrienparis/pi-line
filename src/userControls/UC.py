@@ -44,11 +44,12 @@ class UserControl(object):
         self.childrens = []
         self.command = {}
         self.name = "UC"
+        self.bgc = 0xa00000
 
 
     
     def create(self):
-        self.layout = cmds.formLayout(parent=self.parentLay, bgc=hexToRGB(0xa00000), h=30, w=30)
+        self.layout = cmds.formLayout(parent=self.parentLay, bgc=hexToRGB(self.bgc), h=30, w=30)
         print("create userControl : " + self.__class__.__name__)
         print("/!\\ Not implemented")
 

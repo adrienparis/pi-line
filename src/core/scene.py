@@ -14,6 +14,7 @@ class Scene(Item):
         self.relativePath = os.path.join(self._path, cat, name)
         print(self.relativePath)
         self.versions = []
+        self.fileName = self.parent.diminutive + "_" + self.name
 
     def setRelativePath(self):
         self.relativePath = os.path.join(self._path, self.category, self.name)
@@ -39,8 +40,8 @@ class Scene(Item):
 
     def getVersionBy(self, steps):
         l = []
-        self.versions.sort(key=lambda x: x.date, reverse=False)
-        if type(steps) == tuple:
+        self.versions.sort(key=lambda x: x.name, reverse=True)
+        if type(steps) == tuple or type(steps) == list :
             l = [x for x in self.versions if x.step in steps]
         elif type(steps) == str:
             l = [x for x in self.versions if x.step == steps]
@@ -66,6 +67,7 @@ class Scene(Item):
         self.versions.append(v)
     
     def fetchVersions(self):
+        self.versions = []
         for s in self._steps:
 
             lp = os.path.join(self.path.local, self.getAbsolutePath(), s, Version._path)

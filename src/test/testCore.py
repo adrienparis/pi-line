@@ -68,13 +68,16 @@ def mainUI():
         a = core.asset.Asset("bob", "chars", p)
         a.make()
         p.addAssetToCategory(a, a.category)
-        # a.makeNewVersion(core.Asset._steps[0])
-        a.fetchVersions()
-        vers = a.getVersionBy("mod")
-        vers[0].upload()
-        vers[0].setCurrent()
-        for v in vers:
-            print(v.onServer, v.onLocal)
+        # a.makeNewVersion(core.Asset._steps[1])
+        # a.fetchVersions()
+        # vers = a.getVersionBy("mod")
+        # vers[0].fetchWips()
+        # print(vers[0].wips)
+        # vers[0].publish()
+        # vers[0].setCurrent()
+        # vers[0].upload()
+        # for v in vers:
+        #     print(v.parent.name, v.name, v.onServer, v.onLocal)
         
 #S:\a.paris\projects\Cesaristochat\3_work\maya\scenes\char\bob\mod\versions   
 #S:/a.paris/projects\Cesaristochat\3_work\maya\scenes\char\bob\versions\20191209163707

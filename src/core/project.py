@@ -130,7 +130,7 @@ class Project(Item):
                     a = Asset(n, c, self)
                     s = next((x for x in self.assets[c] if x.name == a.name and x.category == a.category), None)
                     if s is None:
-                        self.assets.append(a)
+                        self.assets[c].append(a)
                     else:
                         a = s
                     a.onServer = True
@@ -171,7 +171,7 @@ class Project(Item):
                     a = Shot(n, c, self)
                     s = next((x for x in self.shots[c] if x.name == a.name and x.category == a.category), None)
                     if s is None:
-                        self.shots.append(a)
+                        self.shots[c].append(a)
                     else:
                         a = s
                     a.onServer = True
