@@ -163,6 +163,8 @@ class UserControl(object):
         print("reload " + self.__class__.__name__)
         print("/!\\ Not implemented")
     def refresh(self):
+        for c in self.childrens:
+            c.refresh()
         print("refresh " + self.__class__.__name__)
         print("/!\\ Not implemented")
     def eventHandler(self, event, c, *args):

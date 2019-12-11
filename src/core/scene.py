@@ -12,7 +12,6 @@ class Scene(Item):
         self.category = cat
         Item.__init__(self, name, project)
         self.relativePath = os.path.join(self._path, cat, name)
-        print(self.relativePath)
         self.versions = []
         self.fileName = self.parent.diminutive + "_" + self.name
 
@@ -82,10 +81,9 @@ class Scene(Item):
 
             lp = os.path.join(self.path.local, self.getAbsolutePath(), s, Version._path)
             sp = os.path.join(self.path.server, self.getAbsolutePath(), s, Version._path)
-            print(lp)
-            print(sp)
             if not os.path.isdir(lp):
-                print("no " + s + " step in local")
+                # print("no " + s + " step in " + self.name + " local")
+                pass
             else:
                 for n in os.listdir(lp):
                     v = Version(self, s, n)
@@ -93,7 +91,8 @@ class Scene(Item):
                     self.versions.append(v)
 
             if not os.path.isdir(sp):
-                print("no " + s + " step in server")
+                # print("no " + s + " step of " + self.name + " in server")
+                pass
             else:
                 for n in os.listdir(sp):
                     isOnLoc = next((x for x in self.versions if x.name == n and x.step == s), None)

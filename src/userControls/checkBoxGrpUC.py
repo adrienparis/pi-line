@@ -12,10 +12,11 @@ class CheckBoxGrpUC(UserControl):
         self.items = {}
 
     def load(self):
+        print("loading checkBoxes")
         if self.layout is None or not cmds.formLayout(self.layout, q=True, exists=True):
             self.layout = cmds.formLayout(parent=self.parentLay)
+        print(self.parentLay)
         for i in self.items:
-            print("box" in self.items[i])
             if "box" in self.items[i] and cmds.checkBox(self.items[i]["box"], q=True, exist=True):
                 cmds.deleteUI(lay)
 
@@ -24,7 +25,7 @@ class CheckBoxGrpUC(UserControl):
         an = []
         prev = None
         for i in self.items:
-            c = cmds.checkBox( label=i, value=self.items[i]["value"], onc=Callback(self._changeState, True, i), ofc=Callback(self._changeState, False, i))
+            c = cmds.checkBox( parent=self.layout, label=i, value=self.items[i]["value"], onc=Callback(self._changeState, True, i), ofc=Callback(self._changeState, False, i))
             self.items[i]["box"] = c
             af.append((c, "top", 5))
             an.append((c, "bottom"))
@@ -34,11 +35,17 @@ class CheckBoxGrpUC(UserControl):
             else:
                 ac.append((c, "left", 5, prev))
             prev = c
-        print(af,ac,an)
         cmds.formLayout(self.layout, e=True, af=af, an=an, ac=ac)
 
 
 
+        pass
+
+    def clearItems(self):
+        for i in self.items:
+            print("delete " + self.items[i]["box"])
+            cmds.deleteUI(self.items[i]["box"], ctl=True)
+        self.items.clear()
         pass
 
     def addItem(self, item, value=False):
@@ -49,6 +56,8 @@ class CheckBoxGrpUC(UserControl):
         self.items[item]["value"] = value
 
     def refresh(self):
+        if self.layout is None or not cmds.formLayout(self.layout, q=True, exists=True):
+            return
         for i in self.items:
             cmds.checkBox(self.items[i]["box"], e=True, label=i, value=self.items[i]["value"])
 

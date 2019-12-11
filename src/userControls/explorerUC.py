@@ -76,7 +76,7 @@ class ExplorerUC(UserControl):
         
         if cmds.tabLayout(self.tabs, q=True, ex=True):
             cmds.deleteUI(self.tabs)
-        self.tabs = cmds.tabLayout('SceneFold', parent=self.layout)
+        self.tabs = cmds.tabLayout('SceneFold', parent=self.layout, sc=Callback(self.changeTab))
 
         if self.project is None or self.project.assets is None:
             self.tabAssets = cmds.formLayout('Assets', numberOfDivisions=100, parent=self.tabs)
@@ -87,5 +87,10 @@ class ExplorerUC(UserControl):
 
         cmds.formLayout(self.layout, e=True, 
                         attachForm=[(self.tabs, 'top', 0),(self.tabs, 'bottom', 0),(self.tabs, 'left', 0), (self.tabs, 'right', 0)])
+        self.changeTab()
+
+    def changeTab(self):
+        tabSel = cmds.tabLayout(self.tabs, q=True, st=True)
+        self.runEvent("changeTab", tabSel)
 
 print("ExplorerUC Loaded")

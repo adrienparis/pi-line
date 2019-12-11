@@ -7,6 +7,7 @@ from assetTileUC import AssetTileUC
 from assetTreeUC import AssetTreeUC
 from cupboardUC import CupboardUC
 from checkBoxGrpUC import CheckBoxGrpUC
+from chooseStepUC import ChooseStepUC
 from defineProjectUC import DefineProjectUC
 from detailUC import DetailUC
 from explorerUC import ExplorerUC
@@ -26,6 +27,7 @@ from wipUC import WipUC
 reload(windowUC)
 reload(cupboardUC)
 reload(checkBoxGrpUC)
+reload(chooseStepUC)
 reload(assetTileUC)
 reload(explorerUC)
 reload(assetTreeUC)

@@ -262,7 +262,6 @@ class DefineProjectUC(UserControl):
             self.refresh()
 
         def changeWorkDir(self, p):
-            print("define path server", p)
             self.project.path.server = p
             
             self.loadTab.changePath(self.project.path.server)

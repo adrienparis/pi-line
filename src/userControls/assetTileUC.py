@@ -32,7 +32,6 @@ class AssetTileUC(UserControl):
                 tile.selection(True)
                 self.selected.append(tile)
         selection = [x.asset for x in self.selected]
-        print(selection)
         self.runEvent("changeTile", selection)
 
     def newAssetCommand(self, c):
@@ -97,12 +96,10 @@ class AssetTileUC(UserControl):
 
     def reload(self):        
         for s in list(self.shelf.values()):
-            print(s[0])
             cmds.deleteUI(s[0])
 
 
         for c in self.assets.assets.keys():
-            print(c)
             scrollLayout = cmds.scrollLayout( c, parent=self.tabs,
                                         horizontalScrollBarThickness=160,
                                         verticalScrollBarThickness=16,
