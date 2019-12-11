@@ -261,6 +261,7 @@ class CupboardUC(UserControl):
             self.versSelect[0].publish()
             self.versSelect[0].setCurrent()
             self.versSelect[0].upload()
+            self.views["version"].loadTree()
         pass
 
     def commandSaveVersion(self):

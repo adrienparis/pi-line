@@ -65,6 +65,8 @@ class Version(Item):
         print("all worked")
 
     def deleteLocal(self):
+        print("delete Local")
+        self.onLocal = False
         pass
 
     def setCurrent(self):

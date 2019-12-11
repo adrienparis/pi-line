@@ -45,10 +45,10 @@ f.write('profil = "MODELER"\n')
 f.close()
 
 f = open(os.path.join(userPath, "projects.pil"), "w+")
-f.write('["golem", "go", "Q:/promo002/casiers/a.paris/ateliers", "S:/' + u + '/projects"]\n')
-f.write('["testAssetManager", "tam", "Q:/promo002/casiers/a.paris/ateliers", "S:/' + u + '/projects"]\n')
-f.write('["Amenti", "amenti", "Q:/promo002/projects", "S:/' + u + '/projects"]\n')
-f.write('["Nasterea", "nas", "Q:/promo002/projects", "S:/' + u + '/projects"]\n')
+f.write('golem;go;Q:/promo002/casiers/a.paris/ateliers;S:/' + u + '/projects;\n')
+f.write('testAssetManager;tam;Q:/promo002/casiers/a.paris/ateliers;S:/' + u + '/projects;\n')
+f.write('Amenti;amenti;Q:/promo002/projects;S:/' + u + '/projects;\n')
+f.write('Nasterea;nas;Q:/promo002/projects;S:/' + u + '/projects;\n')
 f.close()
 
 shrtImportStr = 'import sys;sys.path.append(\"' + instalPath + '\");' + "import AMui;" 

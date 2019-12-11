@@ -13,11 +13,11 @@ class ExplorerUC(UserControl):
         self.assets = None
         self.tabs = ""
         
-    def switchAssetView(self, *args):
-        buttonTree = args[0].split(", ")[0]
-        buttonTile = args[0].split(", ")[1]
-        atrv = args[0].split(", ")[2]
-        ativ = args[0].split(", ")[3]
+    def switchAssetView(self, buttonTree, buttonTile, atrv, ativ):
+        # buttonTree = args[0].split(", ")[0]
+        # buttonTile = args[0].split(", ")[1]
+        # atrv = args[0].split(", ")[2]
+        # ativ = args[0].split(", ")[3]
         switch = cmds.layout(ativ, q=True, vis=True)
 
         cmds.layout(ativ, e=True, vis=not switch)
@@ -61,6 +61,7 @@ class ExplorerUC(UserControl):
 
 
         return layout
+
 
 
     def setProject(self, project):
