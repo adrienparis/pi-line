@@ -38,6 +38,16 @@ class Scene(Item):
     def addVersion(self, version):
         self.versions.append(version)
 
+
+
+
+    def getLastVersion(self):
+        '''return the last version'''
+        if len(self.versions) == 0:
+            return None
+        self.versions.sort(key=lambda x: x, reverse=True)
+        return self.versions[0]
+
     def getVersionBy(self, steps):
         l = []
         self.versions.sort(key=lambda x: x.name, reverse=True)

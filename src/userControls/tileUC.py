@@ -19,15 +19,24 @@ class TileUC(UserControl):
 
     def create(self):
         self.layout = cmds.formLayout(parent=self.parentLay, h=30)
-        self.btnLay = cmds.iconTextButton(self.asset.name + "Tile", parent=self.layout, style=self.style, image1=self.asset.image,
+        self.btnLay = cmds.iconTextButton(self.asset.name + "Tile", parent=self.layout, style=self.style, image1=getIcon(self.asset.image),
                             label=self.asset.name, w=self.sizeImage, h=self.sizeImage, sic=True, c=Callback(self.clickCommand), bgc=self.selectedColor, ebg=self.selected)
         img = "denied"
-        if self.asset.onServer and self.asset.onLocal:
-            img = "check"
-        if self.asset.onServer and not self.asset.onLocal:
-            img = "download"
-        if not self.asset.onServer and self.asset.onLocal:
-            img = "upload"
+        # if self.asset.onServer and self.asset.onLocal:
+        v = self.asset.getLastVersion()
+        if v is not None:
+            if v.onServer and v.onLocal:
+                img = "check"
+            elif v.onServer and not v.onLocal:
+                img = "download"
+            elif not v.onServer and v.onLocal:
+                img = "upload"
+        else:
+            img = "new"
+        # if self.asset.onServer and not self.asset.onLocal:
+        #     img = "download"
+        # if not self.asset.onServer and self.asset.onLocal:
+        #     img = "upload"
 
         # if self.asset.state == 0:        
         #     img = "check"

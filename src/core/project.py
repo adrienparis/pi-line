@@ -116,6 +116,7 @@ class Project(Item):
                     print(self.assets)
                     self.assets[c].append(a)
                     a.onLocal = True
+                    a.fetchVersions()
 
         if not os.path.isdir(sp):
             print(sp)
@@ -134,6 +135,7 @@ class Project(Item):
                     else:
                         a = s
                     a.onServer = True
+                    a.fetchVersions()
 
     def fetchShots(self):
         relativePath = os.path.join(self.relativePath, Shot._path)

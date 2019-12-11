@@ -1,3 +1,5 @@
+import datetime
+
 import maya.cmds as cmds
 from pymel.all import *
 
@@ -16,6 +18,7 @@ class VersionUC(UserControl):
         self.bgc = 0x202020
         self.scene = None
         self.versions = []
+        self.listVersion = None
 
     def load(self):
         if self.layout is None or not cmds.formLayout(self.layout, q=True, exists=True):
@@ -70,9 +73,30 @@ class VersionUC(UserControl):
             elif v.onServer and not v.onLocal:
                 image = "download"
 
-            self.listVersion.addItem(name, v, image=image, info=v.date)
-            print(name, v, image, v.date)
+            dLag = datetime.datetime.now() - v.date
+            now = datetime.datetime.now().replace(minute=0, second=0, microsecond=0)
+            
+            p = now - datetime.timedelta(hours = 1)
+            if p < v.date:
+                d = str((dLag.seconds//60)%60 ) + "min ago"
+            else:
+                d = v.date.strftime('%Hh%M')
+            p = p.replace(hour=0)
+            if p >= v.date:
+                d = v.date.strftime('Yesterday - %Hh%M')
+            if p - datetime.timedelta(days=1) >= v.date:
+                d = v.date.strftime('%A - %Hh%M')
+            if p - datetime.timedelta(days=6) >= v.date:
+                d = v.date.strftime('%m/%d - %Hh')
+            if p - datetime.timedelta(days=20) >= v.date:
+                d = v.date.strftime('%Y/%m/%d')
+
+            self.listVersion.addItem(name, v, image=image, info=d)
         self.listVersion.load()
+
+    def refresh(self):
+        if self.listVersion is not None:
+            self.listVersion.load()
 
 
     def chkBxChange(self, chkBxs):
