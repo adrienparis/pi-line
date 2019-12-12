@@ -17,7 +17,6 @@ class Item():
         self.image = ""
         self.author = ""
         self.date = ""
-        print("path", self._path, self.relativePath)
         
     def setRelativePath(self):
         self.relativePath = os.path.join(self._path, self.name)
@@ -33,7 +32,6 @@ class Item():
     def setParent(self, parent):
         if parent is None:
             return
-        print(self.name, parent.name)
         if self.parent is not None:
             self.parent.removeChildren(self)
         parent.addChildren(self)

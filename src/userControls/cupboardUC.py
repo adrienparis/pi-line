@@ -5,6 +5,9 @@ from pymel.all import *
 
 from .UC import *
 
+import core
+
+from .chooseStepUC import ChooseStepUC
 from .defineProjectUC import *
 from .detailUC import *
 from .explorerUC import *
@@ -28,6 +31,7 @@ class CupboardUC(UserControl):
         self.project = None
         self.assets = None
         self.selected = []
+        self.versSelected = []
         self.viewVert = False
         
 
@@ -81,20 +85,20 @@ class CupboardUC(UserControl):
         self.views["project"].eventHandler("optionBtn", self.commandProjectOption)
         self.views["project"].eventHandler("refreshBtn", None)
         self.views["explorer"].eventHandler("changeItem", self.changeSelection)
+        self.views["explorer"].eventHandler("changeTab", self.changeTabScene)
         self.views["version"].eventHandler("changeItem", self.changeVersion)
         self.views["sync"].eventHandler("download", self.commandDownload)
         self.views["sync"].eventHandler("delete", None)
-        self.views["import"].eventHandler("edit", None)
-        self.views["import"].eventHandler("saveVersion", None)
-        self.views["import"].eventHandler("publish", None)
+        self.views["import"].eventHandler("open", self.commandOpen)
+        self.views["import"].eventHandler("saveVersion", self.commandSaveVersion)
+        self.views["import"].eventHandler("publish", self.commandPublish)
         self.views["import"].eventHandler("importRaw", None)
         self.views["import"].eventHandler("importRef", None)
         self.views["import"].eventHandler("importProxy", None)
         
         #Create and load all the interfaces
         for key, view in self.views.items():
-            print(key)
-            view.create()
+            view.load()
         # self.views["project"].create()
         # self.views["explorer"].create()
         # self.views["detail"].create()
@@ -127,14 +131,16 @@ class CupboardUC(UserControl):
         self.views["wip"].attach(top=Attach.NONE, bottom=(Attach.CTRL, self.views["import"]), left=(Attach.POS, col2), right=Attach.FORM, margin=5)
         self.views["import"].attach(top=Attach.NONE, bottom=Attach.FORM, left=(Attach.POS, col2), right=Attach.FORM, margin=5)
 
-        self.views["project"].setParent(self.horizontalFrame)
-        self.views["explorer"].setParent(self.horizontalFrame)
-        self.views["detail"].setParent(self.horizontalFrame)
-        self.views["version"].setParent(self.horizontalFrame)
-        self.views["sync"].setParent(self.horizontalFrame)
-        self.views["versInfo"].setParent(self.horizontalFrame)
-        self.views["wip"].setParent(self.horizontalFrame)
-        self.views["import"].setParent(self.horizontalFrame)
+        for key, view in self.views.items():
+            view.setParent(self.horizontalFrame)
+        # self.views["project"].setParent(self.horizontalFrame)
+        # self.views["explorer"].setParent(self.horizontalFrame)
+        # self.views["detail"].setParent(self.horizontalFrame)
+        # self.views["version"].setParent(self.horizontalFrame)
+        # self.views["sync"].setParent(self.horizontalFrame)
+        # self.views["versInfo"].setParent(self.horizontalFrame)
+        # self.views["wip"].setParent(self.horizontalFrame)
+        # self.views["import"].setParent(self.horizontalFrame)
 
         # self.applyAttach()
 
@@ -162,14 +168,17 @@ class CupboardUC(UserControl):
         self.views["wip"].attach(top=(Attach.CTRL, self.views["versInfo"]), bottom=Attach.NONE, left=Attach.FORM, right=Attach.FORM, margin=5)
         self.views["import"].attach(top=(Attach.CTRL, self.views["wip"]), bottom=Attach.NONE, left=Attach.FORM, right=Attach.FORM, margin=5)
 
-        self.views["project"].setParent(self.verticalFrame)
-        self.views["explorer"].setParent(self.verticalFrame)
-        self.views["detail"].setParent(self.verticalFrame)
-        self.views["version"].setParent(self.verticalFrame)
-        self.views["sync"].setParent(self.verticalFrame)
-        self.views["versInfo"].setParent(self.verticalFrame)
-        self.views["wip"].setParent(self.verticalFrame)
-        self.views["import"].setParent(self.verticalFrame)
+
+        for key, view in self.views.items():
+            view.setParent(self.verticalFrame)
+        # self.views["project"].setParent(self.verticalFrame)
+        # self.views["explorer"].setParent(self.verticalFrame)
+        # self.views["detail"].setParent(self.verticalFrame)
+        # self.views["version"].setParent(self.verticalFrame)
+        # self.views["sync"].setParent(self.verticalFrame)
+        # self.views["versInfo"].setParent(self.verticalFrame)
+        # self.views["wip"].setParent(self.verticalFrame)
+        # self.views["import"].setParent(self.verticalFrame)
 
         af = [] + self.views["project"].af + self.views["explorer"].af + self.views["detail"].af + self.views["version"].af + self.views["sync"].af + self.views["versInfo"].af + self.views["wip"].af + self.views["import"].af
         ap = [] + self.views["project"].ap + self.views["explorer"].ap + self.views["detail"].ap + self.views["version"].ap + self.views["sync"].ap + self.views["versInfo"].ap + self.views["wip"].ap + self.views["import"].ap
@@ -208,23 +217,73 @@ class CupboardUC(UserControl):
             self.views["detail"].changeScene(selection[0])
             self.views["version"].changeScene(selection[0])
         self.views["detail"].refresh()
-        self.views["version"].load()
+        self.views["version"].loadTree()
 
-    def changeVersion(self, s):
-        print(s)
+    def changeVersion(self, selection):
+        print(selection)
+        if len(selection) == 1:
+            self.versSelect = [selection[0]]
+
+    def changeTabScene(self, tab):
+        # TODO find a solution for this
+        # if tab == "Assets":
+        #     self.views["version"].changeStepBox(core.Asset._steps)
+        # if tab == "Shots":
+        #     self.views["version"].changeStepBox(core.Shot._steps)
+
+        if tab == "Assets":
+            self.views["version"].changeStepBox(["mod", "rig", "surf"])
+        if tab == "Shots":
+            self.views["version"].changeStepBox(["animation", "previz", "rendering", "sfx"])
 
     def commandDownload(self):
-        if len(self.selected) > 0:
-            if self.step == 4:
-                self.selected[0].download()
-                self.selected[0].state = 0
-            else:
-                self.selected[0].downloadStep(self.step)
-                self.selected[0].state = 2
+        if len(self.selected) > 0 and len(self.versSelect) > 0:
+            print(self.versSelect[0].step)
+            self.views["version"].refresh()
+            # if self.step == 4:
+            #     self.selected[0].download()
+            #     self.selected[0].state = 0
+            # else:
+            #     self.selected[0].downloadStep(self.step)
+            #     self.selected[0].state = 2
         self.views["explorer"].refresh()
         #TODO remove the line below
         self.views["explorer"].reload()
 
+    def commandOpen(self):
+        if len(self.selected) > 0 and len(self.versSelect) > 0:
+            print("open version")
+        pass
+
+    def commandPublish(self):
+        if len(self.selected) > 0 and len(self.versSelect) > 0:
+            print("publish version " + str(self.versSelect[0].date))
+            self.versSelect[0].publish()
+            self.versSelect[0].setCurrent()
+            self.versSelect[0].upload()
+        pass
+
+    def commandSaveVersion(self):
+        if len(self.selected) > 0:
+            print("creating a new version")
+            
+            self.nvWin = WindowUC("New version")
+            self.nvWin.ih = 100
+            self.nvWin.iw = 200
+            self.nvWin.load()
+
+            newVersUC = ChooseStepUC(self.nvWin)
+            newVersUC.load()
+            newVersUC.attach(top=Attach.FORM, bottom=Attach.FORM, left=Attach.FORM, right=Attach.FORM, margin=0)
+            newVersUC.eventHandler("close", self.closeNewVersionWin)
+            self.nvWin.applyAttach()
+            self.refresh()
+
+            self.selected[0].makeNewVersion(core.Asset._steps[1])
+        pass
+    
+    def closeNewVersionWin(self):
+        self.nvWin.close()
 
     def attachViewTo(self, layout, parent):
         print("attach " + layout + " to " + self.views[parent].layout)
@@ -232,10 +291,5 @@ class CupboardUC(UserControl):
         cmds.formLayout(self.views[parent], edit=True,
                         attachForm=[(layout, 'top', 5),(layout, 'bottom', 5),(layout, 'left', 5), (layout, 'right', 5)])
 
-
-    def reload(self):
-        self.colProj.reload()
-    def refresh(self):
-        self.colProj.reload()
 
 print("Cupboard Loaded")

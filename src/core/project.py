@@ -113,9 +113,9 @@ class Project(Item):
                 self.addCategory(c)
                 for n in os.listdir(cat):
                     a = Asset(n, c, self)
-                    print(self.assets)
                     self.assets[c].append(a)
                     a.onLocal = True
+                    a.fetchVersions()
 
         if not os.path.isdir(sp):
             print(sp)
@@ -134,6 +134,7 @@ class Project(Item):
                     else:
                         a = s
                     a.onServer = True
+                    a.fetchVersions()
 
     def fetchShots(self):
         relativePath = os.path.join(self.relativePath, Shot._path)
@@ -145,13 +146,11 @@ class Project(Item):
             print("local shot folder not found")
         else:
             for c in os.listdir(lp):
-                print("\t" + c)
                 cat = os.path.join(lp, c)
                 if not os.path.isdir(cat):
                     continue
                 self.addSequence(c)
                 for n in os.listdir(cat):
-                    print("\t\t" + n)
                     a = Shot(n, c, self)
                     self.shots[c].append(a)
                     a.onLocal = True
@@ -161,13 +160,11 @@ class Project(Item):
             print("server shot folder not found")
         else:
             for c in os.listdir(sp):
-                print("\t" + c)
                 cat = os.path.join(sp, c)
                 if not os.path.isdir(cat):
                     continue
                 self.addSequence(c)
                 for n in os.listdir(cat):
-                    print("\t\t" + n)
                     a = Shot(n, c, self)
                     s = next((x for x in self.shots[c] if x.name == a.name and x.category == a.category), None)
                     if s is None:
@@ -218,11 +215,11 @@ class Project(Item):
         cmds.workspace(dir=p)
 
 
-    def updateInfo(self):
-        #TODO look in the project folder if there is the name of the project, if it's there replace it with the new path, if not, add it to te file
-        username = getpass.getuser()
-        print(username)
-        print("C:/Users/" + username + "/Documents/Pi-Line")
+    # def updateInfo(self):
+    #     #TODO look in the project folder if there is the name of the project, if it's there replace it with the new path, if not, add it to te file
+    #     username = getpass.getuser()
+    #     print(username)
+    #     print("C:/Users/" + username + "/Documents/Pi-Line")
 
 
     #TODO Create/copy all the folders of the local tree
@@ -248,9 +245,7 @@ class Project(Item):
         ctypes.windll.kernel32.SetFileAttributesW(path, 0x02)
 
     def readInfo(self):
-        print("fetching Data") 
         path = os.path.join(self.path.server, self.name, ".pil", "project.pil")
-        print(path)
         if not os.path.isfile(path):
             return
         data = {}
@@ -259,7 +254,6 @@ class Project(Item):
                 k, v = line.replace("\n", "").split("=")
                 data[k] = v
         
-        print(data)
         self.diminutive = data["dim"]
         self.date = datetime.datetime.strptime( data["date"], '%Y-%m-%d %H:%M:%S.%f')
         self.author = data["author"]
@@ -269,13 +263,11 @@ class Project(Item):
         if not os.path.isdir(user.prefPath):
             os.mkdir(user.prefPath)
         filepath = os.path.join(user.prefPath, "projects.pil")
-        print(filepath)
         with open(filepath,"a") as f:
             s = ""
             for w in (self.name, self.diminutive, self.path.server, self.path.local):
                 s += str(w) + ";"
             f.write(s + "\n")
-            print(s)
 
     @staticmethod
     def writeAllProjectsInPrefs(projects):
@@ -286,7 +278,6 @@ class Project(Item):
         os.remove(filepath)
 
         for p in projects:
-            print(p.name, p.diminutive, p.path.server, p.path.local)
             p.writeProjectInPrefs()
 
 
@@ -310,7 +301,6 @@ class Project(Item):
                 if len(l) >= 3:
                     p = Project(l[0], Path(l[2]))
                     p.diminutive = l[1]
-                    print(l)
                     if len(l) == 4:
                         print(l[3])
                         p.path.local = l[3]

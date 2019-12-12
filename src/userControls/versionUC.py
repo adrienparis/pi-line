@@ -1,3 +1,5 @@
+import datetime
+
 import maya.cmds as cmds
 from pymel.all import *
 
@@ -16,48 +18,79 @@ class VersionUC(UserControl):
         self.bgc = 0x202020
         self.scene = None
         self.versions = []
+        self.listVersion = None
+        self.stepLay = None
+        self.listVersion = None
+        self.selectSteps = []
 
     def load(self):
+        print("version been load")
         if self.layout is None or not cmds.formLayout(self.layout, q=True, exists=True):
             self.layout = cmds.formLayout('VersionUC', parent=self.parentLay)
-        
-        if self.scene is not None:
+        print(self.layout)
+        if self.stepLay is None:
+            print("create CheckBoxGrpUC")
             self.stepLay = CheckBoxGrpUC(self)
-            steps = self.scene._steps[:]
-
-            for step in self.scene._steps:
-                self.stepLay.addItem(step)
-
-            self.stepLay.load()
-            self.stepLay.eventHandler("changeState", self.chkBxChange)
-
+        print(self.stepLay.parentUC)
+        self.stepLay.load()
+        if self.listVersion is None:
+            print("create TreeUC")
             self.listVersion = TreeUC(self)
-            self.listVersion.load()
-            self.listVersion.eventHandler("changeSelection", self._changeSelectedVersions)
 
+        if self.scene is not None:
+            steps = self.scene._steps[:]
             self.scene.fetchVersions()
+        else:
+            steps = []
 
-            self.loadTree()
-            # self.listVersion.refresh()
-            # self.rc = cmds.radioCollection(parent=self.layout)
+        for step in steps:
+            self.stepLay.addItem(step)
 
-            # user = User()
-            # 1:mod     2:rig   3:surf
-            # self.cat = (user.profil == "MODELER") * 1 + (user.profil == "RIGGER") * 2 + (user.profil == "ANIMATOR") * 2 + (user.profil == "SURFACER") * 3
-            # cmds.radioButton( parent=self.plop, label='mod', align='left', onc=Callback(self.runEvent, "changeRadioButton", 1), sl=(self.cat==1))
-            # cmds.radioButton( parent=self.plop, label='rig', align='center', onc=Callback(self.runEvent, "changeRadioButton", 2), sl=(self.cat==2))
-            # cmds.radioButton( parent=self.plop, label='surf', align='right', onc=Callback(self.runEvent, "changeRadioButton", 3), sl=(self.cat==3))
-            # cmds.radioButton( parent=self.plop, label='All', align='right', onc=Callback(self.runEvent, "changeRadioButton", 4), sl=(self.cat==4))
-            # self.eventHandler("changeRadioButton", self.changeCategory)
-            # self.runEvent("changeRadioButton", self.cat)
-            self.stepLay.attach(top=Attach.FORM, bottom=Attach.NONE, left=Attach.FORM, right=Attach.FORM, margin=5)
-            self.listVersion.attach(top=(Attach.CTRL, self.stepLay), bottom=Attach.FORM, left=Attach.FORM, right=Attach.FORM, margin=5)
+
+        self.stepLay.eventHandler("changeState", self.chkBxChange)
+        self.listVersion.eventHandler("changeSelection", self._changeSelectedVersions)
+
+
+        self.loadTree()
+
+        cmds.formLayout(self.layout, e=True, bgc=hexToRGB(0x808080))
+
+        self.stepLay.attach(top=Attach.FORM, bottom=Attach.NONE, left=Attach.FORM, right=Attach.FORM, margin=5)
+        self.listVersion.attach(top=(Attach.CTRL, self.stepLay), bottom=Attach.FORM, left=Attach.FORM, right=Attach.FORM, margin=5)
 
         self.applyAttach()
     
+    def displayTimeToSimpleStr(self, time):
+
+            dLag = datetime.datetime.now() - time
+            now = datetime.datetime.now().replace(minute=0, second=0, microsecond=0)
+            
+            p = now - datetime.timedelta(hours = 1)
+            if p < time:
+                d = str((dLag.seconds//60)%60 ) + "min ago"
+            else:
+                d = time.strftime('%Hh%M')
+            p = p.replace(hour=0)
+            if p >= time:
+                d = time.strftime('Yesterday - %Hh%M')
+            if p - datetime.timedelta(days=1) >= time:
+                d = time.strftime('%A - %Hh%M')
+            if p - datetime.timedelta(days=6) >= time:
+                d = time.strftime('%m/%d - %Hh')
+            if p - datetime.timedelta(days=20) >= time:
+                d = time.strftime('%Y/%m/%d')
+            return d
+
+
     def loadTree(self):
+        print("load version list")
+        print(self.listVersion)
+        if self.listVersion is None:
+            return
         self.listVersion.deleteAllItemsFolders()
+        print(self.versions)
         for v in self.versions:
+            print(v.name)
             if v.infoName is not None:
                 name = v.infoName
             else:
@@ -70,20 +103,38 @@ class VersionUC(UserControl):
             elif v.onServer and not v.onLocal:
                 image = "download"
 
-            self.listVersion.addItem(name, v, image=image, info=v.date)
-            print(name, v, image, v.date)
+            d = self.displayTimeToSimpleStr(v.date)
+
+            self.listVersion.addItem(name, v, image=image, info=d)
         self.listVersion.load()
+
+    def changeStepBox(self, bxs):
+
+        if self.stepLay is None:
+            return
+        print(bxs)
+        self.stepLay.clearItems()
+        for step in bxs:
+            self.stepLay.addItem(step)
+        self.stepLay.load()
+        print("stepbox change")
+
+    def refresh(self):
+        if self.listVersion is not None:
+            self.listVersion.load()
 
 
     def chkBxChange(self, chkBxs):
-        print(chkBxs)
-        l = [x for x in chkBxs if chkBxs[x]]
-        self.versions = self.scene.getVersionBy(l)
-        print(len(self.versions))
+        self.selectSteps = [x for x in chkBxs if chkBxs[x]]
+        if self.scene is None:
+            return
+        self.versions = self.scene.getVersionBy(self.selectSteps)
         self.loadTree()
 
     def _changeSelectedVersions(self, selection):
         self.runEvent("changeItem", selection)
 
     def changeScene(self, scene):
+        self.versions = []
         self.scene = scene
+        self.versions = self.scene.getVersionBy(self.selectSteps)

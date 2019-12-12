@@ -15,7 +15,6 @@ class DetailUC(UserControl):
         self.scene = scene
     
     def refresh(self):
-        print("in detailUC", self.scene)
         if self.scene == None:
             return
         cmds.text(self.name, e=True, label=self.scene.name.capitalize() , ann=self.scene.category)

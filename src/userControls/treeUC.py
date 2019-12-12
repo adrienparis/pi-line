@@ -119,14 +119,11 @@ class TreeUC(UserControl):
         
 
         if cmds.scrollLayout(self.scrlLay, q=True, ex=True):
-            print("deleting " + self.scrlLay)
             cmds.deleteUI(self.scrlLay)
-        print(cmds.scrollLayout(self.scrlLay, q=True, ex=True))
         self.scrlLay = cmds.scrollLayout(parent=self.layout, childResizable=True)
         t = self._loadFolder(self.root, self.scrlLay)
         
         cmds.formLayout(self.layout, edit=True, attachForm=[(self.scrlLay, 'top', -2),(self.scrlLay, 'bottom', -2),(self.scrlLay, 'left', -2), (self.scrlLay, 'right', -2)])
-        print("reformat" + self.scrlLay)
 
     def _clickFolder(self, folder, line, mod):
         if mod == 0:
@@ -153,7 +150,6 @@ class TreeUC(UserControl):
         self.runEvent("changeSelection", selection)
 
     def deleteAllItemsFolders(self):
-        print("unload tree")
         self.folders = {}
         self.items = {}
         self.root = TreeUC._folder(".", None)
