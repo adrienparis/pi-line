@@ -37,7 +37,19 @@ class Version(Item):
 # TODO copy the server version to the local version
 # TODO and copy the publish of the version to the local scene
     def download(self):
-        pass
+        print("downloading " + self.name)
+        if not(self.onServer and not self.onLocal):
+            print("Already on local")
+            return
+        loc = os.path.join(self.path.local, self.parent.getAbsolutePath(), self.step, Version._path, self.name)
+        ser = os.path.join(self.path.server, self.parent.getAbsolutePath(), self.step, Version._path, self.name)
+        print(loc)
+        print(ser)
+        shutil.move(last, loc)
+        os.makedirs(ser)
+        copy_tree(ser, loc)
+        self.onLocal = True
+        print(self.name + " downloaded")
 
 # TODO and copy the publish of the version to the server scene
     def upload(self):

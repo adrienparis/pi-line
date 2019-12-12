@@ -222,7 +222,7 @@ class CupboardUC(UserControl):
     def changeVersion(self, selection):
         print(selection)
         if len(selection) == 1:
-            self.versSelect = [selection[0]]
+            self.versSelected = [selection[0]]
 
     def changeTabScene(self, tab):
         # TODO find a solution for this
@@ -237,9 +237,11 @@ class CupboardUC(UserControl):
             self.views["version"].changeStepBox(["animation", "previz", "rendering", "sfx"])
 
     def commandDownload(self):
-        if len(self.selected) > 0 and len(self.versSelect) > 0:
-            print(self.versSelect[0].step)
+        if len(self.selected) > 0 and len(self.versSelected) > 0:
+            print(self.versSelected[0].step)
             self.views["version"].refresh()
+
+            self.versSelected[0].download()
             # if self.step == 4:
             #     self.selected[0].download()
             #     self.selected[0].state = 0
@@ -249,18 +251,22 @@ class CupboardUC(UserControl):
         self.views["explorer"].refresh()
         #TODO remove the line below
         self.views["explorer"].reload()
+        self.views["detail"].changeScene(None)
+        self.views["version"].changeScene(None)
+        self.views["version"].loadTree()
+        self.views["detail"].refresh()
 
     def commandOpen(self):
-        if len(self.selected) > 0 and len(self.versSelect) > 0:
+        if len(self.selected) > 0 and len(self.versSelected) > 0:
             print("open version")
         pass
 
     def commandPublish(self):
-        if len(self.selected) > 0 and len(self.versSelect) > 0:
-            print("publish version " + str(self.versSelect[0].date))
-            self.versSelect[0].publish()
-            self.versSelect[0].setCurrent()
-            self.versSelect[0].upload()
+        if len(self.selected) > 0 and len(self.versSelected) > 0:
+            print("publish version " + str(self.versSelected[0].date))
+            self.versSelected[0].publish()
+            self.versSelected[0].setCurrent()
+            self.versSelected[0].upload()
             self.views["version"].loadTree()
         pass
 

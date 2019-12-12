@@ -79,7 +79,7 @@ class ProjectUC(UserControl):
             self.projectsLabel.append(cmds.menuItem( "projName_" + str(i) ,label=p.name ))
         cmds.formLayout(self.layout, edit=True,
             attachForm=[(self.menu, 'top', 0), (self.menu, 'left', 0)],
-            attachControl=[(self.menu, 'right', 5, self.optionBtn)],
+            attachControl=[(self.menu, 'right', 5, self.refreshBtn)],
             attachNone=[(self.menu, 'bottom')])
 
         self.projectsLabel *= 0

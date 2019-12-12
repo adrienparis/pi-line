@@ -20,7 +20,6 @@ class VersionUC(UserControl):
         self.versions = []
         self.listVersion = None
         self.stepLay = None
-        self.listVersion = None
         self.selectSteps = []
 
     def load(self):
@@ -137,4 +136,7 @@ class VersionUC(UserControl):
     def changeScene(self, scene):
         self.versions = []
         self.scene = scene
-        self.versions = self.scene.getVersionBy(self.selectSteps)
+        if self.scene is None:
+            self.versions = []
+        else:    
+            self.versions = self.scene.getVersionBy(self.selectSteps)

@@ -1,6 +1,7 @@
 import os
 import datetime
 import getpass
+import ctypes
 import maya.cmds as cmds
 
 from .user import User

@@ -39,7 +39,20 @@ class ExplorerUC(UserControl):
         for c in a.assets.keys():
             p = atrv.addFolder(c, None)
             for asset in a.assets[c]:
-                atrv.addItem(asset.name, asset, parent=p, image="check", info="Yesterday")
+                
+                img = "denied"
+                v = asset.getLastVersion()
+                if v is not None:
+                    if v.onServer and v.onLocal:
+                        img = "check"
+                    elif v.onServer and not v.onLocal:
+                        img = "download"
+                    elif not v.onServer and v.onLocal:
+                        img = "upload"
+                else:
+                    img = "new"
+
+                atrv.addItem(asset.name, asset, parent=p, image=img, info="Yesterday")
         atrv.eventHandler("changeSelection", self.runEvent, "changeItem")
 
         atrv.load()

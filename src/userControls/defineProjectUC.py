@@ -5,6 +5,7 @@ from .UC import *
 from .treeUC import TreeUC
 
 from core.project import Project, Path
+from core.user import User
 
 
 
@@ -298,7 +299,7 @@ class DefineProjectUC(UserControl):
             self.project.name = name
             self.project.diminutive = dim
             self.project.author = user.name
-            self.project.createTreeTemplateServer()
+            self.project.makeServerFolderTree()
             self.setEdition(False)
             self.runEvent("loadProj", self.project)
 
@@ -316,6 +317,7 @@ class DefineProjectUC(UserControl):
     def __init__(self, parent):
         UserControl.__init__(self, parent)
         self.name = "DefineProjectUC"
+        self.selected = None
 
     def load(self):
         UserControl.create(self)
@@ -338,6 +340,7 @@ class DefineProjectUC(UserControl):
         self.views["projects"].eventHandler("changeSelection", self.changeSelect)
         self.views["exit"].eventHandler("save", self.saveExit)
         self.views["initInfo"].eventHandler("loadProj", self.loadNewProject)
+        self.views["localPath"].eventHandler("changeDir", self.changeLocalDir)
 
 
         for key, view in self.views.items():
@@ -353,8 +356,16 @@ class DefineProjectUC(UserControl):
         self.applyAttach()
 
     def changeSelect(self, p):
+        self.selected = p[0]
         self.views["initInfo"].setProj(p[0])
+        self.views["localPath"].path = p[0].path.local
+        self.views["localPath"].refresh()
  
+    def changeLocalDir(self, path):
+        if self.selected is None:
+            return
+        self.selected.path.local = path
+
     def updateLocalPath(self, p):
         pass
 
