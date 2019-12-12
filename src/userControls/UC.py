@@ -1,6 +1,15 @@
 import os
+from copy import copy
 from pymel.all import *
 import maya.cmds as cmds
+
+class Color():
+    def __init__(self):
+        self.highlight = 0xf7567c
+        self.main = 0x99e1d9
+        self.background = 0x5d576b
+        self.text = 0xfffaf3
+
 
 class Attach():
     NONE = 0
@@ -44,12 +53,13 @@ class UserControl(object):
         self.childrens = []
         self.command = {}
         self.name = "UC"
+        self.color = Color()
         self.bgc = 0xa00000
 
 
     
     def create(self):
-        self.layout = cmds.formLayout(parent=self.parentLay, bgc=hexToRGB(self.bgc), h=30, w=30)
+        self.layout = cmds.formLayout(parent=self.parentLay, bgc=hexToRGB(self.color.background), h=30, w=30)
         print("create userControl : " + self.__class__.__name__)
         print("/!\\ Not implemented")
 
@@ -139,6 +149,7 @@ class UserControl(object):
         if parent is None:
             self.parentLay = parent
             self.parentUC = parent
+            self.color = Color()
         elif type(parent) is str or type(parent) is unicode:
             self.parentLay = parent
         else:
@@ -148,6 +159,7 @@ class UserControl(object):
                 self.parentUC = parent
                 self.parentLay = parent.layout
                 self.parentUC.addChildren(self)
+                self.color = copy(parent.color)
             except:
                 print(parent + " is unreadable")
         if self.layout is not None and self.parentLay is not None:
