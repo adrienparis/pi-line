@@ -12,6 +12,6 @@ if os.path.exists(pathDest):
     rmtree(pathDest, ignore_errors=True)
     print("deleted")
 
-copytree(current_path, pathDest, ignore=ignore_patterns('*.pyc', '.git', '.vscode', 'Template', '.gitignore', 'uploader.py'))
+copytree(current_path, pathDest, ignore=ignore_patterns('*.pyc', '.git', '.vscode', '.gitignore', 'uploader.py'))
 
 time.sleep(10)

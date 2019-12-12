@@ -36,12 +36,12 @@ class AssetTileUC(UserControl):
 
     def newAssetCommand(self, c):
         print("badly implemented")
-        return
+        
         print("Create New Asset")
-        print(c.name)
+        print(c)
     
         result = cmds.promptDialog(
-                        title='New Asset - ' + c.name,
+                        title='New Asset - ' + c,
                         message='Enter name:',
                         button=['OK', 'Cancel'],
                         defaultButton='OK',
@@ -49,6 +49,8 @@ class AssetTileUC(UserControl):
                         dismissString='Cancel')
         if result != 'OK': return
         name = cmds.promptDialog(query=True, text=True)
+        self.runEvent("newScene", c, name)
+        return
         a = astPL.Asset(c, name)
         a.create(c.path)
         a.fetchAssetData()

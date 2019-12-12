@@ -286,7 +286,8 @@ class CupboardUC(UserControl):
             self.nvWin.applyAttach()
             self.refresh()
 
-            self.selected[0].makeNewVersion(core.Asset._steps[1])
+            # self.selected[0].makeNewVersion(core.Scene._steps[1])
+            self.selected[0].makeNewVersion("rig")
         pass
     
     def closeNewVersionWin(self):

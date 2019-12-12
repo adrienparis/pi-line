@@ -4,6 +4,7 @@ from .UC import *
 from .assetTileUC import *
 from .assetTreeUC import *
 from .treeUC import *
+from core.asset import Asset
 
 class ExplorerUC(UserControl):
 
@@ -30,6 +31,8 @@ class ExplorerUC(UserControl):
         
         current_path = os.path.dirname(os.path.abspath(__file__)).replace('\\', '/')
         ativ = AssetTileUC(layout) #AssetTilesView(layout) # cmds.formLayout('assetViewSwitchTile', parent=layout, numberOfDivisions=100, bgc=[0.2,0.2,0.2])
+
+        ativ.eventHandler("newScene", self.newScene)
 
         ativ.setAsset(a)
         ativ.create()
@@ -106,5 +109,10 @@ class ExplorerUC(UserControl):
     def changeTab(self):
         tabSel = cmds.tabLayout(self.tabs, q=True, st=True)
         self.runEvent("changeTab", tabSel)
+
+    def newScene(self, cat, sceneName):
+        a = Asset(sceneName, cat, self.project)
+        a.make()
+        self.project.addAssetToCategory(a, a.category)
 
 print("ExplorerUC Loaded")
