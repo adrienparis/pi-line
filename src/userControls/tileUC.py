@@ -1,6 +1,8 @@
 import maya.cmds as cmds
 from pymel.all import *
 
+import log
+
 from .UC import *
 
 class TileUC(UserControl):
@@ -25,9 +27,9 @@ class TileUC(UserControl):
         # if self.asset.onServer and self.asset.onLocal:
         v = self.asset.getLastVersion()
         for x in self.asset.versions:
-            print(x.name + " " + x.fileName)
+            log.debug(x.name + " " + x.fileName)
         if v is not None:
-            print(v.parent.name, v.name, v.onLocal, v.onServer, v.fileName)
+            log.debug(v.parent.name, v.name, v.onLocal, v.onServer, v.fileName)
             if v.onServer and v.onLocal:
                 img = "check"
             elif v.onServer and not v.onLocal:

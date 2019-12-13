@@ -1,6 +1,7 @@
 import maya.cmds as cmds
 from pymel.all import *
 
+import log
 from .UC import *
 
 class LineUC(UserControl):
@@ -64,7 +65,7 @@ class LineUC(UserControl):
 
     def selection(self, b):
         self.selected = b
-        print(self.layout)
+        log.debug(self.layout)
         if cmds.formLayout(self.layout, q=True, exists=True):
             cmds.formLayout(self.layout, e=True, ebg=self.selected)
 

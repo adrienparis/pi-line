@@ -4,6 +4,8 @@ import getpass
 import ctypes
 import maya.cmds as cmds
 
+import log
+
 from .user import User
 
 from .path import Path
@@ -105,8 +107,7 @@ class Project(Item):
         sp = os.path.join(self.path.server, relativePath)
 
         if not os.path.isdir(lp):
-            print(lp)
-            print("local assets folder not found")
+            log.warning("[" + lp + "] local assets'folder not foud")
         else:
             for c in os.listdir(lp):
                 cat = os.path.join(lp, c)
@@ -120,8 +121,7 @@ class Project(Item):
                     a.fetchVersions()
 
         if not os.path.isdir(sp):
-            print(sp)
-            print("server assets folder not found")
+            log.warning("[" + sp + "] server assets'folder not foud")
         else:
             for c in os.listdir(sp):
                 cat = os.path.join(sp, c)
@@ -145,8 +145,7 @@ class Project(Item):
         sp = os.path.join(self.path.server, relativePath)
 
         if not os.path.isdir(lp):
-            print(lp)
-            print("local shot folder not found")
+            log.warning("[" + lp + "] local assets'folder not foud")
         else:
             for c in os.listdir(lp):
                 cat = os.path.join(lp, c)
@@ -159,8 +158,7 @@ class Project(Item):
                     a.onLocal = True
 
         if not os.path.isdir(sp):
-            print(sp)
-            print("server shot folder not found")
+            log.warning("[" + sp + "] server assets'folder not foud")
         else:
             for c in os.listdir(sp):
                 cat = os.path.join(sp, c)
@@ -216,14 +214,6 @@ class Project(Item):
         
         cmds.workspace(p, o=True)
         cmds.workspace(dir=p)
-
-
-    # def updateInfo(self):
-    #     #TODO look in the project folder if there is the name of the project, if it's there replace it with the new path, if not, add it to te file
-    #     username = getpass.getuser()
-    #     print(username)
-    #     print("C:/Users/" + username + "/Documents/Pi-Line")
-
 
     #TODO Create/copy all the folders of the local tree
     def makeLocalFolderTree(self):
@@ -294,7 +284,7 @@ class Project(Item):
 
         filepath = os.path.join(user.prefPath, "projects.pil")
         if not os.path.isfile(filepath):
-            print("File path {} does not exist. Exiting...".format(filepath))
+            log.warning("Saved projects file not found")
             return ps
         with open(filepath) as fp:
             for line in fp:
@@ -305,7 +295,7 @@ class Project(Item):
                     p = Project(l[0], Path(l[2]))
                     p.diminutive = l[1]
                     if len(l) == 4:
-                        print(l[3])
+                        log.debug(l[3])
                         p.path.local = l[3]
                     p.readInfo()
                     ps.append(p)
@@ -318,9 +308,9 @@ class Project(Item):
             if type(f) == str or type(f) == unicode:
                 name = f
                 if os.path.exists(os.path.join(path, name)):
-                    print("\t" + name + ' : exists')
+                    log.warning("\t" + name + ' :  already exists')
                 elif not os.path.exists(path):
-                    print("\t" + path + ' : does not exist')
+                    log.warning("\t" + path + ' : does not exist')
                 else:
                     os.mkdir(os.path.join(path, name))
             else:

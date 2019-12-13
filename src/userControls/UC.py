@@ -2,6 +2,7 @@ import os
 from copy import copy
 from pymel.all import *
 import maya.cmds as cmds
+import log
 
 class Color():
     def __init__(self):
@@ -59,16 +60,12 @@ class Attach(object):
         if name == 'none' or name == 'form' or name == 'position' or name == 'controller':
             self._createAttach()
             if name == 'none':
-                # print("an", self._an)
                 return object.__getattribute__(self, "_an")
             elif name == 'form':
-                # print("af", self._af)
                 return object.__getattribute__(self, "_af")
             elif name == 'position':
-                # print("ap", self._ap)
                 return object.__getattribute__(self, "_ap")
             elif name == 'controller':
-                # print("ac", self._ac)
                 return object.__getattribute__(self, "_ac")
         else:
             return object.__getattribute__(self, name)
@@ -101,7 +98,7 @@ class Attach(object):
                         try:
                             self._ac.append((self.parent.layout, key, self.margin[Attach.__sideToValue(str(key))], value[1].layout))
                         except AttributeError:
-                            print(value[1] + "is not supported")
+                            log.warning(value[1] + "is not supported")
 
     def attach(self, margin, attachs):
         #check if margin is (0), (0,0) or (0,0,0,0)
@@ -153,26 +150,26 @@ class UserControl(object):
         self._load()
 
     def load(self):
-        print("/!\\ Not implemented")
+        log.warning("Not implemented")
 
     def _load(self):
-        print("loading " + self.__class__.__name__ + "...")
+        log.info("loading " + self.__class__.__name__ + "...")
         if not self.loaded:
-            print("loading UC")
+            log.debug("loading UC")
             if self.parentLay is None:
-                print("parent layout doesnot exist")
+                log.debug("parent layout doesnot exist")
                 if cmds.workspaceControl(self.name, exists=1):
-                    print("delete " + self.name)
+                    log.debug("delete " + self.name)
                     cmds.deleteUI(self.name)
                 self.parentLay = cmds.workspaceControl(self.name, retain=False, iw=self.initWidth, ih=self.initHeight, floating=True)
-            self.layout = cmds.formLayout(self.__class__.__name__ + str(UserControl.increment) , parent=self.parentLay, bgc=hexToRGB(self.bgc), h=self.height, w=self.width)
+            self.layout = cmds.formLayout(self.__class__.__name__ + str(UserControl.increment) , parent=self.parentLay, bgc=hexToRGB(self.color.background), h=self.height, w=self.width)
             
-            print("create layout " + self.__class__.__name__ + str(UserControl.increment))
+            log.debug("create layout " + self.__class__.__name__ + str(UserControl.increment))
             UserControl.increment += 1
             self.loaded = True
         else:
-            print("Editing UC")
-            cmds.formLayout(self.layout, e=True, parent=self.parentLay, bgc=hexToRGB(self.bgc), h=self.height, w=self.width)
+            log.debug("Editing UC")
+            cmds.formLayout(self.layout, e=True, parent=self.parentLay, bgc=hexToRGB(self.color.background), h=self.height, w=self.width)
         
         object.__getattribute__(self, "load")()
         
@@ -180,16 +177,16 @@ class UserControl(object):
 
 
     def refresh(self):
-        print("/!\\ Not implemented")
+        log.warning("/!\\ Not implemented")
 
     def _refresh(self):
-        print("refresh " + self.__class__.__name__ + "...")
+        log.info("refresh " + self.__class__.__name__ + "...")
         for c in self.childrens:
             c.refresh()
         object.__getattribute__(self, "refresh")
   
     def _unload(self):
-        print("unload " + self.__class__.__name__ + "...")
+        log.info("unload " + self.__class__.__name__ + "...")
         self.loaded = False
         for c in self.childrens:
             c.unload()
@@ -198,7 +195,7 @@ class UserControl(object):
         object.__getattribute__(self, "unload")
 
     def unload(self):
-        print("/!\\ Not implemented")
+        log.warning("/!\\ Not implemented")
 
     def reload(self):
         self.unload()
@@ -254,13 +251,13 @@ class UserControl(object):
             ac += ch.pins.controller
             an += ch.pins.none
 
-        print("~~~~~~~~~~~attach~~~~~~~~~")
-        print(self.__class__.__name__)
-        print(af)
-        print(ap)
-        print(ac)
-        print(an)
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        log.debug("~~~~~~~~~~~attach~~~~~~~~~")
+        log.debug(self.__class__.__name__)
+        log.debug(af)
+        log.debug(ap)
+        log.debug(ac)
+        log.debug(an)
+        log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
         cmds.formLayout(self.layout, edit=True,
                         attachForm=af,
@@ -286,7 +283,7 @@ class UserControl(object):
                 self.parentUC.addChildren(self)
                 self.color = copy(parent.color)
             except:
-                print(parent + " is unreadable")
+                log.warning(str(parent) + " is unreadable")
         if self.layout is not None and self.parentLay is not None:
             cmds.formLayout(self.layout, edit=True, parent=self.parentLay)
 
@@ -307,7 +304,7 @@ class UserControl(object):
         for c in self.command[event]:
             if c[0] is None:
                 # cmds.error("Event \"" + event + "\" call a function not implemented yet -WIP-")
-                print("Event \"" + event + "\" call a function not implemented yet -WIP-")
+                log.warning("Event \"" + event + "\" call a function not implemented yet -WIP-")
                 continue
             a = c[1] + args
             c[0](*a)
@@ -315,4 +312,4 @@ class UserControl(object):
     def __str__(self):
         return self.layout
 
-print("UC Loaded")
+log.info("UC Loaded")

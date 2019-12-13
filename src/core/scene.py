@@ -1,6 +1,8 @@
 import os
 from copy import copy
 
+import log
+
 from .item import Item
 from .version import Version
 
@@ -59,12 +61,12 @@ class Scene(Item):
 
     #TODO create on both server and local
     def make(self):
-        print(os.path.join(self.path.local, self.getAbsolutePath()))
-        print(self.relativePath)
+        log.debug(os.path.join(self.path.local, self.getAbsolutePath()))
+        log.debug(self.relativePath)
         for s in self._steps:
-            print("create folder " + self.getAbsolutePath() + s)
+            log.info("create folder " + self.getAbsolutePath() + s)
             p = os.path.join(self.path.local, self.getAbsolutePath(), s, Version._path)
-            print(p)
+            log.debug(p)
             if not os.path.isdir(p):
                 os.makedirs(p)
             #and inside create folder versions, and wip only for local

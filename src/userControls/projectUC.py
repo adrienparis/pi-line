@@ -2,6 +2,7 @@ import maya.cmds as cmds
 from pymel.all import Callback
 import os
 
+import log
 from .UC import *
 from .defineProjectUC import DefineProjectUC
 from .windowUC import WindowUC

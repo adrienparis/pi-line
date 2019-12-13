@@ -1,5 +1,7 @@
 import maya.cmds as cmds
 from pymel.all import *
+
+import log
 from .UC import *
 from tileUC import TileUC
 
@@ -35,10 +37,10 @@ class AssetTileUC(UserControl):
         self.runEvent("changeTile", selection)
 
     def newAssetCommand(self, c):
-        print("badly implemented")
+        log.warning("badly implemented")
         
-        print("Create New Asset")
-        print(c)
+        log.info("Create New Asset")
+        log.info(c)
     
         result = cmds.promptDialog(
                         title='New Asset - ' + c,

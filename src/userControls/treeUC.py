@@ -1,6 +1,7 @@
 from pymel.all import *
 import maya.cmds as cmds
 
+import log
 from .UC import *
 from .lineUC import *
 

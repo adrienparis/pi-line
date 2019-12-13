@@ -5,6 +5,7 @@ from pymel.all import *
 
 from .UC import *
 
+import log
 import core
 
 from .chooseStepUC import ChooseStepUC
@@ -148,7 +149,6 @@ class CupboardUC(UserControl):
         ac = []
         an = [] 
         for key, view in self.views.items():
-            print("===========" + key + "===========")
             af += view.pins.form
             ap += view.pins.position
             ac += view.pins.controller
@@ -194,7 +194,6 @@ class CupboardUC(UserControl):
         ac = []
         an = [] 
         for key, view in self.views.items():
-            print("===========" + key + "===========")
             af += view.pins.form
             ap += view.pins.position
             ac += view.pins.controller
@@ -219,7 +218,7 @@ class CupboardUC(UserControl):
 
     def changeProject(self, p):
         if p == None:
-            print("the project was not found")
+            log.error("the project was not found")
             # cmds.error("Project do not exist")
 
             return
@@ -230,7 +229,7 @@ class CupboardUC(UserControl):
         self.views["explorer"].reload()
 
     def changeSelection(self, selection):
-        print(selection)
+        log.debug(selection)
         if len(selection) == 1:
             self.selected = [selection[0]]
             self.views["detail"].changeScene(selection[0])
@@ -239,7 +238,7 @@ class CupboardUC(UserControl):
         self.views["version"].loadTree()
 
     def changeVersion(self, selection):
-        print(selection)
+        log.debug(selection)
         if len(selection) == 1:
             self.versSelected = [selection[0]]
 
@@ -257,7 +256,7 @@ class CupboardUC(UserControl):
 
     def commandDownload(self):
         if len(self.selected) > 0 and len(self.versSelected) > 0:
-            print(self.versSelected[0].step)
+            log.debug(self.versSelected[0].step)
             self.views["version"].refresh()
 
             self.versSelected[0].download()
@@ -277,12 +276,12 @@ class CupboardUC(UserControl):
 
     def commandOpen(self):
         if len(self.selected) > 0 and len(self.versSelected) > 0:
-            print("open version")
+            log.debug("open version")
         pass
 
     def commandPublish(self):
         if len(self.selected) > 0 and len(self.versSelected) > 0:
-            print("publish version " + str(self.versSelected[0].date))
+            log.debug("publish version " + str(self.versSelected[0].date))
             self.versSelected[0].publish()
             self.versSelected[0].setCurrent()
             self.versSelected[0].upload()
@@ -291,7 +290,7 @@ class CupboardUC(UserControl):
 
     def commandSaveVersion(self):
         if len(self.selected) > 0:
-            print("creating a new version")
+            log.debug("creating a new version")
             
             self.nvWin = WindowUC("New version")
             self.nvWin.ih = 100
@@ -313,10 +312,10 @@ class CupboardUC(UserControl):
         self.nvWin.close()
 
     def attachViewTo(self, layout, parent):
-        print("attach " + layout + " to " + self.views[parent].layout)
+        log.debug("attach " + layout + " to " + self.views[parent].layout)
         cmds.formLayout(layout, e=True, parent=self.views[parent].layout)
         cmds.formLayout(self.views[parent], edit=True,
                         attachForm=[(layout, 'top', 5),(layout, 'bottom', 5),(layout, 'left', 5), (layout, 'right', 5)])
 
 
-print("Cupboard Loaded")
+log.info("Cupboard Loaded")

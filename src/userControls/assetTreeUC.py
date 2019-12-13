@@ -1,3 +1,6 @@
+
+import log
+
 from .UC import UserControl
 from .lineUC import LineUC
 
@@ -32,5 +35,5 @@ class AssetTreeUC(UserControl):
 
 
 
-print("AssetTreeUC Loaded")
+log.info("AssetTreeUC Loaded")
 

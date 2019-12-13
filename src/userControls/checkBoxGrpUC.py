@@ -1,6 +1,7 @@
 import maya.cmds as cmds
 from pymel.all import *
 
+import log
 from .UC import *
 from .treeUC import TreeUC
 from core.user import User
@@ -12,10 +13,9 @@ class CheckBoxGrpUC(UserControl):
         self.items = {}
 
     def load(self):
-        print("loading checkBoxes")
         if self.layout is None or not cmds.formLayout(self.layout, q=True, exists=True):
             self.layout = cmds.formLayout(parent=self.parentLay)
-        print(self.parentLay)
+        log.debug(self.parentLay)
         for i in self.items:
             if "box" in self.items[i] and cmds.checkBox(self.items[i]["box"], q=True, exist=True):
                 cmds.deleteUI(lay)
@@ -43,7 +43,7 @@ class CheckBoxGrpUC(UserControl):
 
     def clearItems(self):
         for i in self.items:
-            print("delete " + self.items[i]["box"])
+            log.debug("delete " + self.items[i]["box"])
             cmds.deleteUI(self.items[i]["box"], ctl=True)
         self.items.clear()
         pass

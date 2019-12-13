@@ -19,7 +19,7 @@ class User():
         def loadPref(self):
             filepath = os.path.join(self.prefPath, "preferences.pil")
             if not os.path.isfile(filepath):
-                print("File path {} does not exist. Exiting...".format(filepath))
+                log.warning("user's preference file does not exist")
                 return
             #TODO create a try and catch to avoid a badly written config file
             with open(filepath) as fp:

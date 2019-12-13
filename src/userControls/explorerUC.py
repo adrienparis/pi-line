@@ -1,5 +1,6 @@
 import maya.cmds as cmds
 
+import log
 from .UC import *
 from .assetTileUC import *
 from .assetTreeUC import *
@@ -115,4 +116,4 @@ class ExplorerUC(UserControl):
         a.make()
         self.project.addAssetToCategory(a, a.category)
 
-print("ExplorerUC Loaded")
+log.debug("ExplorerUC Loaded")

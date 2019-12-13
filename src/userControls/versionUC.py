@@ -3,6 +3,7 @@ import datetime
 import maya.cmds as cmds
 from pymel.all import *
 
+import log
 from .UC import *
 from .treeUC import TreeUC
 from .checkBoxGrpUC import CheckBoxGrpUC

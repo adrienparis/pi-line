@@ -2,6 +2,8 @@ from imp import reload
 
 __all__ = ["UC", "assetTileUC", "assetTreeUC", "cupboardUC", "defineProjectUC", "detailUC", "explorerUC", "iconButtonUC", "importUC", "projectUC", "syncUC", "tileUC", "versInfonUC", "versionUC", "windowUC", "wipUC"]
 
+import log
+
 from UC import *
 from assetTileUC import AssetTileUC
 from assetTreeUC import AssetTreeUC
@@ -43,4 +45,4 @@ reload(treeUC)
 reload(versInfonUC)
 reload(versionUC)
 reload(wipUC)
-print("userControls Loaded")
+log.info("userControls Loaded")

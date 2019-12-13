@@ -1,5 +1,8 @@
 import maya.cmds as cmds
 from pymel.all import *
+
+import log
+
 from .UC import *
 from tileUC import TileUC
 
@@ -156,12 +159,12 @@ class TilesViewUC(UserControl):
 
     def reload(self):        
         for s in list(self.shelf.values()):
-            print(s[0])
+            log.debug(s[0])
             cmds.deleteUI(s[0])
 
 
         for c in self.assets.assets.keys():
-            print(c)
+            log.debug(c)
             scrollLayout = cmds.scrollLayout( c, parent=self.tabs,
                                         horizontalScrollBarThickness=160,
                                         verticalScrollBarThickness=16,
