@@ -13,6 +13,8 @@ class User():
             self.loadPref()
             self.assignPrefs()
             self.profil = None
+            #0=alpha 1=beta 2=releaseCandidate 3=release
+            self.tester = 3
             
         def loadPref(self):
             filepath = os.path.join(self.prefPath, "preferences.pil")

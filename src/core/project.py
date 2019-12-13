@@ -99,6 +99,7 @@ class Project(Item):
         return True
 
     def fetchAssets(self):
+        self.assets = {}
         relativePath = os.path.join(self.relativePath, Asset._path)
         lp = os.path.join(self.path.local, relativePath)
         sp = os.path.join(self.path.server, relativePath)
@@ -138,6 +139,7 @@ class Project(Item):
                     a.fetchVersions()
 
     def fetchShots(self):
+        self.shots = {}
         relativePath = os.path.join(self.relativePath, Shot._path)
         lp = os.path.join(self.path.local, relativePath)
         sp = os.path.join(self.path.server, relativePath)

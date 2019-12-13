@@ -7,10 +7,15 @@ from .item import Item
 
 class Version(Item):
     _path = "versions"
-    def __init__(self, scene, step, name=datetime.datetime.now().strftime("%Y%m%d%H%M%S")):
+    def __init__(self, scene, step, name=None):
         self.step = step
+        if name is None:
+            self.name = name=datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        else:
+            self.name = name
         Item.__init__(self, name, scene)
         self.date = datetime.datetime.strptime(self.name, '%Y%m%d%H%M%S')
+        print("init version", self.date)
         self.fileName = self.parent.fileName + "_" + self.step
         self.infoName = None
         self.wips = []
@@ -32,6 +37,7 @@ class Version(Item):
         templateFile = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir, "empty.ma")
         print(templateFile)
         print(os.path.join(wipPath, name))
+        self.onLocal = True
         shutil.copy(templateFile, os.path.join(wipPath, name))
 
 # TODO copy the server version to the local version
@@ -45,8 +51,6 @@ class Version(Item):
         ser = os.path.join(self.path.server, self.parent.getAbsolutePath(), self.step, Version._path, self.name)
         print(loc)
         print(ser)
-        shutil.move(last, loc)
-        os.makedirs(ser)
         copy_tree(ser, loc)
         self.onLocal = True
         print(self.name + " downloaded")
