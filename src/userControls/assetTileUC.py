@@ -118,4 +118,4 @@ class AssetTileUC(UserControl):
             for a in self.assets.assets[c]:
                 t = TileUC(a, self.shelf[c][1], self.sizeImage)
                 t.eventHandler("click", self.clickCommand)
-                t.create()
+                t.load()

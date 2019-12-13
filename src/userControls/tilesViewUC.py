@@ -146,7 +146,7 @@ class TilesViewUC(UserControl):
         #     self.layout = cmds.formLayout(parent=self.parentLay)
         # self.layout = cmds.formLayout('AssetTileUC', parent=self.parentLay)
 
-        
+        return
         self.tabs = cmds.tabLayout('Categories', snt=True, parent=self.layout)
         cmds.tabLayout(self.tabs, e=True, ntc=Callback(self.runEvent("newCategorie")))
         
@@ -179,4 +179,4 @@ class TilesViewUC(UserControl):
             for a in self.assets.assets[c]:
                 t = TileUC(a, self.shelf[c][1], self._sizeImage)
                 t.eventHandler("click", self.clickCommand)
-                t.create()
+                t.load()

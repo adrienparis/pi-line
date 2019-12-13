@@ -20,11 +20,9 @@ class TileUC(UserControl):
         self.name = asset.name + "Tile" + self.name
 
     def load(self):
-        # self.layout = cmds.formLayout(parent=self.parentLay, h=30)
         self.btnLay = cmds.iconTextButton(self.asset.name + "Tile", parent=self.layout, style=self.style, image1=getIcon(self.asset.image),
-                            label=self.asset.name, w=self.sizeImage, h=self.sizeImage, sic=True, c=Callback(self.clickCommand), bgc=self.selectedColor, ebg=self.selected)
+                            label=self.asset.name, w=self.sizeImage, h=self.sizeImage, sic=True, c=Callback(self.clickCommand), bgc=hexToRGB(self.color.highlight), ebg=self.selected)
         img = "denied"
-        # if self.asset.onServer and self.asset.onLocal:
         v = self.asset.getLastVersion()
         for x in self.asset.versions:
             log.debug(x.name + " " + x.fileName)
@@ -38,18 +36,6 @@ class TileUC(UserControl):
                 img = "upload"
         else:
             img = "new"
-        # if self.asset.onServer and not self.asset.onLocal:
-        #     img = "download"
-        # if not self.asset.onServer and self.asset.onLocal:
-        #     img = "upload"
-
-        # if self.asset.state == 0:        
-        #     img = "check"
-        # if self.asset.state == 1:        
-        #     img = "download"
-        # if self.asset.state == 2:        
-        #     img = "upload"
-
 
         self.iconLay = cmds.image(parent=self.layout, image=getIcon(img), bgc=hexToRGB(0x1d1d1d))
         cmds.formLayout(self.layout, edit=True,

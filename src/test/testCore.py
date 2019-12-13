@@ -86,7 +86,7 @@ def mainUI():
     # win.load()
 
     # cpBrd = UC.CupboardUC(win)
-    # cpBrd.create()
+    # cpBrd.load()
     # cpBrd.attach(top=UC.Attach.FORM, bottom=UC.Attach.FORM, left=UC.Attach.FORM, right=UC.Attach.FORM, margin=0)
 
     # win.applyAttach()

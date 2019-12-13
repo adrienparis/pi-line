@@ -76,7 +76,7 @@ class TreeUC(UserControl):
     
     def _loadFolder(self, fold, parent):
         elems = []
-        layout = cmds.formLayout(fold.name + "_layout", parent=parent, bgc=hexToRGB(0x111111 * (fold.deep % 2) + 0x555555), vis=(fold.isDeployed or fold.deep < 1))
+        layout = cmds.formLayout(fold.name + "_layout", parent=parent, bgc=hexToRGB(0x202020 * (fold.deep % 2) + self.color.background), vis=(fold.isDeployed or fold.deep < 1))
         for elem in fold.childrens:
             elem.line = LineUC(layout, elem.name, info=elem.info, icon=elem.image)
             elem.line.load()

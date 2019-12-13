@@ -2,6 +2,7 @@ import maya.cmds as cmds
 from pymel.all import *
 
 import log
+DEBUG = True
 from .UC import *
 
 class LineUC(UserControl):
@@ -21,7 +22,7 @@ class LineUC(UserControl):
 
     def load(self):
         # self.layout = cmds.formLayout(self.name, parent=self.parentLay, h=17, bgc=self.selectedColor, ebg=self.selected)
-        cmds.formLayout(self.layout, e=True, ebg=self.selected)
+        cmds.formLayout(self.layout, e=True, bgc=hexToRGB(self.color.highlight), ebg=self.selected)
         self.gmc = cmds.popupMenu("gmc  " + self.layout,parent=self.layout, button=1, pmc=Callback(self.clickCommand))
         self.gmcs = cmds.popupMenu("gmcs  " + self.layout, parent=self.layout, button=1, sh=True, pmc=Callback(self.clickCommandShift))
         self.nameTextLay = cmds.text(parent=self.layout, label=self.text, al="left")

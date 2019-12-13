@@ -11,7 +11,7 @@ import core
 from .chooseStepUC import ChooseStepUC
 from .defineProjectUC import *
 from .detailUC import *
-from .explorerUC import *
+from .sceneExplorerUC import *
 from .importUC import *
 from .projectUC import *
 from .syncUC import *
@@ -72,7 +72,7 @@ class CupboardUC(UserControl):
 
         #initialize the differents userControls and stock them in a dictionnary
         self.views["project"] = ProjectUC(self.horizontalFrame)
-        self.views["explorer"] = ExplorerUC(self.horizontalFrame)
+        self.views["explorer"] = SceneExplorerUC(self.horizontalFrame)
         self.views["detail"] = DetailUC(self.horizontalFrame)
         self.views["version"] = VersionUC(self.horizontalFrame)
         self.views["sync"] = SyncUC(self.horizontalFrame)

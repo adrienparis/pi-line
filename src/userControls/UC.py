@@ -8,15 +8,9 @@ class Color():
     def __init__(self):
         self.highlight = 0xf7567c
         self.main = 0x99e1d9
+        self.button = 0x99e1d9
         self.background = 0x5d576b
         self.text = 0xfffaf3
-
-
-class Attach():
-    NONE = 0
-    FORM = 1
-    POS = 2
-    CTRL = 3
 
 def getIcon(icon):
     if icon is not None:
@@ -111,11 +105,6 @@ class Attach(object):
             self.margin = [margin[0], margin[1], margin[2], margin[3]]
         self._attachs = attachs
 
-
-
-
-
-
 class UserControl(object):
     """ 
     Creating a userControl
@@ -144,14 +133,6 @@ class UserControl(object):
         self.loaded = False
         self.pins = Attach(self)
 
-
-    
-    def create(self):
-        self._load()
-
-    def load(self):
-        log.warning("Not implemented")
-
     def _load(self):
         log.info("loading " + self.__class__.__name__ + "...")
         if not self.loaded:
@@ -167,35 +148,38 @@ class UserControl(object):
             log.debug("create layout " + self.__class__.__name__ + str(UserControl.increment))
             UserControl.increment += 1
             self.loaded = True
+            object.__getattribute__(self, "load")()
         else:
-            log.debug("Editing UC")
+            log.warning(self.__class__.__name__ + "is already loaded")
             cmds.formLayout(self.layout, e=True, parent=self.parentLay, bgc=hexToRGB(self.color.background), h=self.height, w=self.width)
         
-        object.__getattribute__(self, "load")()
-        
         self.applyAttach()
-
-
-    def refresh(self):
-        log.warning("/!\\ Not implemented")
 
     def _refresh(self):
         log.info("refresh " + self.__class__.__name__ + "...")
         for c in self.childrens:
             c.refresh()
-        object.__getattribute__(self, "refresh")
+        object.__getattribute__(self, "refresh")()
   
     def _unload(self):
         log.info("unload " + self.__class__.__name__ + "...")
         self.loaded = False
         for c in self.childrens:
             c.unload()
-        if cmds.workspaceControl(self.name, exists=1):
-            cmds.deleteUI(self.name)
-        object.__getattribute__(self, "unload")
+        object.__getattribute__(self, "unload")()
+        if cmds.formLayout(self.layout, exists=1):
+            cmds.deleteUI(self.layout)
+        if cmds.workspaceControl(self.parentLay, exists=1):
+            cmds.deleteUI(self.parentLay)
+
+    def load(self):
+        log.warning("Not implemented")
+
+    def refresh(self):
+        log.warning("Not implemented")
 
     def unload(self):
-        log.warning("/!\\ Not implemented")
+        log.warning("Not implemented")
 
     def reload(self):
         self.unload()
@@ -220,7 +204,6 @@ class UserControl(object):
         """
         cmds.formLayout(self.layout, e=True, vis=vis)
 
-    # Attach.NONE, Attach.FORM, (Attach.POS, pos), (Attach.CTRL, ctrl), margin
     def attach(self, margin=(0), **kwargs):
         """Attach the form to his parent
 
@@ -251,13 +234,11 @@ class UserControl(object):
             ac += ch.pins.controller
             an += ch.pins.none
 
-        log.debug("~~~~~~~~~~~attach~~~~~~~~~")
-        log.debug(self.__class__.__name__)
         log.debug(af)
+        log.debug(an)
         log.debug(ap)
         log.debug(ac)
-        log.debug(an)
-        log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~")
+
 
         cmds.formLayout(self.layout, edit=True,
                         attachForm=af,
@@ -283,6 +264,7 @@ class UserControl(object):
                 self.parentUC.addChildren(self)
                 self.color = copy(parent.color)
             except:
+                print(parent)
                 log.warning(str(parent) + " is unreadable")
         if self.layout is not None and self.parentLay is not None:
             cmds.formLayout(self.layout, edit=True, parent=self.parentLay)

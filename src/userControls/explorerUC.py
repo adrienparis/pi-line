@@ -2,30 +2,29 @@ import maya.cmds as cmds
 
 import log
 from .UC import *
-from .assetTileUC import *
-from .assetTreeUC import *
+from .buttonsUC import *
 from .treeUC import *
+from .tilesViewUC import *
 from core.asset import Asset
 
 class ExplorerUC(UserControl):
 
     def __init__(self, parent):
         UserControl.__init__(self, parent)
-        self.project = None
-        self.assets = None
-        self.tabs = ""
+        self.dispTile = True
+        self.treeView = None
+        self.tileView = None
         
-    def switchAssetView(self, buttonTree, buttonTile, atrv, ativ):
-        # buttonTree = args[0].split(", ")[0]
-        # buttonTile = args[0].split(", ")[1]
-        # atrv = args[0].split(", ")[2]
-        # ativ = args[0].split(", ")[3]
-        switch = cmds.layout(ativ, q=True, vis=True)
+    def switchAssetView(self):
+        self.dispTile = not self.dispTile
+        # switch = cmds.layout(self.ativ.layout, q=True, vis=True)
 
-        cmds.layout(ativ, e=True, vis=not switch)
-        cmds.layout(atrv, e=True, vis=switch)
-        cmds.iconTextButton(buttonTile, e=True, vis=not switch)
-        cmds.iconTextButton(buttonTree, e=True, vis=switch)
+        self.tileView.visibility(self.dispTile)
+        self.treeView.visibility(not self.dispTile)
+        # cmds.layout(self.ativ.layout, e=True, vis=self.dispTile)
+        # cmds.layout(self.atrv.layout, e=True, vis=not self.dispTileswitch)
+        cmds.iconTextButton(self.buttonTile, e=True, vis=self.dispTile)
+        cmds.iconTextButton(self.buttonTree, e=True, vis=not self.dispTile)
 
     def assetDisplay(self, parent, a):    
         layout = cmds.formLayout('Assets', parent=parent, numberOfDivisions=100)
@@ -36,10 +35,10 @@ class ExplorerUC(UserControl):
         ativ.eventHandler("newScene", self.newScene)
 
         ativ.setAsset(a)
-        ativ.create()
         ativ.eventHandler("changeTile", self.runEvent, "changeItem")
         # atrv = AssetTreeUC(layout)
-        atrv = TreeUC(layout)
+        ativ = tilesViewUc(self)
+        atrv = TreeUC(self)
         for c in a.assets.keys():
             p = atrv.addFolder(c, None)
             for asset in a.assets[c]:
@@ -59,12 +58,13 @@ class ExplorerUC(UserControl):
                 atrv.addItem(asset.name, asset, parent=p, image=img)
         atrv.eventHandler("changeSelection", self.runEvent, "changeItem")
 
+
         atrv.load()
-        # atrv.create()
+        ativ.load()
         assetViewSwitchTree = cmds.iconTextButton('assetViewSwitchTree', parent=layout, style='iconOnly', image1=getIcon("list"), label='Switch view', w=22, h=22, sic=True, bgc=[0.45,0.45,0.45])
         assetViewSwitchTile = cmds.iconTextButton('assetViewSwitchTile', parent=layout, style='iconOnly', image1=getIcon("tiles"), label='Switch view', w=22, h=22, sic=True, bgc=[0.45,0.45,0.45])
-        cmds.iconTextButton(assetViewSwitchTile, e=True, c=Callback(self.switchAssetView, assetViewSwitchTree, assetViewSwitchTile, ativ.layout, atrv.layout), vis=False)
-        cmds.iconTextButton(assetViewSwitchTree, e=True, c=Callback(self.switchAssetView, assetViewSwitchTree, assetViewSwitchTile, ativ.layout, atrv.layout), vis=True)
+        cmds.iconTextButton(assetViewSwitchTile, e=True, c=Callback(self.switchAssetView), vis=False)
+        cmds.iconTextButton(assetViewSwitchTree, e=True, c=Callback(self.switchAssetView), vis=True)
         cmds.layout(ativ.layout, e=True, vis=True)
         cmds.layout(atrv.layout, e=True, vis=False)
         cmds.formLayout( layout, edit=True,
@@ -79,19 +79,43 @@ class ExplorerUC(UserControl):
 
         return layout
 
-
-
-    def setProject(self, project):
-        self.project = project
-
-    # def create(self):
-    #     # self.layout = cmds.formLayout('ExplorerUC', parent=self.parentLay, numberOfDivisions=100, bgc=hexToRGB(0x5d5d5d))
-        
-    #     self.reload()
-
     def load(self):
 
+
+
+        self.treeView = TreeUC(self)
+        self.tileView = TilesViewUC(self)
+        self.switchdisp = switchBtn(self, imageOn="list", imageOff="tiles", label="Switch view")
+        self.switchSelect = switchBtn(self, imageOn="selectAll", imageOff="deselectAll", label="Deselect all", labelOn="select all")
+
+        # self.switchTree = cmds.iconTextButton(parent=self.layout, style='iconOnly', image1=getIcon("list"), label='Switch view', w=22, h=22, sic=True, bgc=hexToRGB(self.color.button))
+        # self.switchTile = cmds.iconTextButton(parent=self.layout, style='iconOnly', image1=getIcon("tiles"), label='Switch view', w=22, h=22, sic=True, bgc=hexToRGB(self.color.button))
+        # self.switchSelAll = cmds.iconTextButton(parent=self.layout, style='iconOnly', image1=getIcon("deselectAll"), label='Deselect all', w=22, h=22, sic=True, bgc=hexToRGB(self.color.button))
+        # self.switchDeselAll = cmds.iconTextButton(parent=self.layout, style='iconOnly', image1=getIcon("selectAll"), label='Select all', w=22, h=22, sic=True, bgc=hexToRGB(self.color.button))
         
+        self.treeView.load()
+        self.tileView.load()
+        self.switchdisp.load()
+        self.switchSelect.load()
+
+
+
+
+        self.switchdisp.attach(top=Attach.FORM, bottom=Attach.NONE, left=Attach.FORM, right=Attach.NONE, margin=5)
+        self.switchSelect.attach(top=Attach.FORM, bottom=Attach.NONE, left=(Attach.CTRL, self.switchdisp), right=Attach.NONE, margin=5)
+        self.treeView.attach(top=(Attach.CTRL, self.switchdisp), bottom=Attach.FORM, left=Attach.FORM, right=Attach.FORM, margin=5)
+        self.tileView.attach(top=(Attach.CTRL, self.switchdisp), bottom=Attach.FORM, left=Attach.FORM, right=Attach.FORM, margin=5)
+
+
+
+
+
+
+
+
+
+
+        return
         if cmds.tabLayout(self.tabs, q=True, ex=True):
             cmds.deleteUI(self.tabs)
         self.tabs = cmds.tabLayout('SceneFold', parent=self.layout, sc=Callback(self.changeTab))
@@ -116,4 +140,4 @@ class ExplorerUC(UserControl):
         a.make()
         self.project.addAssetToCategory(a, a.category)
 
-log.debug("ExplorerUC Loaded")
+log.info("ExplorerUC Loaded")
