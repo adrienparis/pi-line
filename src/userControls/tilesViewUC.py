@@ -69,7 +69,7 @@ class TilesViewUC(UserControl):
         self.items = {}
         self.selecteds = []
         self.multiSelect = multiSelect
-        self.layout = ""
+        # self.layout = ""
         self.scrlLay = ""
 
     def load(self):
@@ -139,7 +139,9 @@ class TilesViewUC(UserControl):
     #     self.assets = assets
 
     def load(self):
-        self.layout = cmds.formLayout('AssetTileUC', parent=self.parentLay)
+        # if self.layout is None or not cmds.formLayout(self.layout, q=True, exists=True):
+        #     self.layout = cmds.formLayout(parent=self.parentLay)
+        # self.layout = cmds.formLayout('AssetTileUC', parent=self.parentLay)
 
         
         self.tabs = cmds.tabLayout('Categories', snt=True, parent=self.layout)

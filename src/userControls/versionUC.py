@@ -15,7 +15,7 @@ class VersionUC(UserControl):
 
     def __init__(self, parent):
         UserControl.__init__(self, parent)
-        self.bgc = 0x202020
+        # self.bgc = 0x202020
         self.scene = None
         self.versions = []
         self.listVersion = None
@@ -23,17 +23,14 @@ class VersionUC(UserControl):
         self.selectSteps = []
 
     def load(self):
-        print("version been load")
-        if self.layout is None or not cmds.formLayout(self.layout, q=True, exists=True):
-            self.layout = cmds.formLayout('VersionUC', parent=self.parentLay)
-        print(self.layout)
+        # if self.layout is None or not cmds.formLayout(self.layout, q=True, exists=True):
+        #     self.layout = cmds.formLayout('VersionUC', parent=self.parentLay)
+        # print(self.layout)
         if self.stepLay is None:
-            print("create CheckBoxGrpUC")
             self.stepLay = CheckBoxGrpUC(self)
         print(self.stepLay.parentUC)
         self.stepLay.load()
         if self.listVersion is None:
-            print("create TreeUC")
             self.listVersion = TreeUC(self)
 
         if self.scene is not None:
@@ -83,7 +80,7 @@ class VersionUC(UserControl):
 
     def loadTree(self):
         print("load version list")
-        print(self.listVersion)
+        # print(self.listVersion)
         if self.listVersion is None:
             return
         self.listVersion.deleteAllItemsFolders()

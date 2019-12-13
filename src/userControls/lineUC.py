@@ -13,11 +13,14 @@ class LineUC(UserControl):
         self.text = text
         self.info = info
         self.selected = False
+        self.height = 17
         self.name = self.text + "Line" + self.name + str(LineUC.increment)
+        self.bgc=0x5285a6
         LineUC.increment += 1
 
     def load(self):
-        self.layout = cmds.formLayout(self.name, parent=self.parentLay, h=17, bgc=self.selectedColor, ebg=self.selected)
+        # self.layout = cmds.formLayout(self.name, parent=self.parentLay, h=17, bgc=self.selectedColor, ebg=self.selected)
+        cmds.formLayout(self.layout, e=True, ebg=self.selected)
         self.gmc = cmds.popupMenu("gmc  " + self.layout,parent=self.layout, button=1, pmc=Callback(self.clickCommand))
         self.gmcs = cmds.popupMenu("gmcs  " + self.layout, parent=self.layout, button=1, sh=True, pmc=Callback(self.clickCommandShift))
         self.nameTextLay = cmds.text(parent=self.layout, label=self.text, al="left")

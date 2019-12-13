@@ -9,4 +9,4 @@ class ChooseStepUC(UserControl):
 
     def __init__(self, parent):
         UserControl.__init__(self, parent)
-        self.bgc = 0xa5cc59
+        # self.bgc = 0xa5cc59

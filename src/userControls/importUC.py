@@ -4,8 +4,8 @@ from pymel.all import *
 from .UC import *
 
 class ImportUC(UserControl):
-    def create(self):
-        self.layout = cmds.formLayout('ImportUC', parent=self.parentLay, w=130)
+    def load(self):
+        # self.layout = cmds.formLayout('ImportUC', parent=self.parentLay, w=130)
         self.pubLay = cmds.formLayout('pubLay', parent=self.layout, bgc=hexToRGB(0x373737))
         self.impLay = cmds.formLayout('impLay', parent=self.layout, bgc=hexToRGB(0x373737))
         self.publishBtn = cmds.button(parent=self.pubLay, label="Publish", c=Callback(self.runEvent, "publish"), bgc=hexToRGB(0x5d5d5d))

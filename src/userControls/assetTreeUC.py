@@ -8,7 +8,7 @@ class AssetTreeUC(UserControl):
         self.name = "assetTree" + self.name
 
     def load(self):
-        self.layout = cmds.formLayout(self.name, parent=self.parentLay, bgc=hexToRGB(0x505050))
+        # self.layout = cmds.formLayout(self.name, parent=self.parentLay, bgc=hexToRGB(0x505050))
         cat = ["char", "set", "props", "modules"]
         ast = ["plop", "plip", "plap"]
         pl = None

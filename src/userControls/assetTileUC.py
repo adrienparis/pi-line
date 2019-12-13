@@ -82,8 +82,8 @@ class AssetTileUC(UserControl):
         #TODO check if it's an Assets class
         self.assets = assets
 
-    def create(self):
-        self.layout = cmds.formLayout('AssetTileUC', parent=self.parentLay)
+    def load(self):
+        # self.layout = cmds.formLayout('AssetTileUC', parent=self.parentLay)
 
         
         self.tabs = cmds.tabLayout('Categories', snt=True, parent=self.layout)

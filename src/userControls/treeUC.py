@@ -69,7 +69,7 @@ class TreeUC(UserControl):
         self.items = {}
         self.selecteds = []
         self.multiSelect = multiSelect
-        self.layout = ""
+        # self.layout = ""
         self.scrlLay = ""
 
     
@@ -114,8 +114,8 @@ class TreeUC(UserControl):
         return layout
 
     def load(self):
-        if not cmds.formLayout(self.layout, q=True, ex=True):
-            self.layout = cmds.formLayout(parent=self.parentLay)
+        # if not cmds.formLayout(self.layout, q=True, ex=True):
+        #     self.layout = cmds.formLayout(parent=self.parentLay)
         
 
         if cmds.scrollLayout(self.scrlLay, q=True, ex=True):

@@ -17,8 +17,8 @@ class TileUC(UserControl):
         self.sizeImage = sizeImage
         self.name = asset.name + "Tile" + self.name
 
-    def create(self):
-        self.layout = cmds.formLayout(parent=self.parentLay, h=30)
+    def load(self):
+        # self.layout = cmds.formLayout(parent=self.parentLay, h=30)
         self.btnLay = cmds.iconTextButton(self.asset.name + "Tile", parent=self.layout, style=self.style, image1=getIcon(self.asset.image),
                             label=self.asset.name, w=self.sizeImage, h=self.sizeImage, sic=True, c=Callback(self.clickCommand), bgc=self.selectedColor, ebg=self.selected)
         img = "denied"

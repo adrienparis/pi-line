@@ -17,8 +17,10 @@ class ProjectUC(UserControl):
         UserControl.__init__(self, parent)
         self.projects = Project.fetchProjects()
         self.eventHandler("optionBtn", self.option)
-    def create(self):
-        self.layout = cmds.formLayout('ProjectUC', parent=self.parentLay)
+        # self.bgc = 0x00ff00
+    def load(self):
+        # print("loading project UC")
+        # self.layout = cmds.formLayout('ProjectUC', parent=self.parentLay)
         current_path = os.path.dirname(os.path.abspath(__file__)).replace('\\', '/')
         
         self.menu = cmds.optionMenu('droplist', parent=self.layout, w=20, cc=Callback(self.changeProject), bgc=hexToRGB(0x5d5d5d))

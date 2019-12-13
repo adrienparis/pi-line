@@ -55,17 +55,17 @@ class CupboardUC(UserControl):
                 self.setViewToHorizontal()
         # cmds.gridLayout(self.gridLay, e=True, numberOfColumns=nCol, numberOfRows=nRow, cw=sizeCol)
 
-    def create(self):
+    def load(self):
         
-        self.layout = cmds.formLayout('cupboardUC', parent=self.parentLay, bgc=hexToRGB(0x444444))
+        # self.layout = cmds.formLayout('cupboardUC', parent=self.parentLay, bgc=hexToRGB(0x444444))
 
         self.scrLay = cmds.scrollLayout( "cupBoardScrollLayout", parent=self.layout,
                                         horizontalScrollBarThickness=160,
                                         verticalScrollBarThickness=16,
                                         childResizable=True,
                                         cr=True)
-        self.horizontalFrame = cmds.formLayout('horizontalFrame', parent=self.scrLay, bgc=hexToRGB(0x3b3b3b), vis=True)
-        self.verticalFrame = cmds.formLayout('verticalFrame', parent=self.scrLay, bgc=hexToRGB(0x3b3b3b), vis=True, h=1000)
+        self.horizontalFrame = cmds.formLayout('horizontalFrame', parent=self.scrLay, vis=True)
+        self.verticalFrame = cmds.formLayout('verticalFrame', parent=self.scrLay, vis=True, h=1000)
 
         self.views = {}
 
@@ -143,11 +143,20 @@ class CupboardUC(UserControl):
         # self.views["import"].setParent(self.horizontalFrame)
 
         # self.applyAttach()
-
-        af = [] + self.views["project"].af + self.views["explorer"].af + self.views["detail"].af + self.views["version"].af + self.views["sync"].af + self.views["versInfo"].af + self.views["wip"].af + self.views["import"].af
-        ap = [] + self.views["project"].ap + self.views["explorer"].ap + self.views["detail"].ap + self.views["version"].ap + self.views["sync"].ap + self.views["versInfo"].ap + self.views["wip"].ap + self.views["import"].ap
-        ac = [] + self.views["project"].ac + self.views["explorer"].ac + self.views["detail"].ac + self.views["version"].ac + self.views["sync"].ac + self.views["versInfo"].ac + self.views["wip"].ac + self.views["import"].ac
-        an = [] + self.views["project"].an + self.views["explorer"].an + self.views["detail"].an + self.views["version"].an + self.views["sync"].an + self.views["versInfo"].an + self.views["wip"].an + self.views["import"].an
+        af = []
+        ap = []
+        ac = []
+        an = [] 
+        for key, view in self.views.items():
+            print("===========" + key + "===========")
+            af += view.pins.form
+            ap += view.pins.position
+            ac += view.pins.controller
+            an += view.pins.none
+        # af = [] + self.views["project"].pins.form + self.views["explorer"].pins.form  + self.views["detail"].pins.form  + self.views["version"].pins.form  + self.views["sync"].af + self.views["versInfo"].af + self.views["wip"].af + self.views["import"].af
+        # ap = [] + self.views["project"].ap + self.views["explorer"].ap + self.views["detail"].ap + self.views["version"].ap + self.views["sync"].ap + self.views["versInfo"].ap + self.views["wip"].ap + self.views["import"].ap
+        # ac = [] + self.views["project"].ac + self.views["explorer"].ac + self.views["detail"].ac + self.views["version"].ac + self.views["sync"].ac + self.views["versInfo"].ac + self.views["wip"].ac + self.views["import"].ac
+        # an = [] + self.views["project"].an + self.views["explorer"].an + self.views["detail"].an + self.views["version"].an + self.views["sync"].an + self.views["versInfo"].an + self.views["wip"].an + self.views["import"].an
 
         cmds.formLayout(self.verticalFrame, edit=True, vis=False)
         cmds.formLayout(self.horizontalFrame, edit=True, vis=True,
@@ -180,10 +189,20 @@ class CupboardUC(UserControl):
         # self.views["wip"].setParent(self.verticalFrame)
         # self.views["import"].setParent(self.verticalFrame)
 
-        af = [] + self.views["project"].af + self.views["explorer"].af + self.views["detail"].af + self.views["version"].af + self.views["sync"].af + self.views["versInfo"].af + self.views["wip"].af + self.views["import"].af
-        ap = [] + self.views["project"].ap + self.views["explorer"].ap + self.views["detail"].ap + self.views["version"].ap + self.views["sync"].ap + self.views["versInfo"].ap + self.views["wip"].ap + self.views["import"].ap
-        ac = [] + self.views["project"].ac + self.views["explorer"].ac + self.views["detail"].ac + self.views["version"].ac + self.views["sync"].ac + self.views["versInfo"].ac + self.views["wip"].ac + self.views["import"].ac
-        an = [] + self.views["project"].an + self.views["explorer"].an + self.views["detail"].an + self.views["version"].an + self.views["sync"].an + self.views["versInfo"].an + self.views["wip"].an + self.views["import"].an
+        af = []
+        ap = []
+        ac = []
+        an = [] 
+        for key, view in self.views.items():
+            print("===========" + key + "===========")
+            af += view.pins.form
+            ap += view.pins.position
+            ac += view.pins.controller
+            an += view.pins.none
+        # af = [] + self.views["project"].af + self.views["explorer"].af + self.views["detail"].af + self.views["version"].af + self.views["sync"].af + self.views["versInfo"].af + self.views["wip"].af + self.views["import"].af
+        # ap = [] + self.views["project"].ap + self.views["explorer"].ap + self.views["detail"].ap + self.views["version"].ap + self.views["sync"].ap + self.views["versInfo"].ap + self.views["wip"].ap + self.views["import"].ap
+        # ac = [] + self.views["project"].ac + self.views["explorer"].ac + self.views["detail"].ac + self.views["version"].ac + self.views["sync"].ac + self.views["versInfo"].ac + self.views["wip"].ac + self.views["import"].ac
+        # an = [] + self.views["project"].an + self.views["explorer"].an + self.views["detail"].an + self.views["version"].an + self.views["sync"].an + self.views["versInfo"].an + self.views["wip"].an + self.views["import"].an
 
         cmds.formLayout(self.horizontalFrame, edit=True, vis=False)
         cmds.formLayout(self.verticalFrame, edit=True, vis=True,

@@ -55,7 +55,7 @@ class ExplorerUC(UserControl):
                 else:
                     img = "new"
 
-                atrv.addItem(asset.name, asset, parent=p, image=img, info="Yesterday")
+                atrv.addItem(asset.name, asset, parent=p, image=img)
         atrv.eventHandler("changeSelection", self.runEvent, "changeItem")
 
         atrv.load()
@@ -83,12 +83,12 @@ class ExplorerUC(UserControl):
     def setProject(self, project):
         self.project = project
 
-    def create(self):
-        self.layout = cmds.formLayout('ExplorerUC', parent=self.parentLay, numberOfDivisions=100, bgc=hexToRGB(0x5d5d5d))
+    # def create(self):
+    #     # self.layout = cmds.formLayout('ExplorerUC', parent=self.parentLay, numberOfDivisions=100, bgc=hexToRGB(0x5d5d5d))
         
-        self.reload()
+    #     self.reload()
 
-    def reload(self):
+    def load(self):
 
         
         if cmds.tabLayout(self.tabs, q=True, ex=True):

@@ -18,7 +18,7 @@ class DefineProjectUC(UserControl):
             self.name = "workpath" + self.name
             self.path = "Q:/"
         def load(self):
-            self.layout = cmds.formLayout(self.name, parent=self.parentLay, bgc=hexToRGB(0x5a5a5a))
+            # self.layout = cmds.formLayout(self.name, parent=self.parentLay, bgc=hexToRGB(0x5a5a5a))
             self.pathLay = cmds.text(label=self.path, parent=self.layout, bgc=hexToRGB(0x9a9a9a), al="left")
             self.folderBtn = cmds.iconTextButton('folderBtn', parent=self.layout, style='iconOnly', image1=getIcon("folder"), label='Option', w=22, h=22, sic=True, bgc=hexToRGB(0x4a4a4a),
                                               c=Callback(self.selectDir))
@@ -43,7 +43,7 @@ class DefineProjectUC(UserControl):
             self.projName = ""
             self.projDim = ""
         def load(self):
-            self.layout = cmds.formLayout(self.name, parent=self.parentLay, bgc=hexToRGB(0x5a5a5a), h=30, w=10)
+            # self.layout = cmds.formLayout(self.name, parent=self.parentLay, bgc=hexToRGB(0x5a5a5a), h=30, w=10)
             self.labName = cmds.text(parent=self.layout, label="Project name : ")
             self.nameFld = cmds.textField(parent=self.layout, text="", bgc=hexToRGB(0xababab))
             self.labShrtNm = cmds.text(parent=self.layout, label="Short Name : ")
@@ -83,10 +83,10 @@ class DefineProjectUC(UserControl):
             self.path = ""
             self.projects = []
             self.folderMenuItem = []
-            self.layout = ""
+            # self.layout = ""
 
         def load(self):
-            self.layout = cmds.formLayout(self.name, parent=self.parentLay, bgc=hexToRGB(0x5a5a5a))
+            # self.layout = cmds.formLayout(self.name, parent=self.parentLay, bgc=hexToRGB(0x5a5a5a))
             self.button = cmds.button(parent=self.layout, label="Load", c=Callback(self.clickLoad), bgc=hexToRGB(0x5d5d5d))
             self.menu = cmds.optionMenu('droplist', parent=self.layout, w=150, cc=Callback(self.changeFolder), bgc=hexToRGB(0x7d7d7d))
             self.refresh()
@@ -127,7 +127,7 @@ class DefineProjectUC(UserControl):
             self.name = "info"
             self.project = None
         def load(self):
-            self.layout = cmds.formLayout(self.name, parent=self.parentLay, bgc=hexToRGB(0x7a7a7a), h=150)
+            # self.layout = cmds.formLayout(self.name, parent=self.parentLay, bgc=hexToRGB(0x7a7a7a), h=150)
             self.txName = cmds.text(parent=self.layout, label="test Name")
             self.txDim = cmds.text(parent=self.layout, label="test Dim")
             self.txServPath = cmds.text(parent=self.layout, label="test Server Path")
@@ -169,7 +169,7 @@ class DefineProjectUC(UserControl):
             self.name = "localPath" + self.name
             self.path = "S:/"
         def load(self):
-            self.layout = cmds.formLayout(self.name, parent=self.parentLay, bgc=hexToRGB(0x5a5a5a))
+            # self.layout = cmds.formLayout(self.name, parent=self.parentLay, bgc=hexToRGB(0x5a5a5a))
             self.pathLay = cmds.text(label=self.path, parent=self.layout, bgc=hexToRGB(0x9a9a9a), al="left")
             self.folderBtn = cmds.iconTextButton('folderBtn', parent=self.layout, style='iconOnly', image1=getIcon("folder"), label='Option', w=22, h=22, sic=True, bgc=hexToRGB(0x4a4a4a),
                                               c=Callback(self.selectDir))
@@ -198,7 +198,7 @@ class DefineProjectUC(UserControl):
             UserControl.__init__(self, parent)
             self.name = "saveExit" + self.name
         def load(self):
-            self.layout = cmds.formLayout(self.name, parent=self.parentLay, bgc=hexToRGB(0x5a5a5a))
+            # self.layout = cmds.formLayout(self.name, parent=self.parentLay, bgc=hexToRGB(0x5a5a5a))
             self.svBtn = cmds.button(parent=self.layout, label="Save and Exit", c=Callback(self.runEvent, "save"), bgc=hexToRGB(0x7d7d7d))
             self.calBtn = cmds.button(parent=self.layout, label="Cancel", c=Callback(self.runEvent, "cancel"), bgc=hexToRGB(0x7d7d7d))
 
@@ -218,7 +218,7 @@ class DefineProjectUC(UserControl):
             self.edition = True
             self.project = Project("new Project", Path())
         def load(self):
-            self.layout = cmds.formLayout(self.name, parent=self.parentLay, bgc=hexToRGB(0x5a5a5a))
+            # self.layout = cmds.formLayout(self.name, parent=self.parentLay, bgc=hexToRGB(0x5a5a5a))
             
             self.infoUC = DefineProjectUC.infoUC(self)
             self.pathUC = DefineProjectUC.workPathUC(self)
@@ -320,7 +320,7 @@ class DefineProjectUC(UserControl):
         self.selected = None
 
     def load(self):
-        UserControl.create(self)
+        # UserControl.create(self)
         cmds.formLayout(self.layout, e=True, bgc=hexToRGB(0x4a4a4a))
 
         self.views = {}
