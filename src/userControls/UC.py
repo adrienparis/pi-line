@@ -1,7 +1,21 @@
 import os
+from copy import copy
 from pymel.all import *
 import maya.cmds as cmds
 
+class Color():
+    def __init__(self):
+        self.highlight = 0xf7567c
+        self.main = 0x99e1d9
+        self.background = 0x5d576b
+        self.text = 0xfffaf3
+
+
+class Attach():
+    NONE = 0
+    FORM = 1
+    POS = 2
+    CTRL = 3
 
 def getIcon(icon):
     if icon is not None:
@@ -124,6 +138,7 @@ class UserControl(object):
         self.childrens = []
         self.command = {}
         self.name = "UC"
+        self.color = Color()
         self.bgc = 0xa00000
         self.width = 30
         self.height = 30
@@ -259,6 +274,7 @@ class UserControl(object):
         if parent is None:
             self.parentLay = parent
             self.parentUC = parent
+            self.color = Color()
         elif type(parent) is str or type(parent) is unicode:
             self.parentLay = parent
         else:
@@ -268,6 +284,7 @@ class UserControl(object):
                 self.parentUC = parent
                 self.parentLay = parent.layout
                 self.parentUC.addChildren(self)
+                self.color = copy(parent.color)
             except:
                 print(parent + " is unreadable")
         if self.layout is not None and self.parentLay is not None:
