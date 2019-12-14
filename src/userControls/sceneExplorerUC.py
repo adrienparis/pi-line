@@ -48,14 +48,16 @@ class SceneExplorerUC(UserControl):
 
 
 
-        for c in self.project.assets.keys():
-            p = self.explorerAssets.addFolder(c, None)
-            for asset in self.project.assets[c]:              
-                img = "denied"
-                v = asset.getLastVersion()
-                img = self.getImage(v)
-                self.explorerAssets.addItem(asset.name, asset, parent=p, image=img)
-        self.explorerAssets.eventHandler("changeSelection", self.runEvent, "changeItem")
+        if self.project is not None:
+
+            for c in self.project.assets.keys():
+                p = self.explorerAssets.addFolder(c, None)
+                for asset in self.project.assets[c]:              
+                    img = "denied"
+                    v = asset.getLastVersion()
+                    img = self.getImage(v)
+                    self.explorerAssets.addItem(asset.name, asset, parent=p, image=img)
+            self.explorerAssets.eventHandler("changeSelection", self.runEvent, "changeItem")
 
 
 

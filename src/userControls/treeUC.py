@@ -2,15 +2,16 @@ from pymel.all import *
 import maya.cmds as cmds
 
 import log
+from browsing import Browsing
 from .UC import *
 from .lineUC import *
 
-class TreeUC(UserControl):
+class TreeUC(UserControl, Browsing):
     class _item():
-        def __init__(self, name, elem, image=None, info=""):
+        def __init__(self, name, elem, icon=None, info=""):
             self.name = name
             self.elem = elem
-            self.image = image
+            self.icon = icon
             self.info = info
             self.deep = 0
             self.parent = None
@@ -27,17 +28,17 @@ class TreeUC(UserControl):
         def __init__(self, name, elem):
             TreeUC._item.__init__(self, name, elem)
             self.childrens = []
-            self.image = "arrowBottom"
+            self.icon = "arrowBottom"
             self.isDeployed = True
             self.area = None
 
         def deploying(self, val):
             self.isDeployed = val
             if val:
-                self.image = "arrowBottom"
+                self.icon = "arrowBottom"
             else:
-                self.image = "arrowRight"
-            self.line.icon = self.image
+                self.icon = "arrowRight"
+            self.line.icon = self.icon
             self.line.refresh()
             cmds.formLayout(self.area, e=True, vis=self.isDeployed)
 
@@ -63,8 +64,12 @@ class TreeUC(UserControl):
 
     
     def __init__(self, parent, multiSelect=True):
-        UserControl.__init__(self, parent)
+        super(TreeUC, self).__init__(parent=parent)
+        # UserControl.__init__(self, parent)
+        # Browsing.__init__(self)
         self.name = "Tree" + self.name
+
+
         self.root = TreeUC._folder(".", None)
         self.folders = {}
         self.items = {}
@@ -73,16 +78,17 @@ class TreeUC(UserControl):
         # self.layout = ""
         self.scrlLay = ""
 
+
     
     def _loadFolder(self, fold, parent):
         elems = []
-        layout = cmds.formLayout(fold.name + "_layout", parent=parent, bgc=hexToRGB(0x202020 * (fold.deep % 2) + self.color.background), vis=(fold.isDeployed or fold.deep < 1))
+        layout = cmds.formLayout(fold.name + "_layout", parent=parent, bgc=hexToRGB(0x202020 * (fold.deep % 2) + self.color.main), vis=(fold.isDeployed or fold.deep < 1))
         for elem in fold.childrens:
             elem.line = LineUC(layout, elem.name, info=elem.info, icon=elem.image)
             elem.line.load()
             elems.append(elem.line.layout)
             # l.attach(top=(Attach.CTRL, pl), bottom=Attach.NONE, left=(Attach.POS, 15), right=Attach.FORM)
-            if elem.__class__ is TreeUC._folder:
+            if elem.__class__ is Browsing.folder:
                 elems.append(self._loadFolder(elem, layout))
                 elem.area = elems[-1]
                 elem.line.eventHandler("click", self._clickFolder, elem)

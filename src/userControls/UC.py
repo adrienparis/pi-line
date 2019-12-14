@@ -132,6 +132,7 @@ class UserControl(object):
         self.initHeight = 30
         self.loaded = False
         self.pins = Attach(self)
+        super(UserControl, self).__init__()
 
     def _load(self):
         log.info("loading " + self.__class__.__name__ + "...")

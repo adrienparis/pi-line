@@ -15,10 +15,12 @@ class ProjectUC(UserControl):
     projects = []
 
     def __init__(self, parent):
-        UserControl.__init__(self, parent)
+        # UserControl.__init__(self, parent)
         self.projects = Project.fetchProjects()
         self.eventHandler("optionBtn", self.option)
         # self.bgc = 0x00ff00
+        super(ProjectUC, self).__init__(parent=parent)
+
     def load(self):
         # print("loading project UC")
         # self.layout = cmds.formLayout('ProjectUC', parent=self.parentLay)

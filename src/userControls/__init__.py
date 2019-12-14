@@ -8,6 +8,7 @@ from UC import *
 from assetTileUC import AssetTileUC
 from assetTreeUC import AssetTreeUC
 from buttonsUC import *
+from browsing import Browsing
 from cupboardUC import CupboardUC
 from checkBoxGrpUC import CheckBoxGrpUC
 from chooseStepUC import ChooseStepUC
@@ -27,7 +28,8 @@ from versionUC import VersionUC
 from windowUC import WindowUC
 from wipUC import WipUC
 
-# reload(UC)
+reload(UC)
+reload(browsing)
 reload(windowUC)
 reload(cupboardUC)
 reload(checkBoxGrpUC)
@@ -50,3 +52,27 @@ reload(versInfonUC)
 reload(versionUC)
 reload(wipUC)
 log.info("userControls Loaded")
+
+from UC import *
+from assetTileUC import AssetTileUC
+from assetTreeUC import AssetTreeUC
+from buttonsUC import *
+from browsing import Browsing
+from cupboardUC import CupboardUC
+from checkBoxGrpUC import CheckBoxGrpUC
+from chooseStepUC import ChooseStepUC
+from defineProjectUC import DefineProjectUC
+from detailUC import DetailUC
+from explorerUC import ExplorerUC
+from importUC import ImportUC
+from lineUC import LineUC
+from projectUC import ProjectUC
+from sceneExplorerUC import SceneExplorerUC
+from syncUC import SyncUC
+from tileUC import TileUC
+from tilesViewUC import TilesViewUC
+from treeUC import TreeUC
+from versInfonUC import VersInfonUC
+from versionUC import VersionUC
+from windowUC import WindowUC
+from wipUC import WipUC
