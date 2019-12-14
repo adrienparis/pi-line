@@ -5,7 +5,6 @@ class Path(object):
         self.local = None
         self._local = local
         self.server = server
-        
 
     def __setattr__(self, name, value):
         if name == "local":

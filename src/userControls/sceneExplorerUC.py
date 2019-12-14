@@ -16,6 +16,19 @@ class SceneExplorerUC(UserControl):
     def setProject(self, project):
         self.project = project
 
+    def getImage(self, v):
+        img = "denied"
+        if v is not None:
+            if v.onServer and v.onLocal:
+                img = "check"
+            elif v.onServer and not v.onLocal:
+                img = "download"
+            elif not v.onServer and v.onLocal:
+                img = "upload"
+        else:
+            img = "new"
+        return img
+        
     def load(self):
 
         self.tabs = cmds.tabLayout('SceneFold', parent=self.layout, sc=Callback(self.changeTab))
@@ -32,6 +45,22 @@ class SceneExplorerUC(UserControl):
 
         self.explorerAssets.color.background = 0xbada55
         self.explorerShots.color.background = 0xbada55
+
+
+
+        for c in self.project.assets.keys():
+            p = self.explorerAssets.addFolder(c, None)
+            for asset in self.project.assets[c]:              
+                img = "denied"
+                v = asset.getLastVersion()
+                img = self.getImage(v)
+                self.explorerAssets.addItem(asset.name, asset, parent=p, image=img)
+        self.explorerAssets.eventHandler("changeSelection", self.runEvent, "changeItem")
+
+
+
+
+
 
         self.explorerAssets.load()
         self.explorerShots.load()

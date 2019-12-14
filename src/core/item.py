@@ -1,6 +1,6 @@
 import os
 
-from .path import Path
+from .path import *
 
 class Item():
     _path = ""
@@ -41,3 +41,4 @@ class Item():
         if self.parent is not None:
             return os.path.join(self.parent.getAbsolutePath(), self.relativePath)
         return self.relativePath
+        

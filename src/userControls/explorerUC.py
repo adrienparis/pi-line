@@ -8,23 +8,59 @@ from .tilesViewUC import *
 from core.asset import Asset
 
 class ExplorerUC(UserControl):
+    class _item():
+        def __init__(self, name, elem, image=None, icon=None, info=""):
+            self.name = name
+            self.elem = elem
+            self.image = image
+            self.icon = icon
+            self.info = info
+            self.parent = None
+            self.tile = None
+            self.selected = False
+            
+        def setParent(self, parent):
+            if self.parent is not None:
+                self.parent.removeChildren(self)
+            parent.addChildren(self)
+
+    class _folder(_item):
+        def __init__(self, name, elem):
+            ExplorerUC._item.__init__(self, name, elem)
+            self.childrens = []
+            # self.image = "arrowBottom"
+            # self.isDeployed = True
+            self.area = None
+
+        def addChildren(self, child):
+            self.childrens.append(child)
+            child.parent = self
+
+        def removeChildren(self, child):
+            self.childrens.remove(child)
+            child.parent = None
+        
 
     def __init__(self, parent):
         UserControl.__init__(self, parent)
         self.dispTile = True
         self.treeView = None
         self.tileView = None
+        self.root = TreeUC._folder(".", None)
+        self.folders = {}
+        self.items = {}
+        self.selecteds = []
         
-    def switchAssetView(self):
-        self.dispTile = not self.dispTile
+    def switchView(self, val):
+        self.dispTile = val
         # switch = cmds.layout(self.ativ.layout, q=True, vis=True)
 
         self.tileView.visibility(self.dispTile)
         self.treeView.visibility(not self.dispTile)
         # cmds.layout(self.ativ.layout, e=True, vis=self.dispTile)
         # cmds.layout(self.atrv.layout, e=True, vis=not self.dispTileswitch)
-        cmds.iconTextButton(self.buttonTile, e=True, vis=self.dispTile)
-        cmds.iconTextButton(self.buttonTree, e=True, vis=not self.dispTile)
+
+            
 
     def assetDisplay(self, parent, a):    
         layout = cmds.formLayout('Assets', parent=parent, numberOfDivisions=100)
@@ -37,23 +73,6 @@ class ExplorerUC(UserControl):
         ativ.setAsset(a)
         ativ.eventHandler("changeTile", self.runEvent, "changeItem")
         # atrv = AssetTreeUC(layout)
-        ativ = tilesViewUc(self)
-        atrv = TreeUC(self)
-        for c in a.assets.keys():
-            p = atrv.addFolder(c, None)
-            for asset in a.assets[c]:
-                
-                img = "denied"
-                v = asset.getLastVersion()
-                if v is not None:
-                    if v.onServer and v.onLocal:
-                        img = "check"
-                    elif v.onServer and not v.onLocal:
-                        img = "download"
-                    elif not v.onServer and v.onLocal:
-                        img = "upload"
-                else:
-                    img = "new"
 
                 atrv.addItem(asset.name, asset, parent=p, image=img)
         atrv.eventHandler("changeSelection", self.runEvent, "changeItem")
@@ -93,6 +112,10 @@ class ExplorerUC(UserControl):
         # self.switchSelAll = cmds.iconTextButton(parent=self.layout, style='iconOnly', image1=getIcon("deselectAll"), label='Deselect all', w=22, h=22, sic=True, bgc=hexToRGB(self.color.button))
         # self.switchDeselAll = cmds.iconTextButton(parent=self.layout, style='iconOnly', image1=getIcon("selectAll"), label='Select all', w=22, h=22, sic=True, bgc=hexToRGB(self.color.button))
         
+
+
+
+
         self.treeView.load()
         self.tileView.load()
         self.switchdisp.load()
@@ -100,7 +123,7 @@ class ExplorerUC(UserControl):
 
 
 
-
+        self.switchdisp.eventHandler("switch", self.switchView)
         self.switchdisp.attach(top=Attach.FORM, bottom=Attach.NONE, left=Attach.FORM, right=Attach.NONE, margin=5)
         self.switchSelect.attach(top=Attach.FORM, bottom=Attach.NONE, left=(Attach.CTRL, self.switchdisp), right=Attach.NONE, margin=5)
         self.treeView.attach(top=(Attach.CTRL, self.switchdisp), bottom=Attach.FORM, left=Attach.FORM, right=Attach.FORM, margin=5)
@@ -140,4 +163,33 @@ class ExplorerUC(UserControl):
         a.make()
         self.project.addAssetToCategory(a, a.category)
 
+
+    def deleteAllItemsFolders(self):
+        self.folders = {}
+        self.items = {}
+        self.root = TreeUC._folder(".", None)
+
+    def addFolder(self, name, elem, parent=None):
+        f = ExplorerUC._folder(name, elem)
+
+        if parent is None:
+            f.setParent(self.root)
+            f.deep = 1
+        else:
+            f.setParent(parent)
+            f.deep = f.parent.deep + 1
+        self.folders[elem] = f
+        return f
+    
+    def addItem(self, name, elem, parent=None, image=None, info=""):
+        i = ExplorerUC._item(name, elem, image=image, info=info)
+
+        if parent is None:
+            i.setParent(self.root)
+        else:
+            i.setParent(parent)
+            i.deep = i.parent.deep + 1
+        self.items[elem] = i
+        return i
+     
 log.info("ExplorerUC Loaded")
