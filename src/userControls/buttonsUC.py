@@ -39,8 +39,8 @@ class switchBtn(UserControl):
         self.refresh()
 
     def load(self):
-        self.btnOn = cmds.iconTextButton(parent=self.layout, style='iconOnly', image1=getIcon(self.imageOff), label=self.labelOn, w=22, h=22, sic=True, bgc=hexToRGB(self.color.button),  c=Callback(self.switchTo, True))
-        self.btnOff = cmds.iconTextButton(parent=self.layout, style='iconOnly', image1=getIcon(self.imageOn), label=self.label, w=22, h=22, sic=True, bgc=hexToRGB(self.color.button),  c=Callback(self.switchTo, False))
+        self.btnOn = cmds.iconTextButton(parent=self.layout, style='iconOnly', image1=getIcon(self.imageOff), label=self.labelOn, w=22, h=22, sic=True, bgc=hexToRGB(self.color.button),  c=Callback(self.switchTo, False))
+        self.btnOff = cmds.iconTextButton(parent=self.layout, style='iconOnly', image1=getIcon(self.imageOn), label=self.label, w=22, h=22, sic=True, bgc=hexToRGB(self.color.button),  c=Callback(self.switchTo, True))
         
         cmds.formLayout( self.layout, edit=True,
                         attachForm=[(self.btnOn, 'top', 0), (self.btnOn, 'bottom', 0), (self.btnOn, 'left', 0), (self.btnOn, 'right', 0),

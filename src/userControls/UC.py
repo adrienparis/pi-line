@@ -138,7 +138,7 @@ class UserControl(object):
         if not self.loaded:
             log.debug("loading UC")
             if self.parentLay is None:
-                log.debug("parent layout doesnot exist")
+                log.debug("parent layout does not exist")
                 if cmds.workspaceControl(self.name, exists=1):
                     log.debug("delete " + self.name)
                     cmds.deleteUI(self.name)
@@ -262,10 +262,9 @@ class UserControl(object):
                 self.parentUC = parent
                 self.parentLay = parent.layout
                 self.parentUC.addChildren(self)
-                self.color = copy(parent.color)
+                self.color = parent.color
             except:
-                print(parent)
-                log.warning(str(parent) + " is unreadable")
+                log.error(str(parent) + " of type " + str(type(parent)) + " is unreadable")
         if self.layout is not None and self.parentLay is not None:
             cmds.formLayout(self.layout, edit=True, parent=self.parentLay)
 
@@ -292,6 +291,6 @@ class UserControl(object):
             c[0](*a)
 
     def __str__(self):
-        return self.layout
+        return str(self.layout)
 
 log.info("UC Loaded")
