@@ -15,11 +15,12 @@ class ProjectUC(UserControl):
     projects = []
 
     def __init__(self, parent):
-        # UserControl.__init__(self, parent)
+        UserControl.__init__(self, parent)
+        # super(ProjectUC, self).__init__(parent=parent)
         self.projects = Project.fetchProjects()
+        print(self.projects)
         self.eventHandler("optionBtn", self.option)
         # self.bgc = 0x00ff00
-        super(ProjectUC, self).__init__(parent=parent)
 
     def load(self):
         # print("loading project UC")
@@ -29,8 +30,10 @@ class ProjectUC(UserControl):
         self.menu = cmds.optionMenu('droplist', parent=self.layout, w=20, cc=Callback(self.changeProject), bgc=hexToRGB(0x5d5d5d))
         self.projectsLabel = []
         self.projectsLabel.append(cmds.menuItem( "projEmpty", label='-' ))
+        print(self.projects)
         for i, p in enumerate(self.projects):
-            self.projectsLabel.append(cmds.menuItem( "projName_" + str(i) ,label=p.name ))
+            log.info(p.name)
+            self.projectsLabel.append(cmds.menuItem( "projName_" + str(i), label=p.name ))
 
         self.optionBtn = cmds.iconTextButton('optionBtn', parent=self.layout, style='iconOnly', image1=getIcon("gear"), label='Option', w=22, h=22, sic=True, bgc=hexToRGB(0x5d5d5d),
                                               c=Callback(self.runEvent, "optionBtn"))
@@ -76,6 +79,7 @@ class ProjectUC(UserControl):
     
     def refresh(self):
         self.projects = Project.fetchProjects()
+        print(self.projects)
         cmds.deleteUI(self.menu)
         self.menu = cmds.optionMenu('droplist', parent=self.layout, w=20, cc=Callback(self.changeProject), bgc=hexToRGB(0x5d5d5d))
         self.projectsLabel = []

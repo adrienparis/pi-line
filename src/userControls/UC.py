@@ -6,11 +6,16 @@ import log
 
 class Color():
     def __init__(self):
-        self.highlight = 0xf7567c
-        self.main = 0x99e1d9
-        self.button = 0x99e1d9
-        self.background = 0x5d576b
-        self.text = 0xfffaf3
+        # self.highlight = 0xe7466c
+        # self.main = 0x99e1d9
+        # self.button = 0x99e1d9
+        # self.background = 0x5d576b
+        # self.text = 0xfffaf3
+        self.highlight = 0xe7466c
+        self.main = 0x404040
+        self.button = 0x606060
+        self.background = 0x303030
+        self.text = 0x5285a6
 
 def getIcon(icon):
     if icon is not None:
@@ -103,7 +108,7 @@ class Attach(object):
             self.margin = [margin[0], margin[0], margin[1], margin[1]]
         if type(margin) is tuple and len(margin) == 4:
             self.margin = [margin[0], margin[1], margin[2], margin[3]]
-        self._attachs = attachs
+        self._attachs.update(attachs)
 
 class UserControl(object):
     """ 
@@ -117,6 +122,7 @@ class UserControl(object):
         
         :parent: str formlayout
         """
+        # super(UserControl, self).__init__()
         self.parentUC = None
         self.parentLay = None
         self.layout = None
@@ -126,41 +132,53 @@ class UserControl(object):
         self.name = "UC"
         self.color = Color()
         self.bgc = 0xa00000
-        self.width = 30
-        self.height = 30
+        self.visible = True
+        self.width = -1
+        self.height = -1
         self.initWidth = 30
         self.initHeight = 30
         self.loaded = False
         self.pins = Attach(self)
-        super(UserControl, self).__init__()
 
     def _load(self):
+        if self.name == "UC":
+            name = self.__class__.__name__ + str(UserControl.increment)
+            UserControl.increment += 1
+        else:
+            name = self.name
         log.info("loading " + self.__class__.__name__ + "...")
         if not self.loaded:
-            log.debug("loading UC")
             if self.parentLay is None:
-                log.debug("parent layout does not exist")
-                if cmds.workspaceControl(self.name, exists=1):
-                    log.debug("delete " + self.name)
-                    cmds.deleteUI(self.name)
-                self.parentLay = cmds.workspaceControl(self.name, retain=False, iw=self.initWidth, ih=self.initHeight, floating=True)
-            self.layout = cmds.formLayout(self.__class__.__name__ + str(UserControl.increment) , parent=self.parentLay, bgc=hexToRGB(self.color.background), h=self.height, w=self.width)
-            
-            log.debug("create layout " + self.__class__.__name__ + str(UserControl.increment))
-            UserControl.increment += 1
+                if cmds.workspaceControl(name, exists=1):
+                    cmds.deleteUI(name)
+                self.parentLay = cmds.workspaceControl(name, retain=False, iw=self.initWidth, ih=self.initHeight, floating=True)
+            if self.height == -1 or self.width == -1:
+                self.layout = cmds.formLayout(name , parent=self.parentLay, bgc=hexToRGB(self.color.background), vis=self.visible)
+            elif not self.height == -1 and self.width == -1:
+                self.layout = cmds.formLayout(name , parent=self.parentLay, bgc=hexToRGB(self.color.background), vis=self.visible, h=self.height)
+            elif self.height == -1 and not self.width == -1:
+                self.layout = cmds.formLayout(name , parent=self.parentLay, bgc=hexToRGB(self.color.background), vis=self.visible, w=self.width)
+            else:
+                self.layout = cmds.formLayout(name , parent=self.parentLay, bgc=hexToRGB(self.color.background), h=self.height, w=self.width, vis=self.visible)
             self.loaded = True
             object.__getattribute__(self, "load")()
         else:
-            log.warning(self.__class__.__name__ + "is already loaded")
-            cmds.formLayout(self.layout, e=True, parent=self.parentLay, bgc=hexToRGB(self.color.background), h=self.height, w=self.width)
+            log.warning(name + " is already loaded")
+            if self.height == -1 or self.width == -1:
+                cmds.formLayout(self.layout, e=True, parent=self.parentLay, bgc=hexToRGB(self.color.background))
+            else:
+                cmds.formLayout(self.layout, e=True, parent=self.parentLay, bgc=hexToRGB(self.color.background), h=self.height, w=self.width)
         
+        if self.parentUC is not None:
+            self.parentUC.applyAttach()
         self.applyAttach()
 
     def _refresh(self):
-        log.info("refresh " + self.__class__.__name__ + "...")
-        for c in self.childrens:
-            c.refresh()
-        object.__getattribute__(self, "refresh")()
+        if self.loaded:
+            log.info("refresh " + self.__class__.__name__ + "...")
+            for c in self.childrens:
+                c.refresh()
+            object.__getattribute__(self, "refresh")()
   
     def _unload(self):
         log.info("unload " + self.__class__.__name__ + "...")
@@ -172,29 +190,30 @@ class UserControl(object):
             cmds.deleteUI(self.layout)
         if cmds.workspaceControl(self.parentLay, exists=1):
             cmds.deleteUI(self.parentLay)
+        self.loaded = False
 
     def load(self):
-        log.warning("Not implemented")
+        log.warning("[load] method is not implemented")
 
     def refresh(self):
-        log.warning("Not implemented")
+        log.warning("[refresh] method is not implemented")
 
     def unload(self):
-        log.warning("Not implemented")
+        log.warning("[unload] method is not implemented")
 
     def reload(self):
+        log.info("reload " + self.__class__.__name__ + "...")
         self.unload()
         self.load()
 
 
     def __getattribute__(self,name):
-        # print(object.__getattribute__(self, "__class__").__name__ + "\t get attr : " + name)
         if name == 'load':
             return object.__getattribute__(self, "_load")
         elif name == 'refresh':
             return object.__getattribute__(self, "_refresh")
         elif name == 'unload':
-            return object.__getattribute__(self, "_refresh")
+            return object.__getattribute__(self, "_unload")
         else:
             return object.__getattribute__(self, name)
 
@@ -203,7 +222,9 @@ class UserControl(object):
 
         :vis: boolean True=Visible False=Invisible
         """
-        cmds.formLayout(self.layout, e=True, vis=vis)
+        self.visible = vis
+        if self.loaded:
+            cmds.formLayout(self.layout, e=True, vis=vis)
 
     def attach(self, margin=(0), **kwargs):
         """Attach the form to his parent
@@ -234,18 +255,8 @@ class UserControl(object):
             ap += ch.pins.position
             ac += ch.pins.controller
             an += ch.pins.none
-
-        log.debug(af)
-        log.debug(an)
-        log.debug(ap)
-        log.debug(ac)
-
-
-        cmds.formLayout(self.layout, edit=True,
-                        attachForm=af,
-                        attachPosition=ap,
-                        attachControl=ac,
-                        attachNone=an)
+        if not(af == [] and af == [] and af == [] and af == []):
+            cmds.formLayout(self.layout, edit=True,attachForm=af,attachPosition=ap,attachControl=ac,attachNone=an)
 
 
     def setParent(self, parent):

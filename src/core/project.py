@@ -277,6 +277,7 @@ class Project(Item):
     # [name, diminutive, pathServer, pathLocal]
     @staticmethod
     def fetchProjects():
+        log.info("fetch projects")
         ps = []
 
         user = User()
@@ -290,7 +291,8 @@ class Project(Item):
             for line in fp:
                 # l = ast.literal_eval(line.replace("\\", "/"))
                 l = line.split(";")
-                l.pop()
+                # l.pop()
+                print(line)
                 if len(l) >= 3:
                     p = Project(l[0], Path(l[2]))
                     p.diminutive = l[1]
@@ -299,6 +301,8 @@ class Project(Item):
                         p.path.local = l[3]
                     p.readInfo()
                     ps.append(p)
+                    log.debug("fetch project", ps)
+        log.debug("fetch project", ps)
         return ps
 
     @staticmethod

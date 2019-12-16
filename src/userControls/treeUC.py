@@ -7,186 +7,91 @@ from .UC import *
 from .lineUC import *
 
 class TreeUC(UserControl, Browsing):
-    class _item():
-        def __init__(self, name, elem, icon=None, info=""):
-            self.name = name
-            self.elem = elem
-            self.icon = icon
-            self.info = info
-            self.deep = 0
-            self.parent = None
-            self.line = None
-            self.selected = False
-            
-        def setParent(self, parent):
-            if self.parent is not None:
-                self.parent.removeChildren(self)
-            parent.addChildren(self)
 
-
-    class _folder(_item):
-        def __init__(self, name, elem):
-            TreeUC._item.__init__(self, name, elem)
-            self.childrens = []
-            self.icon = "arrowBottom"
-            self.isDeployed = True
-            self.area = None
-
-        def deploying(self, val):
-            self.isDeployed = val
-            if val:
-                self.icon = "arrowBottom"
-            else:
-                self.icon = "arrowRight"
-            self.line.icon = self.icon
-            self.line.refresh()
-            cmds.formLayout(self.area, e=True, vis=self.isDeployed)
-
-        def deployingAll(self, val):
-            self.deploying(val)
-            for f in self.childrens:
-                if f.__class__ is TreeUC._folder:
-                    TreeUC._folder.deployingAll(f, val)
-
-
-        def addChildren(self, child):
-            self.childrens.append(child)
-            child.parent = self
-
-        def removeChildren(self, child):
-            self.childrens.remove(child)
-            child.parent = None
-        
-        def getAllParent(self):
-            if self.parent is None:
-                return "/"
-            return self.getAllParent() + "/" + self.name
-
-    
     def __init__(self, parent, multiSelect=True):
-        super(TreeUC, self).__init__(parent=parent)
-        # UserControl.__init__(self, parent)
-        # Browsing.__init__(self)
+        UserControl.__init__(self, parent)
+        Browsing.__init__(self)
         self.name = "Tree" + self.name
-
-
-        self.root = TreeUC._folder(".", None)
-        self.folders = {}
-        self.items = {}
-        self.selecteds = []
-        self.multiSelect = multiSelect
-        # self.layout = ""
         self.scrlLay = ""
 
 
     
     def _loadFolder(self, fold, parent):
         elems = []
-        layout = cmds.formLayout(fold.name + "_layout", parent=parent, bgc=hexToRGB(0x202020 * (fold.deep % 2) + self.color.main), vis=(fold.isDeployed or fold.deep < 1))
-        for elem in fold.childrens:
-            elem.line = LineUC(layout, elem.name, info=elem.info, icon=elem.image)
-            elem.line.load()
-            elems.append(elem.line.layout)
-            # l.attach(top=(Attach.CTRL, pl), bottom=Attach.NONE, left=(Attach.POS, 15), right=Attach.FORM)
-            if elem.__class__ is Browsing.folder:
-                elems.append(self._loadFolder(elem, layout))
-                elem.area = elems[-1]
-                elem.line.eventHandler("click", self._clickFolder, elem)
-            else:
-                elem.line.eventHandler("click", self._clickItem, elem)
+        area = UserControl(parent)
+        area.color.background = 0x101010 * (fold.deep % 2) + self.color.main
+        area.visibility(fold.isDeployed or fold.deep < 1)
+        area.load()
+        
 
-        af = []
-        an = []
-        ac = []
-        ap = []
+        for elem in fold.childrens:
+            if elem.__class__ is Browsing.folder:
+                elem.icon = "arrowBottom"
+            elem.displayElem = LineUC(area, elem.name, info=elem.info, icon=elem.icon)
+            elem.displayElem.load()
+            elems.append(elem.displayElem)
+            if elem.__class__ is Browsing.folder:
+                elems.append(self._loadFolder(elem, area))
+                elem.area = elems[-1]
+                elem.displayElem.eventHandler("click", self._clickFolder, elem)
+            else:
+                elem.displayElem.eventHandler("click", self._clickItem, elem)
+        if self.addable:
+            newElem = LineUC(area, "New", icon="addSmall")
+            newElem.load()
+            newElem.eventHandler("click", self._newElement, fold)
+            elems.append(newElem)
 
         last = None
         for e in elems:
             if last is None:
-                af.append((e, "top", 0))
+                e.attach(top=Attach.FORM)
             else:
-                ac.append((e, "top", 0, last))
-            an.append((e, "bottom"))
+                e.attach(top=(Attach.CTRL, last))
             if fold is self.root:
-                af.append((e, "left", 0))
+                e.attach(left=Attach.FORM)
             else:
-                ap.append((e, "left", 0, 5))
-            af.append((e, 'right', 0))
+                e.attach(left=(Attach.POS, 5))
+            e.attach(bottom=Attach.NONE, right=Attach.FORM)
             last = e
-
-        cmds.formLayout(layout, edit=True, attachForm=af,
-                                            attachPosition=ap,
-                                            attachControl=ac,
-                                            attachNone=an)
-        return layout
+        area.applyAttach()
+        return area
 
     def load(self):
-        # if not cmds.formLayout(self.layout, q=True, ex=True):
-        #     self.layout = cmds.formLayout(parent=self.parentLay)
         
 
         if cmds.scrollLayout(self.scrlLay, q=True, ex=True):
             cmds.deleteUI(self.scrlLay)
-        self.scrlLay = cmds.scrollLayout(parent=self.layout, childResizable=True)
+        self.scrlLay = cmds.scrollLayout(parent=self.layout, childResizable=True, bgc=hexToRGB(0xa5c957))
         t = self._loadFolder(self.root, self.scrlLay)
         
         cmds.formLayout(self.layout, edit=True, attachForm=[(self.scrlLay, 'top', -2),(self.scrlLay, 'bottom', -2),(self.scrlLay, 'left', -2), (self.scrlLay, 'right', -2)])
 
-    def _clickFolder(self, folder, line, mod):
+
+    def _clickFolder(self, folder, displayElem, mod):
         if mod == 0:
             folder.deploying(not folder.isDeployed)
         elif mod == 1:
             folder.deployingAll(not folder.isDeployed)
 
 
-    def _clickItem(self, item, line, mod):
+    def _clickItem(self, item, displayElem, mod):
         
         for t in self.selecteds:
             if (mod != 1 or item.parent != t.parent or not self.multiSelect):
-                t.line.selection(False)
+                t.displayElem.selection(False)
         if mod != 1:
             self.selecteds = []
         if mod <= 1:
-            if line.selected:
-                line.selection(False)
+            if displayElem.selected:
+                displayElem.selection(False)
                 self.selecteds.remove(item)
             else:
-                line.selection(True)
+                displayElem.selection(True)
                 self.selecteds.append(item)
-        selection = [x.elem for x in self.selecteds if x.line.selected]
+        selection = [x.elem for x in self.selecteds if x.displayElem.selected]
         self.runEvent("changeSelection", selection)
-
-    def deleteAllItemsFolders(self):
-        self.folders = {}
-        self.items = {}
-        self.root = TreeUC._folder(".", None)
-
-    def addFolder(self, name, elem, parent=None):
-        f = TreeUC._folder(name, elem)
-
-        if parent is None:
-            f.setParent(self.root)
-            f.deep = 1
-        else:
-            f.setParent(parent)
-            f.deep = f.parent.deep + 1
-        self.folders[elem] = f
-        return f
     
-    def addItem(self, name, elem, parent=None, image=None, info=""):
-        i = TreeUC._item(name, elem, image=image, info=info)
-
-        if parent is None:
-            i.setParent(self.root)
-        else:
-            i.setParent(parent)
-            i.deep = i.parent.deep + 1
-        self.items[elem] = i
-        return i
-        
-    def select(self, selection, value):
-        '''display the lines in selection as selected in the tree
-        selection: the lines to be select
-        value: True to select
-        '''
+    def _newElement(self, folder, plop1, plop2):
+        self.runEvent("newElem", folder.elem)
         pass

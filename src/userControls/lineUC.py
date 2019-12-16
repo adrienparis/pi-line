@@ -59,14 +59,14 @@ class LineUC(UserControl):
     def refresh(self):
         cmds.text(self.nameTextLay, e=True, label=self.text)
         cmds.text(self.infoTextLay, e=True, label=self.info)
-        cmds.image(self.iconLay, e=True, image=getIcon(self.icon))
+        if self.icon is not None:
+            cmds.image(self.iconLay, e=True, image=getIcon(self.icon))
 
     def setIcon(self, icon):
         self.icon = icon
 
     def selection(self, b):
         self.selected = b
-        log.debug(self.layout)
         if cmds.formLayout(self.layout, q=True, exists=True):
             cmds.formLayout(self.layout, e=True, ebg=self.selected)
 

@@ -43,8 +43,9 @@ class CheckBoxGrpUC(UserControl):
 
     def clearItems(self):
         for i in self.items:
-            log.debug("delete " + self.items[i]["box"])
-            cmds.deleteUI(self.items[i]["box"], ctl=True)
+            if "box" in self.items[i]:
+                log.debug("delete " + self.items[i]["box"])
+                cmds.deleteUI(self.items[i]["box"], ctl=True)
         self.items.clear()
         pass
 

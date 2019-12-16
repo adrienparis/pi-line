@@ -28,8 +28,8 @@ from versionUC import VersionUC
 from windowUC import WindowUC
 from wipUC import WipUC
 
-reload(UC)
-reload(browsing)
+# reload(UC)
+# reload(browsing)
 reload(windowUC)
 reload(cupboardUC)
 reload(checkBoxGrpUC)

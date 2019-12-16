@@ -6,7 +6,7 @@ from pymel.all import *
 from .UC import *
 
 import log
-import core
+from core import *
 
 from .chooseStepUC import ChooseStepUC
 from .defineProjectUC import *
@@ -226,7 +226,8 @@ class CupboardUC(UserControl):
         self.project.fetchAll()
         self.project.setProject()
         self.views["explorer"].setProject(p)
-        self.views["explorer"].reload()
+        self.views["explorer"].refresh()
+        # self.views["explorer"].reload()
 
     def changeSelection(self, selection):
         log.debug(selection)
@@ -243,16 +244,11 @@ class CupboardUC(UserControl):
             self.versSelected = [selection[0]]
 
     def changeTabScene(self, tab):
-        # TODO find a solution for this
-        # if tab == "Assets":
-        #     self.views["version"].changeStepBox(core.Asset._steps)
-        # if tab == "Shots":
-        #     self.views["version"].changeStepBox(core.Shot._steps)
-
         if tab == "Assets":
-            self.views["version"].changeStepBox(["mod", "rig", "surf"])
+            self.views["version"].changeStepBox(Asset._steps)
         if tab == "Shots":
-            self.views["version"].changeStepBox(["animation", "previz", "rendering", "sfx"])
+            self.views["version"].changeStepBox(["previs", "anim", "light"])
+            # self.views["version"].changeStepBox(Shot._steps)
 
     def commandDownload(self):
         if len(self.selected) > 0 and len(self.versSelected) > 0:
@@ -268,7 +264,7 @@ class CupboardUC(UserControl):
             #     self.selected[0].state = 2
         self.views["explorer"].refresh()
         #TODO remove the line below
-        self.views["explorer"].reload()
+        # self.views["explorer"].reload()
         self.views["detail"].changeScene(None)
         self.views["version"].changeScene(None)
         self.views["version"].loadTree()
@@ -312,7 +308,6 @@ class CupboardUC(UserControl):
         self.nvWin.close()
 
     def attachViewTo(self, layout, parent):
-        log.debug("attach " + layout + " to " + self.views[parent].layout)
         cmds.formLayout(layout, e=True, parent=self.views[parent].layout)
         cmds.formLayout(self.views[parent], edit=True,
                         attachForm=[(layout, 'top', 5),(layout, 'bottom', 5),(layout, 'left', 5), (layout, 'right', 5)])

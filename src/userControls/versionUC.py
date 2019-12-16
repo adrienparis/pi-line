@@ -30,9 +30,12 @@ class VersionUC(UserControl):
         if self.stepLay is None:
             self.stepLay = CheckBoxGrpUC(self)
         print(self.stepLay.parentUC)
+        self.stepLay.heigt = 30
+        self.stepLay.width = 30
         self.stepLay.load()
         if self.listVersion is None:
             self.listVersion = TreeUC(self)
+            self.listVersion.addable = False
 
         if self.scene is not None:
             steps = self.scene._steps[:]

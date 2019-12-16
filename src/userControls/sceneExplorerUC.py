@@ -16,18 +16,31 @@ class SceneExplorerUC(UserControl):
     def setProject(self, project):
         self.project = project
 
-    def getImage(self, v):
-        img = "denied"
+    def refreshProjectTree(self):
+        plop = 0
+        if self.project is not None:
+            self.explorerAssets.deleteAllItemsFolders()
+            for c in self.project.assets.keys():
+                p = self.explorerAssets.addFolder(c, c)
+                self.explorerAssets.addFolder("Test" + str(plop), "test", parent=p)
+                plop += 1
+                for asset in self.project.assets[c]:
+                    v = asset.getLastVersion()
+                    ico = self.getStateIcon(v)
+                    self.explorerAssets.addItem(asset.name, asset, parent=p, icon=ico)
+
+    def getStateIcon(self, v):
+        ico = "denied"
         if v is not None:
             if v.onServer and v.onLocal:
-                img = "check"
+                ico = "check"
             elif v.onServer and not v.onLocal:
-                img = "download"
+                ico = "download"
             elif not v.onServer and v.onLocal:
-                img = "upload"
+                ico = "upload"
         else:
-            img = "new"
-        return img
+            ico = "new"
+        return ico
         
     def load(self):
 
@@ -43,22 +56,12 @@ class SceneExplorerUC(UserControl):
         self.explorerAssets.attach(top=Attach.FORM, bottom=Attach.FORM, left=Attach.FORM, right=Attach.FORM)
         self.explorerShots.attach(top=Attach.FORM, bottom=Attach.FORM, left=Attach.FORM, right=Attach.FORM)
 
-        self.explorerAssets.color.background = 0xbada55
-        self.explorerShots.color.background = 0xbada55
+        self.explorerAssets.color.background = 0xa5c957
+        self.explorerShots.color.background = 0xa5c957
 
 
-
-        if self.project is not None:
-
-            for c in self.project.assets.keys():
-                p = self.explorerAssets.addFolder(c, None)
-                for asset in self.project.assets[c]:              
-                    img = "denied"
-                    v = asset.getLastVersion()
-                    img = self.getImage(v)
-                    self.explorerAssets.addItem(asset.name, asset, parent=p, image=img)
-            self.explorerAssets.eventHandler("changeSelection", self.runEvent, "changeItem")
-
+        self.refreshProjectTree()
+        self.explorerAssets.eventHandler("changeSelection", self.runEvent, "changeItem")
 
 
 
@@ -74,8 +77,14 @@ class SceneExplorerUC(UserControl):
                         attachForm=[(self.tabs, 'top', 0),(self.tabs, 'bottom', 0),(self.tabs, 'left', 0), (self.tabs, 'right', 0)])
         self.changeTab()
 
+    def refresh(self):
+        self.refreshProjectTree()
+        self.explorerAssets.refresh()
+        self.explorerShots.refresh()
+
     def changeTab(self):
         tabSel = cmds.tabLayout(self.tabs, q=True, st=True)
         self.runEvent("changeTab", tabSel)
+
 
 log.info("SceneExplorerUC Loaded")

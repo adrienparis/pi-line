@@ -84,6 +84,7 @@ class DefineProjectUC(UserControl):
             self.path = ""
             self.projects = []
             self.folderMenuItem = []
+            self.menu = None
             # self.layout = ""
 
         def load(self):
@@ -101,6 +102,8 @@ class DefineProjectUC(UserControl):
                 self.refresh()
 
         def refresh(self):
+            if self.menu is None:
+                return
             for x in self.folderMenuItem:
                 cmds.deleteUI(x)
             self.folderMenuItem = []
@@ -114,7 +117,8 @@ class DefineProjectUC(UserControl):
             
 
         def changeFolder(self, *args):
-            self.projName = cmds.optionMenu(self.menu, q=True, v=True)
+            if self.menu is not None:
+                self.projName = cmds.optionMenu(self.menu, q=True, v=True)
 
         def listFolder(self):
             if not os.path.isdir(self.path):
@@ -238,6 +242,9 @@ class DefineProjectUC(UserControl):
                 self.loadTab.changePath(self.project.path.server)
             else:
                 self.loadTab.changePath("")
+
+            self.newTab.name = "New"
+            self.loadTab.name = "Load"
 
             self.infoUC.load()
             self.newTab.load()

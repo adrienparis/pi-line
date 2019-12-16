@@ -54,4 +54,12 @@ def button(*args, **kwargs):
     print("button" + str(kwargs))
     return "button"
 
+def warning(*args, **kwargs):
+    print("warning" + str(kwargs))
+    return "warning"
+
+def error(*args, **kwargs):
+    print("error" + str(kwargs))
+    return "error"
+
 

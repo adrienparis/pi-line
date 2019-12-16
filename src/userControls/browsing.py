@@ -24,6 +24,23 @@ class Browsing(object):
             self.isDeployed = True
             self.area = None
 
+        def deploying(self, val):
+            self.isDeployed = val
+            if val:
+                self.icon = "arrowBottom"
+            else:
+                self.icon = "arrowRight"
+            self.displayElem.icon = self.icon
+            self.displayElem.refresh()
+            self.area.visibility(self.isDeployed)
+            # cmds.formLayout(self.area, e=True, vis=self.isDeployed)
+
+        def deployingAll(self, val):
+            self.deploying(val)
+            for f in self.childrens:
+                if f.__class__ is Browsing.folder:
+                    Browsing.folder.deployingAll(f, val)
+
         def addChildren(self, child):
             self.childrens.append(child)
             child.parent = self
@@ -38,8 +55,13 @@ class Browsing(object):
             return self.getAllParent() + "/" + self.name
 
     def __init__(self):
+        # super(Browsing, self).__init__()
+        self.folders = {}
+        self.items = {}
         self.root = Browsing.folder(".", None)
-        super(Browsing, self).__init__()
+        self.selecteds = []
+        self.multiSelect = True
+        self.addable = True
     
     def deleteAllItemsFolders(self):
         self.folders = {}
@@ -47,7 +69,7 @@ class Browsing(object):
         self.root = Browsing.folder(".", None)
 
     def addFolder(self, name, elem, parent=None):
-        f = folder(name, elem)
+        f = Browsing.folder(name, elem)
 
         if parent is None:
             f.setParent(self.root)
@@ -58,8 +80,8 @@ class Browsing(object):
         self.folders[elem] = f
         return f
     
-    def addItem(self, name, elem, parent=None, image=None, info=""):
-        i = item(name, elem, image=image, info=info)
+    def addItem(self, name, elem, parent=None, image=None, info="", icon=None):
+        i = Browsing.item(name, elem, image=image, info=info, icon=icon)
 
         if parent is None:
             i.setParent(self.root)
@@ -72,3 +94,9 @@ class Browsing(object):
     def importBrows(self, imp):
         self.root = imp.root
 
+    def select(self, selection, value):
+        '''display the lines in selection as selected in the tree
+        selection: the lines to be select
+        value: True to select
+        '''
+        pass
