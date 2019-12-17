@@ -97,17 +97,10 @@ class CupboardUC(UserControl):
         self.views["import"].eventHandler("importRef", None)
         self.views["import"].eventHandler("importProxy", None)
         
-        #Create and load all the interfaces
+        #load all the interfaces
         for key, view in self.views.items():
             view.load()
-        # self.views["project"].create()
-        # self.views["explorer"].create()
-        # self.views["detail"].create()
-        # self.views["version"].create()
-        # self.views["sync"].create()
-        # self.views["versInfo"].create()
-        # self.views["wip"].create()
-        # self.views["import"].create()
+
         self.scrLay = cmds.scrollLayout( self.scrLay, e=True, rc=Callback(self.resizeView))
         cmds.formLayout(self.layout, edit=True,
                         attachForm=[(self.scrLay, 'top', -2),(self.scrLay, 'bottom', -2),(self.scrLay, 'left', -2), (self.scrLay, 'right', -2)])
@@ -134,16 +127,7 @@ class CupboardUC(UserControl):
 
         for key, view in self.views.items():
             view.setParent(self.horizontalFrame)
-        # self.views["project"].setParent(self.horizontalFrame)
-        # self.views["explorer"].setParent(self.horizontalFrame)
-        # self.views["detail"].setParent(self.horizontalFrame)
-        # self.views["version"].setParent(self.horizontalFrame)
-        # self.views["sync"].setParent(self.horizontalFrame)
-        # self.views["versInfo"].setParent(self.horizontalFrame)
-        # self.views["wip"].setParent(self.horizontalFrame)
-        # self.views["import"].setParent(self.horizontalFrame)
 
-        # self.applyAttach()
         af = []
         ap = []
         ac = []
@@ -153,10 +137,6 @@ class CupboardUC(UserControl):
             ap += view.pins.position
             ac += view.pins.controller
             an += view.pins.none
-        # af = [] + self.views["project"].pins.form + self.views["explorer"].pins.form  + self.views["detail"].pins.form  + self.views["version"].pins.form  + self.views["sync"].af + self.views["versInfo"].af + self.views["wip"].af + self.views["import"].af
-        # ap = [] + self.views["project"].ap + self.views["explorer"].ap + self.views["detail"].ap + self.views["version"].ap + self.views["sync"].ap + self.views["versInfo"].ap + self.views["wip"].ap + self.views["import"].ap
-        # ac = [] + self.views["project"].ac + self.views["explorer"].ac + self.views["detail"].ac + self.views["version"].ac + self.views["sync"].ac + self.views["versInfo"].ac + self.views["wip"].ac + self.views["import"].ac
-        # an = [] + self.views["project"].an + self.views["explorer"].an + self.views["detail"].an + self.views["version"].an + self.views["sync"].an + self.views["versInfo"].an + self.views["wip"].an + self.views["import"].an
 
         cmds.formLayout(self.verticalFrame, edit=True, vis=False)
         cmds.formLayout(self.horizontalFrame, edit=True, vis=True,
@@ -168,26 +148,18 @@ class CupboardUC(UserControl):
     def setViewToVertical(self):
         if len(self.views) == 0:
             return
-        self.views["project"].attach(top=Attach.FORM, bottom=(Attach.NONE), left=Attach.FORM, right=Attach.FORM, margin=5)
-        self.views["explorer"].attach(top=(Attach.CTRL, self.views["project"]), bottom=(Attach.POS, 55), left=Attach.FORM, right=Attach.FORM, margin=5)
-        self.views["detail"].attach(top=(Attach.CTRL, self.views["explorer"]), bottom=Attach.NONE, left=Attach.FORM, right=Attach.FORM, margin=5)
-        self.views["version"].attach(top=(Attach.CTRL, self.views["detail"]),bottom=(Attach.POS, 80), left=Attach.FORM, right=Attach.FORM, margin=5)
-        self.views["sync"].attach(top=(Attach.CTRL, self.views["version"]), bottom=Attach.NONE, left=Attach.FORM, right=Attach.FORM, margin=5)
-        self.views["versInfo"].attach(top=(Attach.CTRL, self.views["sync"]), bottom=Attach.NONE, left=Attach.FORM, right=Attach.FORM, margin=5)
-        self.views["wip"].attach(top=(Attach.CTRL, self.views["versInfo"]), bottom=Attach.NONE, left=Attach.FORM, right=Attach.FORM, margin=5)
-        self.views["import"].attach(top=(Attach.CTRL, self.views["wip"]), bottom=Attach.NONE, left=Attach.FORM, right=Attach.FORM, margin=5)
+        self.views["project"].attach(top=Attach.FORM, bottom=(Attach.NONE), left=Attach.FORM, right=Attach.FORM, margin=(5,5,2,5))
+        self.views["explorer"].attach(top=(Attach.CTRL, self.views["project"]), bottom=(Attach.POS, 55), left=Attach.FORM, right=Attach.FORM, margin=(5,5,2,5))
+        self.views["detail"].attach(top=(Attach.CTRL, self.views["explorer"]), bottom=Attach.NONE, left=Attach.FORM, right=Attach.FORM, margin=(5,5,2,5))
+        self.views["version"].attach(top=(Attach.CTRL, self.views["detail"]),bottom=(Attach.POS, 80), left=Attach.FORM, right=Attach.FORM, margin=(5,5,2,5))
+        self.views["sync"].attach(top=(Attach.CTRL, self.views["version"]), bottom=Attach.NONE, left=Attach.FORM, right=Attach.FORM, margin=(5,5,2,5))
+        self.views["versInfo"].attach(top=(Attach.CTRL, self.views["sync"]), bottom=Attach.NONE, left=Attach.FORM, right=Attach.FORM, margin=(5,5,2,5))
+        self.views["wip"].attach(top=(Attach.CTRL, self.views["versInfo"]), bottom=Attach.NONE, left=Attach.FORM, right=Attach.FORM, margin=(5,5,2,5))
+        self.views["import"].attach(top=(Attach.CTRL, self.views["wip"]), bottom=Attach.NONE, left=Attach.FORM, right=Attach.FORM, margin=(5,5,2,5))
 
 
         for key, view in self.views.items():
             view.setParent(self.verticalFrame)
-        # self.views["project"].setParent(self.verticalFrame)
-        # self.views["explorer"].setParent(self.verticalFrame)
-        # self.views["detail"].setParent(self.verticalFrame)
-        # self.views["version"].setParent(self.verticalFrame)
-        # self.views["sync"].setParent(self.verticalFrame)
-        # self.views["versInfo"].setParent(self.verticalFrame)
-        # self.views["wip"].setParent(self.verticalFrame)
-        # self.views["import"].setParent(self.verticalFrame)
 
         af = []
         ap = []
@@ -198,11 +170,6 @@ class CupboardUC(UserControl):
             ap += view.pins.position
             ac += view.pins.controller
             an += view.pins.none
-        # af = [] + self.views["project"].af + self.views["explorer"].af + self.views["detail"].af + self.views["version"].af + self.views["sync"].af + self.views["versInfo"].af + self.views["wip"].af + self.views["import"].af
-        # ap = [] + self.views["project"].ap + self.views["explorer"].ap + self.views["detail"].ap + self.views["version"].ap + self.views["sync"].ap + self.views["versInfo"].ap + self.views["wip"].ap + self.views["import"].ap
-        # ac = [] + self.views["project"].ac + self.views["explorer"].ac + self.views["detail"].ac + self.views["version"].ac + self.views["sync"].ac + self.views["versInfo"].ac + self.views["wip"].ac + self.views["import"].ac
-        # an = [] + self.views["project"].an + self.views["explorer"].an + self.views["detail"].an + self.views["version"].an + self.views["sync"].an + self.views["versInfo"].an + self.views["wip"].an + self.views["import"].an
-
         cmds.formLayout(self.horizontalFrame, edit=True, vis=False)
         cmds.formLayout(self.verticalFrame, edit=True, vis=True,
                         attachForm=af,

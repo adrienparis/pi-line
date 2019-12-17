@@ -1,5 +1,0 @@
-{
-    "files.exclude": {
-        "\"**/*.pyc\": {\"when\": \"$(basename).py\"}": true
-    }
-}

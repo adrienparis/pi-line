@@ -101,13 +101,15 @@ class Attach(object):
 
     def attach(self, margin, attachs):
         #check if margin is (0), (0,0) or (0,0,0,0)
-        self.margin = [0,0,0,0]
-        if type(margin) is int:
-            self.margin = [margin, margin, margin, margin]
-        if type(margin) is tuple and len(margin) == 2:
-            self.margin = [margin[0], margin[0], margin[1], margin[1]]
-        if type(margin) is tuple and len(margin) == 4:
-            self.margin = [margin[0], margin[1], margin[2], margin[3]]
+
+        # self.margin = [0,0,0,0]
+        if margin != -1:
+            if type(margin) is int:
+                self.margin = [margin, margin, margin, margin]
+            if type(margin) is tuple and len(margin) == 2:
+                self.margin = [margin[0], margin[0], margin[1], margin[1]]
+            if type(margin) is tuple and len(margin) == 4:
+                self.margin = [margin[0], margin[1], margin[2], margin[3]]
         self._attachs.update(attachs)
 
 class UserControl(object):
@@ -226,7 +228,7 @@ class UserControl(object):
         if self.loaded:
             cmds.formLayout(self.layout, e=True, vis=vis)
 
-    def attach(self, margin=(0), **kwargs):
+    def attach(self, margin=(-1), **kwargs):
         """Attach the form to his parent
 
         Use Attach.NONE or Attach.FORM or (Attach.POS, [pos]) or (Attach.CTRL, [ctrl]) where [pos] is an Int and [ctrl] is a UserControl or a layout to the followings arguments

@@ -32,7 +32,6 @@ class DockTilesUC(UserControl):
 
 
     def load(self):
-        print("========================================")
         self.scrLay = cmds.scrollLayout(parent=self.layout,
                                     horizontalScrollBarThickness=160,
                                     verticalScrollBarThickness=16,
@@ -40,9 +39,7 @@ class DockTilesUC(UserControl):
         self.grdLay = cmds.gridLayout(numberOfColumns=3, cr=False, ag=True, cellWidthHeight=(self._sizeImage, self._sizeImage))
         cmds.formLayout(self.layout, edit=True, attachForm=[(self.scrLay, 'top', 0),(self.scrLay, 'bottom', 0),(self.scrLay, 'left', 0), (self.scrLay, 'right', 0)])
         
-        print(self.childrens)
         for t in self.childrens:
-            print(t)
             t.setParent(self.grdLay)
             t.load()
 
@@ -57,50 +54,62 @@ class TilesViewUC(UserControl, Browsing):
         Browsing.__init__(self)
         self.name = "TilesView" + self.name
         self.scrlLay = ""
+        self.currentFold = self.root
+        self.tabs = None
 
-    def _clickItem(self, item, tile, mod):
+    # def _clickItem(self, item, displayElem, mod):
         
-        for t in self.selecteds:
-            if (mod != 1 or item.parent != t.parent or not self.multiSelect):
-                t.displayElem.selection(False)
-        if mod != 1:
-            self.selecteds = []
-        if mod <= 1:
-            if tile.selected:
-                tile.selection(False)
-                self.selecteds.remove(item)
-            else:
-                tile.selection(True)
-                self.selecteds.append(item)
-        selection = [x.elem for x in self.selecteds if x.displayElem.selected]
-        self.runEvent("changeSelection", selection)
+    #     for t in self.selecteds:
+    #         if (mod != 1 or item.parent != t.parent or not self.multiSelect):
+    #             t.displayElem.selection(False)
+    #     if mod != 1:
+    #         self.selecteds = []
+    #     if mod <= 1:
+    #         if displayElem.selected:
+    #             displayElem.selection(False)
+    #             self.selecteds.remove(item)
+    #         else:
+    #             displayElem.selection(True)
+    #             self.selecteds.append(item)
+    #     selection = [x.elem for x in self.selecteds if x.displayElem.selected]
+    #     self.runEvent("changeSelection", selection)
 
-    def load(self):
-        fold = self.root
-
+    def _loadFolder(self, fold):
+        self.currentFold = fold
+        if self.tabs is not None and cmds.tabLayout(self.tabs, q=True, exists=True):
+            cmds.deleteUI(self.tabs)
         if self.addable:
-            self.tabs = cmds.tabLayout(snt=True, parent=self.layout, ntc=Callback(self.newFolder, fold))
+            self.tabs = cmds.tabLayout(snt=True, parent=self.layout, ntc=Callback(self.newElem, fold))
         else:
-            self.tabs = cmds.tabLayout(snt=True, parent=self.layout)
+            self.tabs = cmds.tabLayout(parent=self.layout)
 
         for f in fold.childrens:
             if f.__class__ is Browsing.folder:
                 area = DockTilesUC(self.tabs)
                 area.name = f.name
+                if self.addable:
+                    newElem = TileUC(area, "add", "New")
+                    newElem.eventHandler("click", self.newElem, f)
+                if fold is not self.root:
+                    folderPar = TileUC(area, "folderBig", "..")
+                    folderPar.eventHandler("click", self.clickFolder, fold.parent)
                 for i in f.childrens:
                     if i.__class__ is Browsing.folder:
-                        i.displayElem = TileUC(area, "folderBig", i.name)
+                        i.addDisplayElem(TileUC(area, "folderBig", i.name), "tilesView")
+                        i.displayElem["tilesView"].eventHandler("click", self.clickFolder, f)
                     else:
-                        i.displayElem = TileUC(area, i.image, i.name, i.icon)
-                    i.displayElem.eventHandler("click", self.clickTile, i)
+                        i.addDisplayElem(TileUC(area, i.image, i.name, i.icon), "tilesView")
+                        i.displayElem["tilesView"].eventHandler("click", self._clickItem, i)
                 area.load()
-
         cmds.formLayout(self.layout, edit=True, attachForm=[(self.tabs, 'top', 0),(self.tabs, 'bottom', 0),(self.tabs, 'left', 0), (self.tabs, 'right', 0)])
 
+    def load(self):
+        self._loadFolder(self.root)
 
-    def newFolder(self, folder):
+
+    def newElem(self, folder, tile=None, mod=None):
+        print(folder.name)
         pass
-    def clickTile(self, item, tile, mod):
-        print(item, tile, mod)
-        self._clickItem(item, tile, mod)
-        pass
+
+    def clickFolder(self, item, tile, mod):
+        self._loadFolder(item)

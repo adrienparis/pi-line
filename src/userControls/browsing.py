@@ -8,13 +8,31 @@ class Browsing(object):
             self.info = info
             self.deep = 0
             self.parent = None
-            self.displayElem = None
+            self.displayElem = {}
             self.selected = False
             
         def setParent(self, parent):
             if self.parent is not None:
                 self.parent.removeChildren(self)
             parent.addChildren(self)
+
+        def addDisplayElem(self, dispElem, name):
+            self.displayElem[name] = dispElem
+            pass
+
+        def getDisplayElemBy(self, name):
+            return self.displayElem[name]
+        
+        def selection(self, val):
+            self.selected = val
+            for d in self.displayElem.values():
+                d.selection(val)
+
+        def returnRoot(self):
+            if self.parent is not None:
+                return self.parent.returnRoot()
+            else:
+                return self
 
     class folder(item):
         def __init__(self, name, elem):
@@ -23,6 +41,7 @@ class Browsing(object):
             self.icon = "arrowBottom"
             self.isDeployed = True
             self.area = None
+            self.selecteds = []
 
         def deploying(self, val):
             self.isDeployed = val
@@ -30,8 +49,11 @@ class Browsing(object):
                 self.icon = "arrowBottom"
             else:
                 self.icon = "arrowRight"
-            self.displayElem.icon = self.icon
-            self.displayElem.refresh()
+            for e in self.displayElem.values():
+                e.displayElem.icon = self.icon
+                e.displayElem.refresh()
+            # self.displayElem.icon = self.icon
+            # self.displayElem.refresh()
             self.area.visibility(self.isDeployed)
             # cmds.formLayout(self.area, e=True, vis=self.isDeployed)
 
@@ -93,6 +115,33 @@ class Browsing(object):
 
     def importBrows(self, imp):
         self.root = imp.root
+
+    def _clickItem(self, item, displayElem, mod):
+        print(item)
+        print(item.returnRoot())
+        print("=============\nselected" + str(item.returnRoot().selecteds))
+        print(item.deep)
+        print(item.name)
+        print(item.displayElem, displayElem)
+        for t in item.returnRoot().selecteds:
+            print(mod != 1, item.parent != t.parent, not self.multiSelect)
+            if (mod != 1 or item.parent != t.parent or not self.multiSelect):
+                t.selection(False)
+                # t.displayElem.selection(False)
+        if mod != 1:
+            item.returnRoot().selecteds = []
+        print("=============\nselected" + str(item.returnRoot().selecteds))
+        if mod <= 1:
+            if item.selected:
+                item.selection(False)
+                item.returnRoot().selecteds.remove(item)
+            else:
+                item.selection(True)
+                item.returnRoot().selecteds.append(item)
+        print("=============\nselected" + str(item.returnRoot().selecteds))
+        # selection = [x.elem for x in self.selecteds if x.displayElem.selected]
+        self.runEvent("changeSelection", item.returnRoot().selecteds)
+
 
     def select(self, selection, value):
         '''display the lines in selection as selected in the tree

@@ -27,15 +27,15 @@ class TreeUC(UserControl, Browsing):
         for elem in fold.childrens:
             if elem.__class__ is Browsing.folder:
                 elem.icon = "arrowBottom"
-            elem.displayElem = LineUC(area, elem.name, info=elem.info, icon=elem.icon)
-            elem.displayElem.load()
-            elems.append(elem.displayElem)
+            elem.addDisplayElem(LineUC(area, elem.name, info=elem.info, icon=elem.icon), "treeView")
+            elem.displayElem["treeView"].load()
+            elems.append(elem.displayElem["treeView"])
             if elem.__class__ is Browsing.folder:
                 elems.append(self._loadFolder(elem, area))
                 elem.area = elems[-1]
-                elem.displayElem.eventHandler("click", self._clickFolder, elem)
+                elem.displayElem["treeView"].eventHandler("click", self._clickFolder, elem)
             else:
-                elem.displayElem.eventHandler("click", self._clickItem, elem)
+                elem.displayElem["treeView"].eventHandler("click", self._clickItem, elem)
         if self.addable:
             newElem = LineUC(area, "New", icon="addSmall")
             newElem.load()
@@ -51,7 +51,7 @@ class TreeUC(UserControl, Browsing):
             if fold is self.root:
                 e.attach(left=Attach.FORM)
             else:
-                e.attach(left=(Attach.POS, 5))
+                e.attach(left=Attach.FORM, margin=(0,0,15,0))
             e.attach(bottom=Attach.NONE, right=Attach.FORM)
             last = e
         area.applyAttach()
@@ -75,22 +75,28 @@ class TreeUC(UserControl, Browsing):
             folder.deployingAll(not folder.isDeployed)
 
 
-    def _clickItem(self, item, displayElem, mod):
+    # def _clickItem(self, item, displayElem, mod):
         
-        for t in self.selecteds:
-            if (mod != 1 or item.parent != t.parent or not self.multiSelect):
-                t.displayElem.selection(False)
-        if mod != 1:
-            self.selecteds = []
-        if mod <= 1:
-            if displayElem.selected:
-                displayElem.selection(False)
-                self.selecteds.remove(item)
-            else:
-                displayElem.selection(True)
-                self.selecteds.append(item)
-        selection = [x.elem for x in self.selecteds if x.displayElem.selected]
-        self.runEvent("changeSelection", selection)
+    #     print(item)
+    #     print(self.item.displayElem, displayElem)
+    #     for t in self.selecteds:
+    #         log.debug(t.name, t.parent)
+    #         if (mod != 1 or item.parent != t.parent or not self.multiSelect):
+    #             t.displayElem.selection(False)
+    #             item.selected = False
+    #     if mod != 1:
+    #         self.selecteds = []
+    #     if mod <= 1:
+    #         if item.selected:
+    #             item.selected = False
+    #             item.displayElem.selection(False)
+    #             self.selecteds.remove(item)
+    #         else:
+    #             item.selected = True
+    #             item.displayElem.selection(True)
+    #             self.selecteds.append(item)
+    #     selection = [x.elem for x in self.selecteds if x.selected]
+    #     self.runEvent("changeSelection", selection)
     
     def _newElement(self, folder, plop1, plop2):
         self.runEvent("newElem", folder.elem)

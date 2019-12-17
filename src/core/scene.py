@@ -13,6 +13,8 @@ class Scene(Item):
     def __init__(self, name, cat, project=None):
         self.category = cat
         Item.__init__(self, name, project)
+        # super(Item, self).__init__(name, project)
+        # super(Scene, self).__init__(name, project)
         self.relativePath = os.path.join(self._path, cat, name)
         self.versions = []
         self.fileName = self.parent.diminutive + "_" + self.name

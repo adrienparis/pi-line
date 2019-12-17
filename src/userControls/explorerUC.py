@@ -31,14 +31,12 @@ class ExplorerUC(UserControl, Browsing):
         self.tileView = TilesViewUC(self)
         self.switchdisp = switchBtn(self, imageOn="list", imageOff="tiles", label="Switch view")
         self.switchSelect = switchBtn(self, imageOn="selectAll", imageOff="deselectAll", label="Deselect all", labelOn="select all")
-
-        # self.switchTree = cmds.iconTextButton(parent=self.layout, style='iconOnly', image1=getIcon("list"), label='Switch view', w=22, h=22, sic=True, bgc=hexToRGB(self.color.button))
-        # self.switchTile = cmds.iconTextButton(parent=self.layout, style='iconOnly', image1=getIcon("tiles"), label='Switch view', w=22, h=22, sic=True, bgc=hexToRGB(self.color.button))
-        # self.switchSelAll = cmds.iconTextButton(parent=self.layout, style='iconOnly', image1=getIcon("deselectAll"), label='Deselect all', w=22, h=22, sic=True, bgc=hexToRGB(self.color.button))
-        # self.switchDeselAll = cmds.iconTextButton(parent=self.layout, style='iconOnly', image1=getIcon("selectAll"), label='Select all', w=22, h=22, sic=True, bgc=hexToRGB(self.color.button))
-        
+   
         self.treeView.importBrows(self)
         self.tileView.importBrows(self)
+        self.treeView.addable = self.addable
+        self.tileView.addable = self.addable
+        log.debug("addable", self.tileView.addable)
 
 
         self.treeView.load()
@@ -50,6 +48,9 @@ class ExplorerUC(UserControl, Browsing):
 
         self.switchdisp.eventHandler("switch", self.switchView)
         self.treeView.eventHandler("newElem", self.newElem)
+
+        self.treeView.eventHandler("changeSelection", self.changeSelection, "treeView")
+        self.tileView.eventHandler("changeSelection", self.changeSelection, "tileView")
 
         self.switchdisp.attach(top=Attach.FORM, bottom=Attach.NONE, left=Attach.FORM, right=Attach.NONE, margin=5)
         self.switchSelect.attach(top=Attach.FORM, bottom=Attach.NONE, left=(Attach.CTRL, self.switchdisp), right=Attach.NONE, margin=5)
@@ -64,23 +65,6 @@ class ExplorerUC(UserControl, Browsing):
         self.switchdisp.switchTo(False)
 
 
-
-        return
-        if cmds.tabLayout(self.tabs, q=True, ex=True):
-            cmds.deleteUI(self.tabs)
-        self.tabs = cmds.tabLayout('SceneFold', parent=self.layout, sc=Callback(self.changeTab))
-
-        if self.project is None or self.project.assets is None:
-            self.tabAssets = cmds.formLayout('Assets', numberOfDivisions=100, parent=self.tabs)
-        else:
-            #TODO REPLACE THAT!!!
-            self.assetDisplay(self.tabs, self.project)
-        self.tabShots = cmds.formLayout('Shots', numberOfDivisions=100, parent=self.tabs)
-
-        cmds.formLayout(self.layout, e=True, 
-                        attachForm=[(self.tabs, 'top', 0),(self.tabs, 'bottom', 0),(self.tabs, 'left', 0), (self.tabs, 'right', 0)])
-        self.changeTab()
-
     def refresh(self):
         self.treeView.importBrows(self)
         self.tileView.importBrows(self)
@@ -88,10 +72,13 @@ class ExplorerUC(UserControl, Browsing):
         self.tileView.reload()
         self.tileView.load()
 
+    def changeSelection(self, view, selection):
+        print(view)
+        print(selection)
 
-    def changeTab(self):
-        tabSel = cmds.tabLayout(self.tabs, q=True, st=True)
-        self.runEvent("changeTab", tabSel)
+    # def changeTab(self):
+    #     tabSel = cmds.tabLayout(self.tabs, q=True, st=True)
+    #     self.runEvent("changeTab", tabSel)
 
     def newElem(self, elem):
         print(elem)

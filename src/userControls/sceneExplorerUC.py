@@ -22,8 +22,12 @@ class SceneExplorerUC(UserControl):
             self.explorerAssets.deleteAllItemsFolders()
             for c in self.project.assets.keys():
                 p = self.explorerAssets.addFolder(c, c)
-                self.explorerAssets.addFolder("Test" + str(plop), "test", parent=p)
-                plop += 1
+                # self.explorerAssets.addFolder("Test" + str(plop), "test", parent=p)
+                # plop += 1
+                # self.explorerAssets.addFolder("Test" + str(plop), "test", parent=p)
+                # plop += 1
+                # self.explorerAssets.addFolder("Test" + str(plop), "test", parent=p)
+                # plop += 1
                 for asset in self.project.assets[c]:
                     v = asset.getLastVersion()
                     ico = self.getStateIcon(v)
@@ -66,6 +70,8 @@ class SceneExplorerUC(UserControl):
 
 
 
+        # self.explorerAssets.addable = False
+        # self.explorerShots.addable = False
 
         self.explorerAssets.load()
         self.explorerShots.load()
