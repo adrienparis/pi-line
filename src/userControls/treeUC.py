@@ -69,35 +69,12 @@ class TreeUC(UserControl, Browsing):
 
 
     def _clickFolder(self, folder, displayElem, mod):
+        log.debug("plop")
         if mod == 0:
             folder.deploying(not folder.isDeployed)
         elif mod == 1:
             folder.deployingAll(not folder.isDeployed)
 
-
-    # def _clickItem(self, item, displayElem, mod):
-        
-    #     print(item)
-    #     print(self.item.displayElem, displayElem)
-    #     for t in self.selecteds:
-    #         log.debug(t.name, t.parent)
-    #         if (mod != 1 or item.parent != t.parent or not self.multiSelect):
-    #             t.displayElem.selection(False)
-    #             item.selected = False
-    #     if mod != 1:
-    #         self.selecteds = []
-    #     if mod <= 1:
-    #         if item.selected:
-    #             item.selected = False
-    #             item.displayElem.selection(False)
-    #             self.selecteds.remove(item)
-    #         else:
-    #             item.selected = True
-    #             item.displayElem.selection(True)
-    #             self.selecteds.append(item)
-    #     selection = [x.elem for x in self.selecteds if x.selected]
-    #     self.runEvent("changeSelection", selection)
-    
     def _newElement(self, folder, plop1, plop2):
         self.runEvent("newElem", folder.elem)
         pass

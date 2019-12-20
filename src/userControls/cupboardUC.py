@@ -6,9 +6,11 @@ from pymel.all import *
 from .UC import *
 
 import log
-from core import *
+from core.asset import *
+from core.shot import *
 
 from .chooseStepUC import ChooseStepUC
+from .newElemUC import NewVersion
 from .defineProjectUC import *
 from .detailUC import *
 from .sceneExplorerUC import *
@@ -32,6 +34,7 @@ class CupboardUC(UserControl):
         self.project = None
         self.assets = None
         self.selected = []
+        self.lastSelected = []
         self.versSelected = []
         self.viewVert = False
         
@@ -98,14 +101,17 @@ class CupboardUC(UserControl):
         self.views["import"].eventHandler("importProxy", None)
         
         #load all the interfaces
+
         for key, view in self.views.items():
             view.load()
+        self.changeTabScene("Assets")
 
         self.scrLay = cmds.scrollLayout( self.scrLay, e=True, rc=Callback(self.resizeView))
         cmds.formLayout(self.layout, edit=True,
                         attachForm=[(self.scrLay, 'top', -2),(self.scrLay, 'bottom', -2),(self.scrLay, 'left', -2), (self.scrLay, 'right', -2)])
 
         
+        # self.views["version"].reload()
         self.views["project"].setLastProject()
         self.resizeView()
 
@@ -179,9 +185,6 @@ class CupboardUC(UserControl):
 
     def commandProjectOption(self):
         pass
-        # print("creating tree")
-        # if self.project is not None:
-        #     self.project.createTreeTemplateLocal()
 
     def changeProject(self, p):
         if p == None:
@@ -198,12 +201,25 @@ class CupboardUC(UserControl):
 
     def changeSelection(self, selection):
         log.debug(selection)
+        self.lastSelected = self.selected
+        self.selected = [selection[0]]
         if len(selection) == 1:
-            self.selected = [selection[0]]
             self.views["detail"].changeScene(selection[0])
             self.views["version"].changeScene(selection[0])
+            
+            print(selection[0].__class__.__name__)
+
+            if len(self.lastSelected) == 0 or self.selected[0].__class__ is not self.lastSelected[0].__class__:
+                # if selection[0].__class__.__name__ == Asset.__name__:
+                #     print("======Asset======")
+                #     self.views["version"].changeStepBox(Asset._steps)
+                # if selection[0].__class__.__name__ == Shot.__name__:
+                #     print("======Shot=======")
+                self.views["version"].changeStepBox(selection[0]._steps)
+                    # self.views["version"].changeStepBox(["previs", "anim", "light"])
+
         self.views["detail"].refresh()
-        self.views["version"].loadTree()
+        self.views["version"].refresh()
 
     def changeVersion(self, selection):
         log.debug(selection)
@@ -211,11 +227,12 @@ class CupboardUC(UserControl):
             self.versSelected = [selection[0]]
 
     def changeTabScene(self, tab):
+        return
         if tab == "Assets":
             self.views["version"].changeStepBox(Asset._steps)
         if tab == "Shots":
-            self.views["version"].changeStepBox(["previs", "anim", "light"])
-            # self.views["version"].changeStepBox(Shot._steps)
+            # self.views["version"].changeStepBox(["previs", "anim", "light"])
+            self.views["version"].changeStepBox(Shot._steps)
 
     def commandDownload(self):
         if len(self.selected) > 0 and len(self.versSelected) > 0:
@@ -255,20 +272,21 @@ class CupboardUC(UserControl):
         if len(self.selected) > 0:
             log.debug("creating a new version")
             
-            self.nvWin = WindowUC("New version")
-            self.nvWin.ih = 100
-            self.nvWin.iw = 200
-            self.nvWin.load()
+            # self.nvWin = WindowUC("New version")
+            # self.nvWin.ih = 100
+            # self.nvWin.iw = 200
+            # self.nvWin.load()
 
-            newVersUC = ChooseStepUC(self.nvWin)
+            newVersUC = NewVersion(self.selected[0])
+            newVersUC.name = "New version"
             newVersUC.load()
             newVersUC.attach(top=Attach.FORM, bottom=Attach.FORM, left=Attach.FORM, right=Attach.FORM, margin=0)
             newVersUC.eventHandler("close", self.closeNewVersionWin)
-            self.nvWin.applyAttach()
+            # self.nvWin.applyAttach()
             self.refresh()
 
-            # self.selected[0].makeNewVersion(core.Scene._steps[1])
-            self.selected[0].makeNewVersion("rig")
+            # self.selected[0].makeNewVersion(Scene._steps[1])
+            self.selected[0].makeNewVersion(self.selected[0]._steps[1])
         pass
     
     def closeNewVersionWin(self):

@@ -33,7 +33,7 @@ def fetchVersion(path):
     return version
 
 def download(path):
-    print("|--> Downloading files...")
+    print "|--> Downloading files...",
     current_path = path
 
     if not os.path.exists(current_path):
@@ -60,7 +60,7 @@ def download(path):
 
 
 def writePrefsFiles():
-    print("|--> Write preferences'files...")
+    print "|--> Write preferences'files...",
     f = open(os.path.join(pathUser, "preferences.pil"), "w+")
     f.write('lastProj = ""\n')
     f.write('profil = "MODELER"\n')
@@ -73,10 +73,10 @@ def writePrefsFiles():
     f.write('Amenti;amenti;Q:/promo002/projects;S:/projects;\n')
     f.write('Nasterea;nas;Q:/promo002/projects;S:/projects;\n')
     f.close()
-    print("|--> Preferences' files written  ")
+    print("\r|--> Preferences' files written  ")
 
 def createButtons(pathPiLine, current_path):
-    print("|--> Creating buttons...")
+    print "|--> Creating buttons...",
 
     cmdImport = 'import sys;sys.path.append(\"' + pathSrcs + '\");' + "import main;" + "import core;" + "import userControls;"
     cmdReload = "reload(main);" + "reload(core);" + "reload(userControls);"
@@ -85,7 +85,7 @@ def createButtons(pathPiLine, current_path):
     # cmds.shelfButton(rpt=True, i1=instalPath + "/logo/pi-line.png", l="Pi-Line", p="Custom", dcc=shrtImportStr + "AMui.start()", c="print(\"Not implemented yet\")")
     # cmds.shelfButton(rpt=True, i1=instalPath + "/logo/reload.png", l="Reload", p="Custom", c=delStr + importStr)
     cmds.shelfButton(rpt=True, i1=pathPiLine + "/logo/install.png", l="Install", p="Custom", c="import sys;sys.path.append(\"" + current_path + "\");import installer; installer.download(\"" + current_path + "\")")
-    print("|--> Buttons created     ")
+    print("\r|--> Buttons created     ")
 
 
 print("=================INSTALL PI-LINE=================")

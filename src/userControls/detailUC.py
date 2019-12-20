@@ -2,6 +2,8 @@ import maya.cmds as cmds
 
 import log
 from .UC import *
+from core.asset import Asset
+from core.shot import Shot
 
 class DetailUC(UserControl):
     scene = None
@@ -19,4 +21,7 @@ class DetailUC(UserControl):
         if self.scene == None:
             return
         cmds.text(self.name, e=True, label=self.scene.name.capitalize() , ann=self.scene.category)
-        cmds.text(self.shotUses, e=True, label="Apparition : " + str(self.scene.shotUses) + " shots")
+        if self.scene.__class__ is Asset:
+            cmds.text(self.shotUses, e=True, label="Apparition : " + str(self.scene.shotUses) + " shots")
+        if self.scene.__class__ is Shot:
+            cmds.text(self.shotUses, e=True, label="Assets in shot : " + str(0) + " assets")

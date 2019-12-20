@@ -24,18 +24,13 @@ class VersionUC(UserControl):
         self.selectSteps = []
 
     def load(self):
-        # if self.layout is None or not cmds.formLayout(self.layout, q=True, exists=True):
-        #     self.layout = cmds.formLayout('VersionUC', parent=self.parentLay)
-        # print(self.layout)
-        if self.stepLay is None:
-            self.stepLay = CheckBoxGrpUC(self)
-        print(self.stepLay.parentUC)
+        # if self.stepLay is None:
+        self.stepLay = CheckBoxGrpUC(self)
         self.stepLay.heigt = 30
         self.stepLay.width = 30
-        self.stepLay.load()
-        if self.listVersion is None:
-            self.listVersion = TreeUC(self)
-            self.listVersion.addable = False
+        # if self.listVersion is None:
+        self.listVersion = TreeUC(self)
+        self.listVersion.addable = False
 
         if self.scene is not None:
             steps = self.scene._steps[:]
@@ -51,6 +46,7 @@ class VersionUC(UserControl):
         self.listVersion.eventHandler("changeSelection", self._changeSelectedVersions)
 
 
+        self.stepLay.load()
         self.loadTree()
 
         cmds.formLayout(self.layout, e=True, bgc=hexToRGB(0x808080))
@@ -58,8 +54,13 @@ class VersionUC(UserControl):
         self.stepLay.attach(top=Attach.FORM, bottom=Attach.NONE, left=Attach.FORM, right=Attach.FORM, margin=5)
         self.listVersion.attach(top=(Attach.CTRL, self.stepLay), bottom=Attach.FORM, left=Attach.FORM, right=Attach.FORM, margin=5)
 
-        self.applyAttach()
+        # self.applyAttach()
     
+    def refresh(self):
+        self.listVersion.unload()
+        self.loadTree()
+        # self.stepLay.reload()
+
     def displayTimeToSimpleStr(self, time):
 
             dLag = datetime.datetime.now() - time
@@ -81,32 +82,35 @@ class VersionUC(UserControl):
                 d = time.strftime('%Y/%m/%d')
             return d
 
+    def getStateIcon(self, v):
+        ico = "denied"
+        print(v.onServer, v.onLocal)
+        if v is not None:
+            if v.onServer and v.onLocal:
+                ico = "check"
+            elif v.onServer and not v.onLocal:
+                ico = "download"
+            elif not v.onServer and v.onLocal:
+                ico = "upload"
+        else:
+            ico = "new"
+        return ico
 
     def loadTree(self):
-        print("load version list")
-        # print(self.listVersion)
         if self.listVersion is None:
             return
         self.listVersion.deleteAllItemsFolders()
-        print(self.versions)
+
         for v in self.versions:
-            print(v.name)
             if v.infoName is not None:
                 name = v.infoName
             else:
                 name = v.fileName
-            image = "denied"
-            if v.onServer and v.onLocal:
-                image = "check"
-            elif not v.onServer and v.onLocal:
-                image = "upload"
-            elif v.onServer and not v.onLocal:
-                image = "download"
+            icon = self.getStateIcon(v)
 
             d = self.displayTimeToSimpleStr(v.date)
-
-            self.listVersion.addItem(name, v, image=image, info=d)
-        self.listVersion.load()
+            self.listVersion.addItem(name, v, icon=icon, info=d)
+        self.listVersion.reload()
 
     def changeStepBox(self, bxs):
 
@@ -116,13 +120,8 @@ class VersionUC(UserControl):
         self.stepLay.clearItems()
         for step in bxs:
             self.stepLay.addItem(step)
-        self.stepLay.load()
+        self.stepLay.reload()
         print("stepbox change")
-
-    def refresh(self):
-        if self.listVersion is not None:
-            self.listVersion.load()
-
 
     def chkBxChange(self, chkBxs):
         self.selectSteps = [x for x in chkBxs if chkBxs[x]]
@@ -139,5 +138,5 @@ class VersionUC(UserControl):
         self.scene = scene
         if self.scene is None:
             self.versions = []
-        else:    
+        else:
             self.versions = self.scene.getVersionBy(self.selectSteps)

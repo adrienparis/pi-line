@@ -11,11 +11,10 @@ class CheckBoxGrpUC(UserControl):
     def __init__(self, parent):
         UserControl.__init__(self, parent)
         self.items = {}
+        self.itemsName = []
 
     def load(self):
-        if self.layout is None or not cmds.formLayout(self.layout, q=True, exists=True):
-            self.layout = cmds.formLayout(parent=self.parentLay)
-        log.debug(self.parentLay)
+        
         for i in self.items:
             if "box" in self.items[i] and cmds.checkBox(self.items[i]["box"], q=True, exist=True):
                 cmds.deleteUI(lay)
@@ -24,7 +23,7 @@ class CheckBoxGrpUC(UserControl):
         ac = []
         an = []
         prev = None
-        for i in self.items:
+        for i in self.itemsName:
             c = cmds.checkBox( parent=self.layout, label=i, value=self.items[i]["value"], onc=Callback(self._changeState, True, i), ofc=Callback(self._changeState, False, i))
             self.items[i]["box"] = c
             af.append((c, "top", 5))
@@ -35,11 +34,10 @@ class CheckBoxGrpUC(UserControl):
             else:
                 ac.append((c, "left", 5, prev))
             prev = c
-        cmds.formLayout(self.layout, e=True, af=af, an=an, ac=ac)
+        
+        cmds.formLayout(self.layout, edit=True, attachForm=af, attachControl=ac, attachNone=an)
+        
 
-
-
-        pass
 
     def clearItems(self):
         for i in self.items:
@@ -47,20 +45,21 @@ class CheckBoxGrpUC(UserControl):
                 log.debug("delete " + self.items[i]["box"])
                 cmds.deleteUI(self.items[i]["box"], ctl=True)
         self.items.clear()
+        self.itemsName = []
         pass
 
     def addItem(self, item, value=False):
         self.items[item] = {}
+        self.itemsName.append(item)
         self.items[item]["value"] = value
 
     def modifyItem(self, item, value):
         self.items[item]["value"] = value
 
     def refresh(self):
-        if self.layout is None or not cmds.formLayout(self.layout, q=True, exists=True):
-            return
         for i in self.items:
-            cmds.checkBox(self.items[i]["box"], e=True, label=i, value=self.items[i]["value"])
+            if "box" in self.items[i]:
+                cmds.checkBox(self.items[i]["box"], e=True, label=i, value=self.items[i]["value"])
 
     def getListValue(self):
         l = {}

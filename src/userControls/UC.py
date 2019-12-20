@@ -141,6 +141,7 @@ class UserControl(object):
         self.initHeight = 30
         self.loaded = False
         self.pins = Attach(self)
+        self.layout = None
 
     def _load(self):
         if self.name == "UC":
@@ -148,7 +149,7 @@ class UserControl(object):
             UserControl.increment += 1
         else:
             name = self.name
-        log.info("loading " + self.__class__.__name__ + "...")
+        # log.info("loading " + self.__class__.__name__ + "...")
         if not self.loaded:
             if self.parentLay is None:
                 if cmds.workspaceControl(name, exists=1):
@@ -163,6 +164,8 @@ class UserControl(object):
             else:
                 self.layout = cmds.formLayout(name , parent=self.parentLay, bgc=hexToRGB(self.color.background), h=self.height, w=self.width, vis=self.visible)
             self.loaded = True
+            for c in self.childrens:
+                c.parentLay = self.layout
             object.__getattribute__(self, "load")()
         else:
             log.warning(name + " is already loaded")
@@ -177,13 +180,15 @@ class UserControl(object):
 
     def _refresh(self):
         if self.loaded:
-            log.info("refresh " + self.__class__.__name__ + "...")
+            # log.info("refresh " + self.__class__.__name__ + "...")
             for c in self.childrens:
                 c.refresh()
             object.__getattribute__(self, "refresh")()
   
     def _unload(self):
-        log.info("unload " + self.__class__.__name__ + "...")
+        if self.layout is None:
+            return
+        # log.info("unload " + self.__class__.__name__ + "...")
         self.loaded = False
         for c in self.childrens:
             c.unload()
@@ -204,7 +209,7 @@ class UserControl(object):
         log.warning("[unload] method is not implemented")
 
     def reload(self):
-        log.info("reload " + self.__class__.__name__ + "...")
+        # log.info("reload " + self.__class__.__name__ + "...")
         self.unload()
         self.load()
 
@@ -247,6 +252,8 @@ class UserControl(object):
 
 
     def applyAttach(self):
+        if len(self.childrens) == 0:
+            return
         af = []
         ap = []
         ac = []

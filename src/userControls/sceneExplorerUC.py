@@ -32,6 +32,13 @@ class SceneExplorerUC(UserControl):
                     v = asset.getLastVersion()
                     ico = self.getStateIcon(v)
                     self.explorerAssets.addItem(asset.name, asset, parent=p, icon=ico)
+            self.explorerShots.deleteAllItemsFolders()
+            for c in self.project.shots.keys():
+                p = self.explorerShots.addFolder(c, c)
+                for shot in self.project.shots[c]:
+                    v = shot.getLastVersion()
+                    ico = self.getStateIcon(v)
+                    self.explorerShots.addItem(shot.name, shot, parent=p, icon=ico)
 
     def getStateIcon(self, v):
         ico = "denied"
@@ -66,6 +73,9 @@ class SceneExplorerUC(UserControl):
 
         self.refreshProjectTree()
         self.explorerAssets.eventHandler("changeSelection", self.runEvent, "changeItem")
+        self.explorerShots.eventHandler("changeSelection", self.runEvent, "changeItem")
+        self.explorerAssets.eventHandler("newElem", self.runEvent, "newElem")
+        self.explorerShots.eventHandler("newElem", self.runEvent, "newElem")
 
 
 

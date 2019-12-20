@@ -19,7 +19,6 @@ class ExplorerUC(UserControl, Browsing):
         
     def switchView(self, val):
         self.dispTile = val
-        print("tileview is visible" * self.dispTile + "treeview is visible" * (not self.dispTile))
         self.tileView.visibility(not self.dispTile)
         self.treeView.visibility(self.dispTile)
 
@@ -48,6 +47,7 @@ class ExplorerUC(UserControl, Browsing):
 
         self.switchdisp.eventHandler("switch", self.switchView)
         self.treeView.eventHandler("newElem", self.newElem)
+        self.tileView.eventHandler("newElem", self.newElem)
 
         self.treeView.eventHandler("changeSelection", self.changeSelection, "treeView")
         self.tileView.eventHandler("changeSelection", self.changeSelection, "tileView")
@@ -73,8 +73,8 @@ class ExplorerUC(UserControl, Browsing):
         self.tileView.load()
 
     def changeSelection(self, view, selection):
-        print(view)
-        print(selection)
+        sel = [x.elem for x in selection if x.selected]
+        self.runEvent("changeSelection", sel)
 
     # def changeTab(self):
     #     tabSel = cmds.tabLayout(self.tabs, q=True, st=True)
@@ -82,6 +82,7 @@ class ExplorerUC(UserControl, Browsing):
 
     def newElem(self, elem):
         print(elem)
+        # self.runEvent("newElem", elem)
 
     def newScene(self, cat, sceneName):
         a = Asset(sceneName, cat, self.project)

@@ -108,7 +108,7 @@ class TilesViewUC(UserControl, Browsing):
 
 
     def newElem(self, folder, tile=None, mod=None):
-        print(folder.name)
+        self.runEvent("newElem", folder.elem)
         pass
 
     def clickFolder(self, item, tile, mod):
