@@ -77,14 +77,13 @@ class VersionUC(UserControl):
             if p - datetime.timedelta(days=1) >= time:
                 d = time.strftime('%A - %Hh%M')
             if p - datetime.timedelta(days=6) >= time:
-                d = time.strftime('%m/%d - %Hh')
+                d = time.strftime('%d/%m - %Hh')
             if p - datetime.timedelta(days=20) >= time:
-                d = time.strftime('%Y/%m/%d')
+                d = time.strftime('%d/%m/%Y')
             return d
 
     def getStateIcon(self, v):
         ico = "denied"
-        print(v.onServer, v.onLocal)
         if v is not None:
             if v.onServer and v.onLocal:
                 ico = "check"
@@ -131,7 +130,8 @@ class VersionUC(UserControl):
         self.loadTree()
 
     def _changeSelectedVersions(self, selection):
-        self.runEvent("changeItem", selection)
+        sel = [x.elem for x in selection]
+        self.runEvent("changeItem", sel)
 
     def changeScene(self, scene):
         self.versions = []

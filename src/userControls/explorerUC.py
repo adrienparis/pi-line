@@ -66,6 +66,8 @@ class ExplorerUC(UserControl, Browsing):
 
 
     def refresh(self):
+        self.treeView.addable = self.addable
+        self.tileView.addable = self.addable
         self.treeView.importBrows(self)
         self.tileView.importBrows(self)
         self.treeView.reload()
@@ -81,8 +83,8 @@ class ExplorerUC(UserControl, Browsing):
     #     self.runEvent("changeTab", tabSel)
 
     def newElem(self, elem):
-        print(elem)
-        # self.runEvent("newElem", elem)
+        # print(elem)
+        self.runEvent("newElem", elem)
 
     def newScene(self, cat, sceneName):
         a = Asset(sceneName, cat, self.project)

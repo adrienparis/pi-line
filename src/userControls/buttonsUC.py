@@ -55,8 +55,54 @@ class switchBtn(UserControl):
 
 class IconButtonUC(UserControl):
     def __init__(self):
-        UserControl.__init__(self)
+        UserControl.__init__(self, parent)
 
     def load(self):
         self.button = cmds.iconTextButton('btnSetServerPath', parent=self.layout, style='iconOnly', image1=getIcon("folder"), label='Switch view', w=22, h=22, sic=True, bgc=[0.45,0.45,0.45])
 
+class TextButtonUC(UserControl):
+    def __init__(self, parent, text="OK"):
+        UserControl.__init__(self, parent)
+        self.text = text
+        self.warning = False
+        self.greyOut = False
+    
+    def load(self):
+        if self.warning:
+            self.button = cmds.button(label=self.text, parent=self.layout, bgc=hexToRGB(self.color.warning), c=Callback(self.runEvent, "click"))
+        else:
+            self.button = cmds.button(label=self.text, parent=self.layout, bgc=hexToRGB(self.color.button), c=Callback(self.runEvent, "click"))
+        cmds.formLayout(self.layout, edit=True,
+                        attachForm=[(self.button, 'top', 0), (self.button, 'bottom', 0), (self.button, 'left', 0), (self.button, 'right', 0)])
+
+    def refresh(self):
+        cmds.button(self.button, e=True, label=self.text)
+
+class TextFieldUC(UserControl):
+    def __init__(self, parent, text=""):
+        UserControl.__init__(self, parent)
+        self.text = text
+
+    def load(self):
+        self._textLabel = cmds.textField(parent=self.layout, text=self.text)
+        cmds.formLayout(self.layout, edit=True,
+                        attachForm=[(self._textLabel, 'top', 0), (self._textLabel, 'bottom', 0), (self._textLabel, 'left', 0), (self._textLabel, 'right', 0)])
+    
+    def refresh(self):
+        cmds.textField(self._textLabel, e=True, text=self.text)
+
+class TextLabelUC(UserControl):
+    def __init__(self, parent, text="..."):
+        UserControl.__init__(self, parent)
+        self.text = text
+
+    def load(self):
+        self._textLabel = cmds.text(parent=self.layout, label=self.text)
+        cmds.formLayout(self.layout, edit=True,
+                        attachForm=[(self._textLabel, 'top', 0), (self._textLabel, 'bottom', 0), (self._textLabel, 'left', 0), (self._textLabel, 'right', 0)])
+    
+    def refresh(self):
+        cmds.text(self._textLabel, e=True, label=self.text)
+
+class ImageUC(UserControl):
+    pass

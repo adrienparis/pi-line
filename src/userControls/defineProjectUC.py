@@ -1,9 +1,12 @@
+import subprocess
+
 import maya.cmds as cmds
 from pymel.all import *
 
 import log
 from .UC import *
 from .treeUC import TreeUC
+from .buttonsUC import TextButtonUC, TextFieldUC, TextLabelUC
 
 from core.project import Project, Path
 from core.user import User
@@ -133,26 +136,78 @@ class DefineProjectUC(UserControl):
             self.project = None
         def load(self):
             # self.layout = cmds.formLayout(self.name, parent=self.parentLay, bgc=hexToRGB(0x7a7a7a), h=150)
-            self.txName = cmds.text(parent=self.layout, label="test Name")
-            self.txDim = cmds.text(parent=self.layout, label="test Dim")
-            self.txServPath = cmds.text(parent=self.layout, label="test Server Path")
-            self.txAuthor = cmds.text(parent=self.layout, label="test Author")
-            self.txDate = cmds.text(parent=self.layout, label="test creation Date")
+            self.txName = TextLabelUC(self, text="test Name")
+            self.txDim = TextLabelUC(self, text="test Dim")
+            self.txServPath = TextLabelUC(self, text="test Server Path")
+            self.txAuthor = TextLabelUC(self, text="test Author")
+            self.txDate = TextLabelUC(self, text="test creation Date")
+            self.buttonsBox = UserControl(self)
+            self.buttonsBox.load()
+            self.frgtButton = TextButtonUC(self.buttonsBox, text="Forget")
+            self.frgtButton.warning = True
+            self.mngAutButton = TextButtonUC(self.buttonsBox, text="Manage autorization")
+            self.backupButton = TextButtonUC(self.buttonsBox, text="Backup")
+            self.incVersButton = TextButtonUC(self.buttonsBox, text="Increment Version")
+            self.openEplorer = TextButtonUC(self.buttonsBox, text="open explorer")
 
-            cmds.formLayout(self.layout, e=True, attachForm=[(self.txName, "left", 10), (self.txName, "top", 10),
-                                                             (self.txDim, "left", 10), 
-                                                             (self.txServPath, "left", 10), 
-                                                             (self.txAuthor, "left", 10), 
-                                                             (self.txDate, "left", 10)], 
-                                                 attachNone=[(self.txName, "right"), (self.txName, "bottom"),
-                                                             (self.txDim, "right"), (self.txDim, "bottom"),
-                                                             (self.txServPath, "right"), (self.txServPath, "bottom"),
-                                                             (self.txAuthor, "right"), (self.txAuthor, "bottom"),
-                                                             (self.txDate, "right"), (self.txDate, "bottom")],
-                                                 attachControl=[(self.txDim, "top", 2, self.txName),
-                                                                (self.txServPath, "top", 15, self.txDim),
-                                                                (self.txAuthor, "top", 10, self.txServPath),
-                                                                (self.txDate, "top", 2, self.txAuthor)])
+
+            # self.txName = cmds.text(parent=self.layout, label="test Name")
+            # self.txDim = cmds.text(parent=self.layout, label="test Dim")
+            # self.txServPath = cmds.text(parent=self.layout, label="test Server Path")
+            # self.txAuthor = cmds.text(parent=self.layout, label="test Author")
+            # self.txDate = cmds.text(parent=self.layout, label="test creation Date")
+
+            for c in self.buttonsBox.childrens:
+                log.debug(c.__class__.__name__)
+                c.load()
+                log.debug(str(c))
+
+            self.frgtButton.attach(top=Attach.NONE, bottom=Attach.FORM, left=Attach.NONE, right=Attach.FORM, margin=5)
+            self.mngAutButton.attach(top=Attach.NONE, bottom=Attach.FORM, left=Attach.NONE, right=(Attach.CTRL, self.frgtButton), margin=5)
+            self.backupButton.attach(top=Attach.NONE, bottom=Attach.FORM, left=Attach.NONE, right=(Attach.CTRL, self.mngAutButton), margin=5)
+            self.incVersButton.attach(top=Attach.NONE, bottom=Attach.FORM, left=Attach.NONE, right=(Attach.CTRL, self.backupButton), margin=5)
+            self.openEplorer.attach(top=Attach.NONE, bottom=Attach.FORM, left=Attach.NONE, right=(Attach.CTRL, self.incVersButton), margin=5)
+
+            for c in self.childrens:
+                log.debug(c.__class__.__name__)
+                c.load()
+                log.debug(str(c))
+
+            self.txName.attach(top=Attach.FORM, bottom=Attach.NONE, left=Attach.FORM, right=Attach.NONE, margin=5)
+            self.txDim.attach(top=(Attach.CTRL, self.txName), bottom=Attach.NONE, left=Attach.FORM, right=Attach.NONE, margin=5)
+            self.txServPath.attach(top=(Attach.CTRL, self.txDim), bottom=Attach.NONE, left=Attach.FORM, right=Attach.NONE, margin=5)
+            self.txAuthor.attach(top=(Attach.CTRL, self.txServPath), bottom=Attach.NONE, left=Attach.FORM, right=Attach.NONE, margin=5)
+            self.txDate.attach(top=(Attach.CTRL, self.txAuthor), bottom=Attach.NONE, left=Attach.FORM, right=Attach.NONE, margin=5)
+            self.buttonsBox.attach(top=Attach.NONE, bottom=Attach.FORM, left=Attach.FORM, right=Attach.FORM, margin=0)
+
+
+            self.mngAutButton.visibility(False)
+            self.backupButton.visibility(False)
+            self.incVersButton.visibility(False)
+            self.openEplorer.visibility(False)
+
+
+            self.frgtButton.eventHandler("click", None)
+            self.mngAutButton.eventHandler("click", self.manageAutorisation)
+            self.backupButton.eventHandler("click", None)
+            self.incVersButton.eventHandler("click", self.incrementVersion)
+            self.openEplorer.eventHandler("click", self.openExplorer)
+
+
+            # cmds.formLayout(self.layout, e=True, attachForm=[(self.txName, "left", 10), (self.txName, "top", 10),
+            #                                                  (self.txDim, "left", 10), 
+            #                                                  (self.txServPath, "left", 10), 
+            #                                                  (self.txAuthor, "left", 10), 
+            #                                                  (self.txDate, "left", 10)], 
+            #                                      attachNone=[(self.txName, "right"), (self.txName, "bottom"),
+            #                                                  (self.txDim, "right"), (self.txDim, "bottom"),
+            #                                                  (self.txServPath, "right"), (self.txServPath, "bottom"),
+            #                                                  (self.txAuthor, "right"), (self.txAuthor, "bottom"),
+            #                                                  (self.txDate, "right"), (self.txDate, "bottom")],
+            #                                      attachControl=[(self.txDim, "top", 2, self.txName),
+            #                                                     (self.txServPath, "top", 15, self.txDim),
+            #                                                     (self.txAuthor, "top", 10, self.txServPath),
+            #                                                     (self.txDate, "top", 2, self.txAuthor)])
 
         def setProject(self, project):
             self.project = project
@@ -161,12 +216,39 @@ class DefineProjectUC(UserControl):
         def refresh(self):
             if self.project is None:
                 return
-            cmds.text(self.txName, e=True, label=self.project.name)
-            cmds.text(self.txDim, e=True, label=self.project.diminutive)
-            cmds.text(self.txServPath, e=True, label=self.project.path.server)
-            cmds.text(self.txAuthor, e=True, label=self.project.author)
-            cmds.text(self.txDate, e=True, label=self.project.date)
-            
+            log.debug(self.project)
+            self.txName.text = self.project.name
+            self.txDim.text = self.project.diminutive
+            self.txServPath.text = self.project.path.server
+            self.txAuthor.text = self.project.author
+            self.txDate.text = self.project.date
+            self.mngAutButton.visibility(self.project.roles.isUsernameIsAutorised(User().name, "manageAutorisation"))
+            self.backupButton.visibility(self.project.roles.isUsernameIsAutorised(User().name, "BackupProject"))
+            self.incVersButton.visibility(self.project.roles.isUsernameIsAutorised(User().name, "manageVersion"))
+            self.openEplorer.visibility(self.project.roles.isUsernameIsAutorised(User().name, "openFileExplorer"))
+
+
+
+            # cmds.text(self.txName, e=True, label=self.project.name)
+            # cmds.text(self.txDim, e=True, label=self.project.diminutive)
+            # cmds.text(self.txServPath, e=True, label=self.project.path.server)
+            # cmds.text(self.txAuthor, e=True, label=self.project.author)
+            # cmds.text(self.txDate, e=True, label=self.project.date)
+        def manageAutorisation(self):
+            path = os.path.join(self.project.path.server, self.project.name, ".pil")
+            print(path)
+            print(os.path.join(path, "roles.pil"))
+            self.project.roles.writeInfo(path)
+
+        def openExplorer(self):
+            path = os.path.realpath(self.project.path.server)
+            path = os.path.join(path, self.project.name)
+            log.debug(path)
+            subprocess.Popen(r'explorer ' + path)
+
+        def incrementVersion(self):
+            self.project.copyAllPublishToNewVersion()
+
 
     class localPathUC(UserControl):
         def __init__(self, parent):
@@ -204,8 +286,8 @@ class DefineProjectUC(UserControl):
             self.name = "saveExit" + self.name
         def load(self):
             # self.layout = cmds.formLayout(self.name, parent=self.parentLay, bgc=hexToRGB(0x5a5a5a))
-            self.svBtn = cmds.button(parent=self.layout, label="Save and Exit", c=Callback(self.runEvent, "save"), bgc=hexToRGB(0x7d7d7d))
-            self.calBtn = cmds.button(parent=self.layout, label="Cancel", c=Callback(self.runEvent, "cancel"), bgc=hexToRGB(0x7d7d7d))
+            self.svBtn = cmds.button(parent=self.layout, label="Save and Exit", c=Callback(self.runEvent, "save"), bgc=hexToRGB(self.color.button))
+            self.calBtn = cmds.button(parent=self.layout, label="Cancel", c=Callback(self.runEvent, "cancel"), bgc=hexToRGB(self.color.button))
 
             cmds.formLayout(self.layout, e=True, attachForm=[(self.svBtn, "top", 5), (self.svBtn, "bottom", 5),
                                                              (self.calBtn, "top", 5), (self.calBtn, "bottom", 5),
@@ -340,6 +422,8 @@ class DefineProjectUC(UserControl):
 
         self.projects = Project.fetchProjects()
         self.views["projects"].addItem("New project", None)
+        #TODO manage better
+        self.views["projects"].eventHandler("newElem", None)
         
         self.projects.sort(key=lambda x: x.name)
         
@@ -364,9 +448,9 @@ class DefineProjectUC(UserControl):
         self.applyAttach()
 
     def changeSelect(self, p):
-        self.selected = p[0]
-        self.views["initInfo"].setProj(p[0])
-        self.views["localPath"].path = p[0].path.local
+        self.selected = p[0].elem
+        self.views["initInfo"].setProj(self.selected)
+        self.views["localPath"].path = self.selected.path.local
         self.views["localPath"].refresh()
  
     def changeLocalDir(self, path):

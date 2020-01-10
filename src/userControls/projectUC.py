@@ -20,6 +20,7 @@ class ProjectUC(UserControl):
         self.projects = Project.fetchProjects()
         print(self.projects)
         self.eventHandler("optionBtn", self.option)
+        self.currentProj = None
         # self.bgc = 0x00ff00
 
     def load(self):
@@ -46,8 +47,8 @@ class ProjectUC(UserControl):
 
     def changeProject(self, *args):
         v = cmds.optionMenu(self.menu, q=True, v=True)
-        p = next((x for x in self.projects if x.name == v), None)
-        self.runEvent("changeProject", p)
+        self.currentProj = next((x for x in self.projects if x.name == v), None)
+        self.runEvent("changeProject", self.currentProj)
 
     def setLastProject(self):
         u = User()
@@ -86,6 +87,8 @@ class ProjectUC(UserControl):
         self.projectsLabel.append(cmds.menuItem( "projEmpty", label='-' ))
         for i, p in enumerate(self.projects):
             self.projectsLabel.append(cmds.menuItem( "projName_" + str(i) ,label=p.name ))
+        if self.currentProj is not None:
+            cmds.optionMenu(self.menu, e=True, v=self.currentProj.name)
         cmds.formLayout(self.layout, edit=True,
             attachForm=[(self.menu, 'top', 0), (self.menu, 'left', 0)],
             attachControl=[(self.menu, 'right', 5, self.refreshBtn)],

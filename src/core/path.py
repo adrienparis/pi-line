@@ -19,6 +19,11 @@ class Path(object):
                 return object.__getattribute__(self, "server")
             else:
                 return object.__getattribute__(self, "_local")
+        elif name == "onLocal":
+            if self._local == None:
+                return False
+            return True
         else:
             return object.__getattribute__(self, name)
+    
 

@@ -8,6 +8,7 @@ from .UC import *
 import log
 from core.asset import *
 from core.shot import *
+from core.version import *
 
 from .chooseStepUC import ChooseStepUC
 from .newElemUC import NewVersion
@@ -87,9 +88,10 @@ class CupboardUC(UserControl):
         # TODO replace [None] by actual fonction
         self.views["project"].eventHandler("changeProject", self.changeProject)
         self.views["project"].eventHandler("optionBtn", self.commandProjectOption)
-        self.views["project"].eventHandler("refreshBtn", None)
+        self.views["project"].eventHandler("refreshBtn", self.refreshAll)
         self.views["explorer"].eventHandler("changeItem", self.changeSelection)
         self.views["explorer"].eventHandler("changeTab", self.changeTabScene)
+        self.views["explorer"].eventHandler("newElem", self.commandNewElem)
         self.views["version"].eventHandler("changeItem", self.changeVersion)
         self.views["sync"].eventHandler("download", self.commandDownload)
         self.views["sync"].eventHandler("delete", None)
@@ -186,6 +188,24 @@ class CupboardUC(UserControl):
     def commandProjectOption(self):
         pass
 
+    def commandNewElem(self, name, cat):
+        print(name, cat)
+
+    def refreshAll(self):
+
+        # if self.project is None:
+        #     return
+        # self.project.fetchAll()
+        # self.project.setProject()
+        # self.views["explorer"].setProject(self.project)
+        # self.views["explorer"].refresh()
+        self.refresh()
+
+    def refresh(self):
+        for key, view in self.views.items():
+            view.refresh()
+
+
     def changeProject(self, p):
         if p == None:
             log.error("the project was not found")
@@ -256,8 +276,20 @@ class CupboardUC(UserControl):
 
     def commandOpen(self):
         if len(self.selected) > 0 and len(self.versSelected) > 0:
-            log.debug("open version")
-        pass
+            v = self.versSelected[0]
+            wip = v.getLastWip()
+            if wip is not None:
+                wipPath = os.path.join(v.path.local, v.getAbsolutePath(),"wip", wip)
+                print(wipPath)
+                if os.path.isfile(wipPath):
+                    cmds.file( wipPath, o=True, f=True )
+                    return
+            pubPath = os.path.join(v.path.local, v.getAbsolutePath(), v.fileName + ".ma")
+            print(pubPath)
+            if os.path.isfile(pubPath):
+                cmds.file( pubPath, o=True, f=True)
+                return
+            
 
     def commandPublish(self):
         if len(self.selected) > 0 and len(self.versSelected) > 0:

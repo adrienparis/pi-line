@@ -4,6 +4,7 @@ import log
 from .UC import *
 from .explorerUC import ExplorerUC
 from core.asset import Asset
+from core.user import User
 
 class SceneExplorerUC(UserControl):
 
@@ -30,6 +31,8 @@ class SceneExplorerUC(UserControl):
                 # plop += 1
                 for asset in self.project.assets[c]:
                     v = asset.getLastVersion()
+                    if v is not None:
+                        log.debug("server/local", v.onServer, v.onLocal)
                     ico = self.getStateIcon(v)
                     self.explorerAssets.addItem(asset.name, asset, parent=p, icon=ico)
             self.explorerShots.deleteAllItemsFolders()
@@ -74,8 +77,8 @@ class SceneExplorerUC(UserControl):
         self.refreshProjectTree()
         self.explorerAssets.eventHandler("changeSelection", self.runEvent, "changeItem")
         self.explorerShots.eventHandler("changeSelection", self.runEvent, "changeItem")
-        self.explorerAssets.eventHandler("newElem", self.runEvent, "newElem")
-        self.explorerShots.eventHandler("newElem", self.runEvent, "newElem")
+        self.explorerAssets.eventHandler("newElem", self.runEvent, "newElem", "asset")
+        self.explorerShots.eventHandler("newElem", self.runEvent, "newElem", "shot")
 
 
 
@@ -85,6 +88,9 @@ class SceneExplorerUC(UserControl):
 
         self.explorerAssets.load()
         self.explorerShots.load()
+        if self.project is not None:
+            self.explorerAssets.addable = self.project.roles.isUsernameIsAutorised(User().name, "createNewAssets")
+            self.explorerShots.addable = self.project.roles.isUsernameIsAutorised(User().name, "createNewShots")
 
         cmds.formLayout(self.tabAssets, e=True, attachForm=self.explorerAssets.pins.form)
         cmds.formLayout(self.tabShots, e=True, attachForm=self.explorerShots.pins.form)
@@ -94,6 +100,9 @@ class SceneExplorerUC(UserControl):
         self.changeTab()
 
     def refresh(self):
+        if self.project is not None:
+            self.explorerAssets.addable = self.project.roles.isUsernameIsAutorised(User().name, "createNewAssets")
+            self.explorerShots.addable = self.project.roles.isUsernameIsAutorised(User().name, "createNewShots")
         self.refreshProjectTree()
         self.explorerAssets.refresh()
         self.explorerShots.refresh()

@@ -13,6 +13,91 @@ from .item import Item
 from .asset import Asset
 from .shot import Shot
 
+
+class Role(object):
+    def __init__(self):
+
+        #Jobs
+        self.jobs = {}
+        self.jobs["owners"] = []
+        self.jobs["writers"] = []
+        self.jobs["mainProductionManagers"] = []
+        self.jobs["imageProductionManagers"] = []
+        self.jobs["animationProductionManagers"] = []
+        self.jobs["conceptArtists"] = []
+        self.jobs["storyboarders"] = []
+        self.jobs["imageReferants"] = []
+        self.jobs["animReferants"] = []
+        self.jobs["modellers"] = []
+        self.jobs["surfacers"] = []
+        self.jobs["riggers"] = []
+        self.jobs["animators"] = []
+        #always autorised
+        self.jobs["devs"] = ["a.paris"]
+
+        #Autorisations
+        self.autorisations = {}
+        self.autorisations["manageAutorisation"] = ["owners"]
+        self.autorisations["BackupProject"] = ["all"]
+        self.autorisations["manageVersion"] = ["owners", "mainProductionManagers", "imageProductionManagers", "animationProductionManagers"]
+        self.autorisations["openFileExplorer"] = ["mainProductionManagers", "imageProductionManagers", "surfacers"]
+        self.autorisations["createNewAssetsCategories"] = ["mainProductionManagers", "imageProductionManagers", "conceptArtists"]
+        self.autorisations["createNewSequences"] = ["mainProductionManagers", "animationProductionManagers", "storyboarders"]
+        self.autorisations["createNewAssets"] = ["mainProductionManagers", "imageProductionManagers", "imageReferants", "conceptArtists"]
+        self.autorisations["createNewShots"] = ["mainProductionManagers", "animationProductionManagers", "animReferants", "storyboarders"]
+        self.autorisations["deleteAssetsCategories"] = ["mainProductionManagers", "imageProductionManagers", "conceptArtists"]
+        self.autorisations["deleteSequences"] = ["mainProductionManagers", "animationProductionManagers", "storyboarders"]
+        self.autorisations["deleteAssets"] = ["mainProductionManagers", "imageProductionManagers", "imageReferants", "conceptArtists"]
+        self.autorisations["deleteShots"] = ["mainProductionManagers", "animationProductionManagers", "animReferants", "storyboarders"]
+
+    def isUsernameIsAutorised(self, username, autorisation):
+        # if username == "a.paris":
+        #     return True
+        if username in self.jobs["devs"]:
+            log.debug("autorized " + username + " to " + autorisation + " because he is a dev")
+            return True
+        jobs = self.autorisations[autorisation]
+
+        if "all" in jobs:
+            log.debug("autorized " + username + " to " + autorisation + " because everyone as acces")
+            return True
+        for job in jobs:
+            if username in self.jobs[job]:
+                log.debug("autorized " + username + " to " + autorisation + " because he is a " + job)
+                return True
+        return False
+
+    def isUsernameIsInAJob(self, username, job):
+        if username in self.job:
+            return True
+        return False
+
+    
+    def writeInfo(self, path):
+        log.debug(os.path.join(path, "roles.pil"))
+        if not os.path.isdir(path):
+            log.warning(".pil folder not found")
+        with open(os.path.join(path, "roles.pil"), "w+") as fp:
+            for key, item in self.jobs.items():
+                l = key + "="
+                for i in item:
+                    l += i + ";"
+                fp.write(l + "\n")
+
+    def readInfo(self, path):
+        info = os.path.join(path, "roles.pil")
+        if not os.path.isfile(info):
+            log.warning("can't open roles'file", info)
+            return
+        data = {}
+        with open(info) as fp:
+            for line in fp:
+                k, v = line.replace("\n", "").split("=")
+                array = v.split(";")
+                log.debug("line : ", k, array)
+                self.jobs[k] = array
+        
+
 class Project(Item):
     treeTemplate = [["1_preprod"],
                     ["2_ressource"], 
@@ -39,6 +124,7 @@ class Project(Item):
         self.assetCategories = [] # Categories ????
         self.shots = {}
         self.sequences = []
+        self.roles = Role()
 
     def getAssetsByCategory(self, cat):
         '''Return a list of assets that are a [cat] categories
@@ -106,8 +192,10 @@ class Project(Item):
         lp = os.path.join(self.path.local, relativePath)
         sp = os.path.join(self.path.server, relativePath)
 
+        log.debug("local  asset [" + lp + "]")
+        log.debug("server asset [" + sp + "]")
         if not os.path.isdir(lp):
-            log.warning("[" + lp + "] local assets'folder not foud")
+            log.warning("[" + lp + "] local assets'folder not found")
         else:
             for c in os.listdir(lp):
                 cat = os.path.join(lp, c)
@@ -115,13 +203,16 @@ class Project(Item):
                     continue
                 self.addCategory(c)
                 for n in os.listdir(cat):
+                    nPath = os.path.join(cat, n)
+                    if not os.path.isdir(nPath):
+                        continue
                     a = Asset(n, c, self)
                     self.assets[c].append(a)
                     a.onLocal = True
                     a.fetchVersions()
 
         if not os.path.isdir(sp):
-            log.warning("[" + sp + "] server assets'folder not foud")
+            log.warning("[" + sp + "] server assets'folder not found")
         else:
             for c in os.listdir(sp):
                 cat = os.path.join(sp, c)
@@ -129,6 +220,9 @@ class Project(Item):
                     continue
                 self.addCategory(c)
                 for n in os.listdir(cat):
+                    nPath = os.path.join(cat, n)
+                    if not os.path.isdir(nPath):
+                        continue
                     a = Asset(n, c, self)
                     s = next((x for x in self.assets[c] if x.name == a.name and x.category == a.category), None)
                     if s is None:
@@ -143,9 +237,11 @@ class Project(Item):
         relativePath = os.path.join(self.relativePath, Shot._path)
         lp = os.path.join(self.path.local, relativePath)
         sp = os.path.join(self.path.server, relativePath)
+        log.debug("local  shot  [" + lp + "]")
+        log.debug("server shot  [" + sp + "]")
 
         if not os.path.isdir(lp):
-            log.warning("[" + lp + "] local assets'folder not foud")
+            log.warning("[" + lp + "] local assets'folder not found")
         else:
             for c in os.listdir(lp):
                 cat = os.path.join(lp, c)
@@ -153,12 +249,15 @@ class Project(Item):
                     continue
                 self.addSequence(c)
                 for n in os.listdir(cat):
+                    nPath = os.path.join(cat, n)
+                    if not os.path.isdir(nPath):
+                        continue
                     a = Shot(n, c, self)
                     self.shots[c].append(a)
                     a.onLocal = True
 
         if not os.path.isdir(sp):
-            log.warning("[" + sp + "] server assets'folder not foud")
+            log.warning("[" + sp + "] server shots'folder not found")
         else:
             for c in os.listdir(sp):
                 cat = os.path.join(sp, c)
@@ -166,6 +265,9 @@ class Project(Item):
                     continue
                 self.addSequence(c)
                 for n in os.listdir(cat):
+                    nPath = os.path.join(cat, n)
+                    if not os.path.isdir(nPath):
+                        continue
                     a = Shot(n, c, self)
                     s = next((x for x in self.shots[c] if x.name == a.name and x.category == a.category), None)
                     if s is None:
@@ -201,19 +303,30 @@ class Project(Item):
         self.shots[name] = []
         return True
 
+    def copyAllPublishToNewVersion(self):
+        self.fetchAll()
+        for c, scenes in self.assets.items():
+            for s in scenes:
+                s.makeVersionFromPublish()
+                print(s.name)
+        for c, scenes in self.shots.items():
+            for s in scenes:
+                s.makeVersionFromPublish()
+                print(s.name)
 
     def fetchAll(self):
         self.fetchAssets()
         self.fetchShots()
 
+    #TODO Find an other way
     def setProject(self):
-        p = os.path.join(self.path.server, self.name, "3_work", "maya")
+        p = os.path.join(self.path.local, self.name, "3_work", "maya")
         if not os.path.isdir(p):
-            cmds.warning("Project folder not found")
+            log.warning("Project folder not found")
             return
         
-        cmds.workspace(p, o=True)
-        cmds.workspace(dir=p)
+        # cmds.workspace(p, o=True)
+        # cmds.workspace(dir=p)
 
     #TODO Create/copy all the folders of the local tree
     def makeLocalFolderTree(self):
@@ -235,21 +348,30 @@ class Project(Item):
         info.write("author=" + self.author + "\n")
         info.write("date=" + str(self.date) + "\n")
 
+        self.roles.writeInfo(path)
+
         ctypes.windll.kernel32.SetFileAttributesW(path, 0x02)
 
     def readInfo(self):
-        path = os.path.join(self.path.server, self.name, ".pil", "project.pil")
-        if not os.path.isfile(path):
+        path = os.path.join(self.path.server, self.name, ".pil")
+        if not os.path.isdir(path):
             return
+        info = os.path.join(path, "project.pil")
         data = {}
-        with open(path) as fp:
+        log.debug("start reading project infos")
+        with open(info) as fp:
             for line in fp:
+                log.debug("line : ", line)
                 k, v = line.replace("\n", "").split("=")
                 data[k] = v
         
         self.diminutive = data["dim"]
         self.date = datetime.datetime.strptime( data["date"], '%Y-%m-%d %H:%M:%S.%f')
         self.author = data["author"]
+
+        log.debug("start reading roles infos")
+        self.roles.readInfo(path)
+        log.debug("stop reading roles infos")
 
     def writeProjectInPrefs(self):
         user = User()
@@ -290,13 +412,14 @@ class Project(Item):
         with open(filepath) as fp:
             for line in fp:
                 # l = ast.literal_eval(line.replace("\\", "/"))
-                l = line.split(";")
+                l = line.split("\n")[0].split(";")
                 # l.pop()
                 print(line)
+                print(l)
                 if len(l) >= 3:
                     p = Project(l[0], Path(l[2]))
                     p.diminutive = l[1]
-                    if len(l) == 4:
+                    if len(l) >= 4:
                         log.debug(l[3])
                         p.path.local = l[3]
                     p.readInfo()

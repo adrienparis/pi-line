@@ -16,6 +16,7 @@ class Color():
         self.button = 0x606060
         self.background = 0x303030
         self.text = 0x5285a6
+        self.warning = 0xec281a
 
 def getIcon(icon):
     if icon is not None:
@@ -149,7 +150,7 @@ class UserControl(object):
             UserControl.increment += 1
         else:
             name = self.name
-        # log.info("loading " + self.__class__.__name__ + "...")
+        # log.debug("loading " + self.__class__.__name__ + "...")
         if not self.loaded:
             if self.parentLay is None:
                 if cmds.workspaceControl(name, exists=1):
@@ -174,21 +175,23 @@ class UserControl(object):
             else:
                 cmds.formLayout(self.layout, e=True, parent=self.parentLay, bgc=hexToRGB(self.color.background), h=self.height, w=self.width)
         
+        for c in self.childrens:
+            c.load()
         if self.parentUC is not None:
             self.parentUC.applyAttach()
         self.applyAttach()
 
     def _refresh(self):
         if self.loaded:
-            # log.info("refresh " + self.__class__.__name__ + "...")
+            # log.debug("refresh " + self.__class__.__name__ + "...")
+            object.__getattribute__(self, "refresh")()
             for c in self.childrens:
                 c.refresh()
-            object.__getattribute__(self, "refresh")()
   
     def _unload(self):
         if self.layout is None:
             return
-        # log.info("unload " + self.__class__.__name__ + "...")
+        # log.debug("unload " + self.__class__.__name__ + "...")
         self.loaded = False
         for c in self.childrens:
             c.unload()
@@ -200,13 +203,19 @@ class UserControl(object):
         self.loaded = False
 
     def load(self):
-        log.warning("[load] method is not implemented")
+        if self.__class__.__name__ is "UserControl":
+            return
+        log.warning("[" + self.__class__.__name__ + "][load] method is not implemented")
 
     def refresh(self):
-        log.warning("[refresh] method is not implemented")
+        if self.__class__.__name__ is "UserControl":
+            return
+        log.warning("[" + self.__class__.__name__ + "][refresh] method is not implemented")
 
     def unload(self):
-        log.warning("[unload] method is not implemented")
+        if self.__class__.__name__ is "UserControl":
+            return
+        log.warning("[" + self.__class__.__name__ + "][unload] method is not implemented")
 
     def reload(self):
         # log.info("reload " + self.__class__.__name__ + "...")

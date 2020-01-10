@@ -15,7 +15,7 @@ class Version(Item):
             self.name = name
         Item.__init__(self, name, scene)
         self.date = datetime.datetime.strptime(self.name, '%Y%m%d%H%M%S')
-        print("init version", self.date)
+        # print("init version", self.date)
         self.fileName = self.parent.fileName + "_" + self.step
         self.infoName = None
         self.wips = []
@@ -27,6 +27,11 @@ class Version(Item):
         '''Create folder of the current version on local named by the current date.
         it also creates a wip folder and an empty project'''
 
+        path = os.path.join(self.path.server, self.parent.getAbsolutePath(),
+                            self.step, Version._path, self.name)
+        os.makedirs(path)
+    
+    def makeNewWIP(self):
         path = os.path.join(self.path.local, self.parent.getAbsolutePath(),
                             self.step, Version._path, self.name)
         wipPath = os.path.join(path, "wip")
@@ -35,10 +40,9 @@ class Version(Item):
         name = self.fileName + ".001" + ".ma"
         # TODO make wips too
         templateFile = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir, "empty.ma")
-        print(templateFile)
-        print(os.path.join(wipPath, name))
         self.onLocal = True
         shutil.copy(templateFile, os.path.join(wipPath, name))
+
 
 # TODO copy the server version to the local version
 # TODO and copy the publish of the version to the local scene
@@ -76,6 +80,8 @@ class Version(Item):
         shutil.move(last, newLoc)
         os.makedirs(newSer)
         copy_tree(newLoc, newSer)
+        #BAD IDEA
+        #TODO REPLACE THAT!! do not copy all and deleting after! only copy what's needed
         shutil.rmtree(newSerWip)
         self.onServer = True
         print("all worked")
@@ -89,14 +95,28 @@ class Version(Item):
         '''copy the publish of the version to the local scene'''
         pubPath = os.path.join( self.path.local, self.parent.getAbsolutePath(), self.step)
         verPath = os.path.join( self.path.local, self.getAbsolutePath())
-        wipPath = os.path.join( pubPath, "wip")
+        wipPath = os.path.join( verPath, "wip")
         print("copy \n\t" + verPath + "\n to \n\t" + pubPath)
-        copy_tree(verPath, pubPath)
-        shutil.rmtree(wipPath)
+
+        f = os.listdir(verPath)
+        for name in f:
+            fullName = os.path.join(verPath, name)
+            if os.path.isfile(fullName):
+                shutil.copy(fullName, pubPath)
+
+
+        # shutil.copytree(verPath, pubPath, ignore=shutil.ignore_patterns("./wip"))
+        print("copied")
+        # copy_tree(verPath, pubPath)
+        #TODO BAD IDEA!!!! find a way to copy the folder WITHOUT copying the wip path
+        # shutil.rmtree(wipPath)
 
     def fetchWips(self):
         path = os.path.join(self.path.local, self.parent.getAbsolutePath(),
                             self.step, Version._path, self.name, "wip")
+        if not os.path.isdir(path):
+            self.wips = []
+            return
         self.wips = os.listdir(path)
         self.wips.sort(key=lambda x: x, reverse=True)
 
@@ -104,11 +124,14 @@ class Version(Item):
         '''return the last wip'''
         self.fetchWips()
         if len(self.wips) == 0:
-            return []
+            return None
         return self.wips[0]
     
     def publish(self):
-        '''export low poly obj, export high poly obj, export proxy, export .ma'''
+        '''export low poly obj, export high poly obj, export proxy, export .ma in the version folder'''
+
+        #TODO Check if the selected file is open in maya
+
         wip = self.getLastWip()
         if len(wip) == 0:
             return False
@@ -123,3 +146,42 @@ class Version(Item):
         #export highpoly obj
         #export proxy
         return True
+
+    
+    def readInfo(self):
+        path = os.path.join(self.getRoot().path.server, self.getRoot().name, ".pil")
+        if not os.path.isdir(path):
+            return
+        info = os.path.join(path, self.fileName + "_" + self.name + ".pil")
+        if not os.path.isfile(info):
+            return
+        data = {}
+        with open(info) as fp:
+            for line in fp:
+                k, v = line.replace("\n", "").split("=")
+                data[k] = v
+        
+        self.date = datetime.datetime.strptime( data["date"], '%Y-%m-%d %H:%M:%S.%f')
+        self.author = data["author"]
+        self.name = data["name"]
+        self.fileName = data["fileName"]
+        self.infoName = data["infoName"]
+        
+
+        img = os.path.join(path, self.fileName + "_" + self.name + ".png")
+        if os.path.isfile(img):
+            self.image = img
+
+
+    def writeInfo(self):
+        path = os.path.join(self.getRoot().path.server, self.getRoot().name, ".pil")
+        if not os.path.isdir(path):
+            os.mkdir(path)
+        info = os.path.join(path, self.fileName + "_" + self.name + ".pil")
+        with open(info, "w+") as fp:
+            fp.write("name=" + self.name + "\n")
+            fp.write("fileName=" + self.fileName + "\n")
+            fp.write("infoName=" + self.infoName + "\n")
+            fp.write("author=" + self.author + "\n")
+            fp.write("date=" + datetime.datetime.strftime(self.date, '%Y-%m-%d %H:%M:%S.%f') + "\n")
+
