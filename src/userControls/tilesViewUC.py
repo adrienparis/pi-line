@@ -43,7 +43,6 @@ class DockTilesUC(UserControl):
             t.setParent(self.grdLay)
             t.load()
 
-
 class TilesViewUC(UserControl, Browsing):
     
     _styleIcon = 'iconAndTextVertical'

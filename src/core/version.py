@@ -43,9 +43,6 @@ class Version(Item):
         self.onLocal = True
         shutil.copy(templateFile, os.path.join(wipPath, name))
 
-
-# TODO copy the server version to the local version
-# TODO and copy the publish of the version to the local scene
     def download(self):
         print("downloading " + self.name)
         if not(self.onServer and not self.onLocal):
@@ -57,6 +54,7 @@ class Version(Item):
         print(ser)
         copy_tree(ser, loc)
         self.onLocal = True
+
         print(self.name + " downloaded")
 
 # TODO and copy the publish of the version to the server scene
@@ -87,7 +85,7 @@ class Version(Item):
         print("all worked")
 
     def deleteLocal(self):
-        print("delete Local")
+        print("delete Local -> not implemented")
         self.onLocal = False
         pass
 

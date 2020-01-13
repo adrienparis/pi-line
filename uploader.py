@@ -21,7 +21,7 @@ def writeVersion(path, version):
     filename = os.path.join(current_path, "version")
     if not os.path.isfile(filename):
         print("Version was not found")
-    f = open(os.path.join(current_path, "version"), "rw+")
+    f = open(os.path.join(current_path, "version"), "w+")
     f.write(version[0] + "." + version[1] + "." + version[2] + "." + version[3])
     f.write('testAssetManager;tam;Q:/promo002/casiers/a.paris/ateliers;S:/projects;\n')
     f.write('Amenti;amenti;Q:/promo002/projects;S:/projects;\n')
@@ -29,7 +29,7 @@ def writeVersion(path, version):
     f.close()
 
 v = fetchVersion(current_path)
-v[2] += 1
+v[2] = str(1 + int(v[2]))
 writeVersion(current_path, v)
 
 pathDest = "Q:/partage/library/Maya scripts/general/Pi-Line"

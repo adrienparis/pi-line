@@ -171,9 +171,9 @@ class UserControl(object):
         else:
             log.warning(name + " is already loaded")
             if self.height == -1 or self.width == -1:
-                cmds.formLayout(self.layout, e=True, parent=self.parentLay, bgc=hexToRGB(self.color.background))
+                cmds.formLayout(self.layout, e=True, parent=self.parentLay)
             else:
-                cmds.formLayout(self.layout, e=True, parent=self.parentLay, bgc=hexToRGB(self.color.background), h=self.height, w=self.width)
+                cmds.formLayout(self.layout, e=True, parent=self.parentLay, h=self.height, w=self.width)
         
         for c in self.childrens:
             c.load()

@@ -28,8 +28,8 @@ class TileUC(UserControl):
         if self.icon is not None:
             self.iconLay = cmds.image(parent=self.layout, image=getIcon(self.icon), bgc=hexToRGB(0x1d1d1d))
             cmds.formLayout(self.layout, edit=True,
-                            attachForm=[(self.btnLay, "top", 2), (self.btnLay, "bottom", 2), 
-                                        (self.btnLay, "left", 2), (self.btnLay, "right", 2), 
+                            attachForm=[(self.btnLay, "top", 0), (self.btnLay, "bottom", 0), 
+                                        (self.btnLay, "left", 0), (self.btnLay, "right", 0), 
                                         (self.iconLay, "top", 5), (self.iconLay, "right", 5)],
                             attachNone=[(self.iconLay, "left"), (self.iconLay, "bottom")])
         else:

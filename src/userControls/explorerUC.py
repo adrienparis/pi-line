@@ -72,7 +72,7 @@ class ExplorerUC(UserControl, Browsing):
         self.tileView.importBrows(self)
         self.treeView.reload()
         self.tileView.reload()
-        self.tileView.load()
+        # self.tileView.load()
 
     def changeSelection(self, view, selection):
         sel = [x.elem for x in selection if x.selected]

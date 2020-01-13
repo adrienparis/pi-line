@@ -1,0 +1,9 @@
+- Ouvrir une scène propre
+- Set le projet (bien vérifier d'avoir importer les fichiers lookdev (scene+sourceimage)
+- Importer en reference la scène de look dev en ayant coché merge into selected namespace dans les option de droite
+- Importer la scène avec votre objet exporter seul de votre scene de modé (en .ma)
+- Ajuster la taille de l'asset lookdev à l'objet et non l'inverse
+- Faites votre shading 
+- Faite un petit rendu pour mettre sur shotgun ou pour garder pour des retakes.
+- Exporter votre mesh shader en .ma sans les assets de lookdev
+- Remplacer l'objet dans votre scène shading.

@@ -214,7 +214,15 @@ class CupboardUC(UserControl):
             return
         self.project = p
         self.project.fetchAll()
-        self.project.setProject()
+        
+        pathProject = os.path.join(self.project.path.local, self.project.name, "3_work", "maya")
+        print(pathProject)
+        if not os.path.isdir(pathProject):
+            log.warning("Project folder not found")
+        else:
+            cmds.workspace(pathProject, o=True)
+            cmds.workspace(dir=pathProject)
+
         self.views["explorer"].setProject(p)
         self.views["explorer"].refresh()
         # self.views["explorer"].reload()
