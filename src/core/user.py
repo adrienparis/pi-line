@@ -10,27 +10,42 @@ class User():
             self.name = getpass.getuser()
             self.prefPath = os.path.join("C:/Users", self.name, "Documents", "Pi-Line")
             self.prefs = {}
-            self.loadPref()
+            self.readPrefs()
             self.assignPrefs()
             self.profil = None
+            self.lastProj = None
             #0=alpha 1=beta 2=releaseCandidate 3=release
             self.tester = 3
-            
-        def loadPref(self):
+        
+        def readPrefs(self):
             filepath = os.path.join(self.prefPath, "preferences.pil")
             if not os.path.isfile(filepath):
                 log.warning("user's preference file does not exist")
                 return
-            #TODO create a try and catch to avoid a badly written config file
             with open(filepath) as fp:
                 for line in fp:
                     key = line.split('=', 1)[0].replace(" ", "")
                     if len(line.split('=', 1)) == 2:
-                        value = ast.literal_eval(line.split('=', 1)[1].strip())
+                        value = line.split('=', 1)[1].strip()
                     self.prefs[key] = value
+        
+        def writePrefs(self):
+            filepath = os.path.join(self.prefPath, "preferences.pil")
+            print("%\\%\\%\\%\\%\\%\\%\\%\\%\\%\\%\\%\\%\\%\\%\\%\\%\\%\\%\\")
+            print(filepath)
+            with open(filepath, "w+") as fp:
+                for k,v in self.prefs.items():
+                    if v is not None:
+                        fp.write(k + "=" + str(v) + "\n")
 
-        def createPrefFiles(self):
-            pass
+                # if self.lastProj is not None:
+                #     fp.write("lastProj=" + self.lastProj + "\n")
+                #     print(self.lastProj)
+                # if self.profil is not None:
+                #     fp.write("profil=" + self.profil + "\n")
+                #     print(self.profil)
+                fp.close()
+
 
         def assignPrefs(self):
             #name project
@@ -47,4 +62,6 @@ class User():
         if not User.__instance:
             User.__instance = User.__user()
     def __getattr__(self, name):
-        return getattr(User.__instance, name)
+        return getattr(self.__instance, name)
+    def __setattr__(self, name, val):
+        return setattr(self.__instance, name, val)

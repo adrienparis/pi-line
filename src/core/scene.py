@@ -51,9 +51,9 @@ class Scene(Item):
         if len(self.versions) == 0:
             return None
         self.versions.sort(key=lambda x: x.name, reverse=True)
-        log.debug("last version", self.versions[0].name)
-        for v in self.versions:
-            log.debug("\tall versions", v.name)
+        # log.debug("last version", self.versions[0].name)
+        # for v in self.versions:
+            # log.debug("\tall versions", v.name)
         return self.versions[0]
 
     def getVersionBy(self, steps):

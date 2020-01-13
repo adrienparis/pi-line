@@ -169,7 +169,7 @@ class UserControl(object):
                 c.parentLay = self.layout
             object.__getattribute__(self, "load")()
         else:
-            log.warning(name + " is already loaded")
+            # log.warning(name + " is already loaded")
             if self.height == -1 or self.width == -1:
                 cmds.formLayout(self.layout, e=True, parent=self.parentLay)
             else:

@@ -31,8 +31,6 @@ class SceneExplorerUC(UserControl):
                 # plop += 1
                 for asset in self.project.assets[c]:
                     v = asset.getLastVersion()
-                    if v is not None:
-                        log.debug("server/local", v.onServer, v.onLocal)
                     ico = self.getStateIcon(v)
                     self.explorerAssets.addItem(asset.name, asset, parent=p, icon=ico)
             self.explorerShots.deleteAllItemsFolders()

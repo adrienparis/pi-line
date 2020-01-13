@@ -226,6 +226,13 @@ class CupboardUC(UserControl):
         self.views["explorer"].setProject(p)
         self.views["explorer"].refresh()
         # self.views["explorer"].reload()
+        print(p.name)
+        print(User().lastProj)
+        User().lastProj = p.name
+        User().prefs["lastProj"] = p.name
+        print(User().lastProj)
+        print("~~~~~~~~~~~~~~~~~~~~~~~")
+        User().writePrefs()
 
     def changeSelection(self, selection):
         log.debug(selection)

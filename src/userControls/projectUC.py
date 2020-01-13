@@ -53,7 +53,7 @@ class ProjectUC(UserControl):
     def setLastProject(self):
         u = User()
         sel = 1
-        if "lastProj" in u.prefs:
+        if "lastProj" in User().prefs:
             for i, p in enumerate(self.projects):
                 if p.name == u.prefs["lastProj"]:
                     sel = i + 2
