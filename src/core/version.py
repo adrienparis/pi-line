@@ -3,6 +3,9 @@ import datetime
 from distutils.dir_util import copy_tree
 import shutil
 
+import mayaInteraction.screenshots as ScreenShots
+import mayaInteraction.fileManagement as FileManagement
+
 from .item import Item
 
 class Version(Item):
@@ -183,3 +186,18 @@ class Version(Item):
             fp.write("author=" + self.author + "\n")
             fp.write("date=" + datetime.datetime.strftime(self.date, '%Y-%m-%d %H:%M:%S.%f') + "\n")
 
+    def takeScreenshots(self):
+        path = os.path.join(self.getRoot().path.server, self.getRoot().name, ".pil")
+        if not os.path.isdir(path):
+            os.mkdir(path)
+            
+        filePath = os.path.join(self.path.local, self.parent.getAbsolutePath(),
+                            self.step, Version._path, self.name, self.fileName + ".ma")
+        if not FileManagement.isCurrentSceneIs(filePath):
+            print(filePath + " is not currently open")
+            # fileManagement.open(filePath)
+            return
+        name = self.fileName + "_" + self.name
+        ScreenShots.orthographicTurnScreenShot(name, path)
+
+        

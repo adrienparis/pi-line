@@ -10,6 +10,8 @@ from core.asset import *
 from core.shot import *
 from core.version import *
 
+from mayaInteraction.screenshots import orthographicTurnScreenShot
+
 from .chooseStepUC import ChooseStepUC
 from .newElemUC import NewVersion
 from .defineProjectUC import *
@@ -93,6 +95,7 @@ class CupboardUC(UserControl):
         self.views["explorer"].eventHandler("changeTab", self.changeTabScene)
         self.views["explorer"].eventHandler("newElem", self.commandNewElem)
         self.views["version"].eventHandler("changeItem", self.changeVersion)
+        self.views["versInfo"].eventHandler("clickScreenShot", self.screenShot)
         self.views["sync"].eventHandler("download", self.commandDownload)
         self.views["sync"].eventHandler("delete", None)
         self.views["import"].eventHandler("open", self.commandOpen)
@@ -304,16 +307,25 @@ class CupboardUC(UserControl):
             if os.path.isfile(pubPath):
                 cmds.file( pubPath, o=True, f=True)
                 return
-            
 
     def commandPublish(self):
+        #TODO check if selected file is currently open
         if len(self.selected) > 0 and len(self.versSelected) > 0:
             log.debug("publish version " + str(self.versSelected[0].date))
             self.versSelected[0].publish()
             self.versSelected[0].setCurrent()
             self.versSelected[0].upload()
             self.views["version"].loadTree()
-        pass
+
+
+    def screenShot(self):
+        
+        if len(self.selected) > 0 and len(self.versSelected) > 0:
+            log.debug("screenShot version " + str(self.versSelected[0].date))
+            self.versSelected[0].takeScreenshots()
+
+            self.views["version"].loadTree()
+
 
     def commandSaveVersion(self):
         if len(self.selected) > 0:
