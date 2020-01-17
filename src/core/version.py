@@ -32,14 +32,16 @@ class Version(Item):
 
         path = os.path.join(self.path.server, self.parent.getAbsolutePath(),
                             self.step, Version._path, self.name)
-        os.makedirs(path)
+        if not os.path.isdir(path):
+            os.makedirs(path)
     
     def makeNewWIP(self):
         path = os.path.join(self.path.local, self.parent.getAbsolutePath(),
                             self.step, Version._path, self.name)
         wipPath = os.path.join(path, "wip")
         print(path)
-        os.makedirs(wipPath)
+        if not os.path.isdir(wipPath):
+            os.makedirs(wipPath)
         name = self.fileName + ".001" + ".ma"
         # TODO make wips too
         templateFile = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir, "empty.ma")
@@ -79,7 +81,8 @@ class Version(Item):
         print(newLoc)
         print(newSer)
         shutil.move(last, newLoc)
-        os.makedirs(newSer)
+        if not os.path.isdir(newSer):
+            os.makedirs(newSer)
         copy_tree(newLoc, newSer)
         #BAD IDEA
         #TODO REPLACE THAT!! do not copy all and deleting after! only copy what's needed
@@ -199,5 +202,16 @@ class Version(Item):
             return
         name = self.fileName + "_" + self.name
         ScreenShots.orthographicTurnScreenShot(name, path)
+
+    def getImage(self):
+        path = os.path.join(self.getRoot().path.server, self.getRoot().name, ".pil")
+        if not os.path.isdir(path):
+            return None
+        name = self.fileName + "_" + self.name + "_quarter.jpg"
+        img = os.path.join(path, name)
+        if not os.path.isfile(img):
+            return None
+        return img
+
 
         

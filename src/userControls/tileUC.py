@@ -22,7 +22,7 @@ class TileUC(UserControl):
 
     def load(self):
         cmds.formLayout(self.layout, e=True, bgc=hexToRGB(self.color.highlight), ebg=self.selected)
-        self.btnLay = cmds.iconTextButton(self.name, parent=self.layout, style=self.style, image1=getIcon(self.image),
+        self.btnLay = cmds.iconTextButton(self.name, parent=self.layout, style=self.style, image1=self.image,
                             label=self.text, w=self.sizeImage, h=self.sizeImage, sic=True, c=Callback(self.clickCommand))
 
         if self.icon is not None:

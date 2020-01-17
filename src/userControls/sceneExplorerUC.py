@@ -21,25 +21,20 @@ class SceneExplorerUC(UserControl):
         plop = 0
         if self.project is not None:
             self.explorerAssets.deleteAllItemsFolders()
-            for c in self.project.assets.keys():
+            for c in sorted(self.project.assets.keys()):
                 p = self.explorerAssets.addFolder(c, c)
-                # self.explorerAssets.addFolder("Test" + str(plop), "test", parent=p)
-                # plop += 1
-                # self.explorerAssets.addFolder("Test" + str(plop), "test", parent=p)
-                # plop += 1
-                # self.explorerAssets.addFolder("Test" + str(plop), "test", parent=p)
-                # plop += 1
                 for asset in self.project.assets[c]:
                     v = asset.getLastVersion()
                     ico = self.getStateIcon(v)
-                    self.explorerAssets.addItem(asset.name, asset, parent=p, icon=ico)
+                    self.explorerAssets.addItem(asset.name, asset, parent=p, image=asset.getImage(), icon=ico)
+                    print(asset.getImage())
             self.explorerShots.deleteAllItemsFolders()
-            for c in self.project.shots.keys():
+            for c in sorted(self.project.shots.keys()):
                 p = self.explorerShots.addFolder(c, c)
                 for shot in self.project.shots[c]:
                     v = shot.getLastVersion()
                     ico = self.getStateIcon(v)
-                    self.explorerShots.addItem(shot.name, shot, parent=p, icon=ico)
+                    self.explorerShots.addItem(shot.name, shot, parent=p, image=shot.getImage(), icon=ico)
 
     def getStateIcon(self, v):
         ico = "denied"

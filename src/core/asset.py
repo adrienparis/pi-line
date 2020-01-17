@@ -18,7 +18,7 @@ class Asset(Scene):
         if not os.path.isdir(p):
             os.makedirs(p)
             
-    def download(self):
+    def download(self, version):
         print("downloading " + self.name)
         if not(self.onServer and not self.onLocal):
             print("Already on local")
@@ -51,7 +51,8 @@ class Asset(Scene):
         print(newLoc)
         print(newSer)
         shutil.move(last, newLoc)
-        os.makedirs(newSer)
+        if not os.path.isdir(newSer):
+            os.makedirs(newSer)
         copy_tree(newLoc, newSer)
         #BAD IDEA
         #TODO REPLACE THAT!! do not copy all and deleting after! only copy what's needed

@@ -94,6 +94,8 @@ def getDimGeoSet():
 
 def getCenterGeoSet():
     bb = getBB()
+    if bb == None:
+        return [0,0,0]
     dim = [bb[3] - bb[0], bb[4] - bb[1], bb[5] - bb[2]]
     center = [dim[0] / 2 + bb[0], dim[1] / 2 + bb[1], dim[2] / 2 + bb[2]]
     return center
@@ -139,3 +141,11 @@ def orthographicTurnScreenShot(name, path):
     cmds.lookThru(curCam)
     cmds.delete(camName)
     cmds.delete(grp)
+    for s in ["front", "quarter", "side"]:
+        original = os.path.join(path, name + "_" + s + ".0001.jpg")
+        output =  os.path.join(path, name + "_" + s + ".jpg")
+        try:
+            os.rename(original, output)
+        except WindowsError:
+            os.remove(output)
+            os.rename(original, output)

@@ -7,5 +7,5 @@ class Shot(Scene):
     _imagePath = os.path.join(Scene._path,"shots")
     _steps = ["animation", "previz", "rendering", "sfx"]
 
-    def __init__(self, name, seq, project=None):
+    def __init__(self, name, seq, project):
         Scene.__init__(self, name, seq, project)

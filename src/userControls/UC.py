@@ -6,12 +6,12 @@ import log
 
 class Color():
     def __init__(self):
-        # self.highlight = 0xe7466c
+        self.highlight = 0x5285a6
         # self.main = 0x99e1d9
         # self.button = 0x99e1d9
         # self.background = 0x5d576b
         # self.text = 0xfffaf3
-        self.highlight = 0xe7466c
+        # self.highlight = 0xe7466c
         self.main = 0x404040
         self.button = 0x606060
         self.background = 0x303030
@@ -222,6 +222,11 @@ class UserControl(object):
         self.unload()
         self.load()
 
+    def killSelf(self):
+        
+        if not self.loaded:
+            if cmds.workspaceControl(name, exists=1):
+                cmds.deleteUI(name)
 
     def __getattribute__(self,name):
         if name == 'load':

@@ -87,14 +87,14 @@ class TilesViewUC(UserControl, Browsing):
                 area = DockTilesUC(self.tabs)
                 area.name = f.name
                 if self.addable:
-                    newElem = TileUC(area, "add", "New")
+                    newElem = TileUC(area, getIcon("add"), "New")
                     newElem.eventHandler("click", self.newElem, f)
                 if fold is not self.root:
-                    folderPar = TileUC(area, "folderBig", "..")
+                    folderPar = TileUC(area, getIcon("folderBig"), "..")
                     folderPar.eventHandler("click", self.clickFolder, fold.parent)
                 for i in f.childrens:
                     if i.__class__ is Browsing.folder:
-                        i.addDisplayElem(TileUC(area, "folderBig", i.name), "tilesView")
+                        i.addDisplayElem(TileUC(area, getIcon("folderBig"), i.name), "tilesView")
                         i.displayElem["tilesView"].eventHandler("click", self.clickFolder, f)
                     else:
                         i.addDisplayElem(TileUC(area, i.image, i.name, i.icon), "tilesView")

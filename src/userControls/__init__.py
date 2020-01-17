@@ -37,6 +37,7 @@ from importUC import ImportUC
 from lineUC import LineUC
 from newElemUC import NewVersion
 from projectUC import ProjectUC
+from popupsUC import newItemUC
 from sceneExplorerUC import SceneExplorerUC
 from syncUC import SyncUC
 from tileUC import TileUC
@@ -61,6 +62,7 @@ reload(importUC)
 reload(lineUC)
 reload(newElemUC)
 reload(projectUC)
+reload(popupsUC)
 reload(sceneExplorerUC)
 reload(syncUC)
 reload(tileUC)
@@ -83,6 +85,7 @@ from explorerUC import ExplorerUC
 from importUC import ImportUC
 from lineUC import LineUC
 from projectUC import ProjectUC
+from popupsUC import newItemUC
 from sceneExplorerUC import SceneExplorerUC
 from syncUC import SyncUC
 from tileUC import TileUC

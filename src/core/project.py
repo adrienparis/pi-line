@@ -279,15 +279,31 @@ class Project(Item):
 
     def makeCategory(self, name):
         if name in self.assets:
-            return False
+            log.warning("Category already exist")
+            return
         self.assets[name] = []
+        p = os.path.join(self.path.server, self.name, "3_work", "maya", "scenes", "assets", name)
+        log.debug("create " + p)
+        if not os.path.isdir(p):
+            os.mkdir(p)
+        if not self.onLocal:
+            return
+        p = os.path.join(self.path.local, self.name, "3_work", "maya", "scenes", "assets", name)
+        log.debug("create " + p)
+        if not os.path.isdir(p):
+            os.mkdir(p)
         #TODO make dir on server and on local
-        return True
+        return
 
     def makeSequence(self, name):
         if name in self.shots:
+            log.warning("Sequence already exist")
             return False
         self.shots[name] = []
+        p = os.path.join(self.path.server, self.name, "3_work", "maya", "shots", name)
+        os.mkdir(p)
+        p = os.path.join(self.path.local, self.name, "3_work", "maya", "shots", name)
+        os.mkdir(p)
         #TODO make dir on server and on local
         return True
 
@@ -359,6 +375,8 @@ class Project(Item):
         info = os.path.join(path, "project.pil")
         data = {}
         log.debug("start reading project infos")
+        if not os.path.isfile(info):
+            return
         with open(info) as fp:
             for line in fp:
                 log.debug("line : ", line)

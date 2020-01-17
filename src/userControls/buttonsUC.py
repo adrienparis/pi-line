@@ -82,14 +82,24 @@ class TextFieldUC(UserControl):
     def __init__(self, parent, text=""):
         UserControl.__init__(self, parent)
         self.text = text
+        
 
     def load(self):
-        self._textLabel = cmds.textField(parent=self.layout, text=self.text)
+        self._textLabel = cmds.textField(parent=self.layout, text=object.__getattribute__(self, "text"))
         cmds.formLayout(self.layout, edit=True,
                         attachForm=[(self._textLabel, 'top', 0), (self._textLabel, 'bottom', 0), (self._textLabel, 'left', 0), (self._textLabel, 'right', 0)])
     
     def refresh(self):
         cmds.textField(self._textLabel, e=True, text=self.text)
+        
+    def __getattribute__(self,name):
+        if name == 'text':
+            if self.loaded:
+                return cmds.textField(self._textLabel, q=True, text=True)
+            else:
+                return ""
+        else:
+            return UserControl.__getattribute__(self, name)
 
 class TextLabelUC(UserControl):
     def __init__(self, parent, text="..."):

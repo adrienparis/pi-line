@@ -12,6 +12,7 @@ from core.version import *
 
 from mayaInteraction.screenshots import orthographicTurnScreenShot
 
+from .popupsUC import newItemUC
 from .chooseStepUC import ChooseStepUC
 from .newElemUC import NewVersion
 from .defineProjectUC import *
@@ -191,7 +192,54 @@ class CupboardUC(UserControl):
     def commandProjectOption(self):
         pass
 
-    def commandNewElem(self, name, cat):
+    def commandNewElem(self, scene, cat):
+        title = "New "
+        if cat is None:
+            if scene == "shot":
+                title += "sequence"
+            elif scene == "asset":
+                title += "asset categorie"
+        else:
+            if scene == "shot":
+                title += "shot in " + cat
+            elif scene == "asset":
+                title += "asset in " + cat
+        
+
+        result = cmds.promptDialog(
+                        title=title,
+                        message='Enter name:',
+                        button=['OK', 'Cancel'],
+                        defaultButton='OK',
+                        cancelButton='Cancel',
+                        dismissString='Cancel')
+        if result == 'OK':
+            name = cmds.promptDialog(query=True, text=True)
+        else:
+            return
+        print(name)
+
+        if cat is None:
+            if scene == "shot":
+                self.project.makeSequence(name)
+            elif scene == "asset":
+                self.project.makeCategory(name)
+        else:
+            if scene == "shot":
+                s = Shot(name, cat, self.project)
+                s.author = User().name
+                s.make()
+                self.project.addShotToSequence(name, cat)
+            elif scene == "asset":
+                a = Asset(name, cat, self.project)
+                a.author = User().name
+                a.make()
+                self.project.addAssetToCategory(name, cat)
+        # self.project.add
+
+        # pop = newItemUC(title)
+        # pop.load()
+        self.views["explorer"].refresh()
         print(name, cat)
 
     def refreshAll(self):

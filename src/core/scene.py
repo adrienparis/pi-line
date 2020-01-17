@@ -1,4 +1,5 @@
 import os
+import datetime
 from copy import copy
 
 import log
@@ -12,7 +13,7 @@ class Scene(Item):
     _steps = []
     _type = ""
 
-    def __init__(self, name, cat, project=None):
+    def __init__(self, name, cat, project):
         self.category = cat
         Item.__init__(self, name, project)
         # super(Item, self).__init__(name, project)
@@ -20,6 +21,22 @@ class Scene(Item):
         self.relativePath = os.path.join(self._path, cat, name)
         self.versions = []
         self.fileName = self.parent.diminutive + "_" + self.name
+        self.date = datetime.datetime.now()
+    
+    def getImage(self):
+        if self.image is not None and os.path.isfile(self.image):
+            return self.image
+        if len(self.versions) != 0:
+            for s in reversed(self._steps):
+                self.versions.sort(key=lambda x: x.name, reverse=True)
+                v = [x for x in self.versions if x.step == s]
+                if len(v) != 0:
+                    i = v[0].getImage()
+                    if i is not None:
+                        return i
+        img = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir, "logo",  "noPicture.png")
+        if os.path.isfile(img):
+            return img
 
     def setRelativePath(self):
         self.relativePath = os.path.join(self._path, self.category, self.name)
@@ -77,6 +94,7 @@ class Scene(Item):
             if not os.path.isdir(p):
                 os.makedirs(p)
             #and inside create folder versions, and wip only for local
+        self.writeInfo()
         pass
 
     def makeNewVersion(self, step):
@@ -131,3 +149,37 @@ class Scene(Item):
         # print(self.versions)
         # for v in self.versions:
             # print(v.onLocal, v.onServer)
+
+    def readInfo(self):
+        path = os.path.join(self.getRoot().path.server, self.getRoot().name, ".pil")
+        if not os.path.isdir(path):
+            return
+        info = os.path.join(path, self.fileName + ".pil")
+        if not os.path.isfile(info):
+            return
+        data = {}
+        with open(info) as fp:
+            for line in fp:
+                k, v = line.replace("\n", "").split("=")
+                data[k] = v
+        
+        self.date = datetime.datetime.strptime( data["date"], '%Y-%m-%d %H:%M:%S.%f')
+        self.author = data["author"]
+        self.name = data["name"]
+        self.fileName = data["fileName"]
+        
+
+        img = os.path.join(path, self.fileName + ".png")
+        if os.path.isfile(img):
+            self.image = img
+
+
+    def writeInfo(self):
+        path = os.path.join(self.getRoot().path.server, self.getRoot().name, ".pil")
+        if not os.path.isdir(path):
+            os.mkdir(path)
+        info = os.path.join(path, self.fileName + ".pil")
+        with open(info, "w+") as fp:
+            fp.write("name=" + self.name + "\n")
+            fp.write("author=" + self.author + "\n")
+            fp.write("date=" + datetime.datetime.strftime(self.date, '%Y-%m-%d %H:%M:%S.%f') + "\n")

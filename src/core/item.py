@@ -43,7 +43,7 @@ class Item():
         #optional
         self.image = ""
         self.author = ""
-        self.date = ""
+        self.date = None
         
     def setRelativePath(self):
         self.relativePath = os.path.join(self._path, self.name)
@@ -87,3 +87,11 @@ class Item():
 
     def readInfo(self):
         log.warning("read info -> Not Implemented")
+
+    def getImage(self):
+        if self.image is not None:
+            if os.path.isfile(self.image):
+                return self.image
+        img = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir, "logo",  "noPicture.png")
+        if os.path.isfile(img):
+            return img
